@@ -283,8 +283,15 @@ function cycleBanner() {
   bannerIdx = (bannerIdx + 1) % BANNERS.length;
   const next = BANNERS[bannerIdx];
   const test = new Image();
-  test.onload  = () => { bannerImg.src = next; };
-  test.onerror = () => { bannerIdx = 0; bannerImg.src = BANNERS[0]; };
+  test.onload  = () => {
+    bannerImg.src = next;
+    sendToLua({ type: 'bannerChange', index: bannerIdx }); // ← ajoute cette ligne
+  };
+  test.onerror = () => {
+    bannerIdx = 0;
+    bannerImg.src = BANNERS[0];
+    sendToLua({ type: 'bannerChange', index: 0 }); // ← et celle-là
+  };
   test.src = next;
 }
 
@@ -560,6 +567,16 @@ window.addEventListener('message', function(e) {
   if (d.type === 'showMenu') { appEl.style.display = 'flex'; render(); return; }
   if (d.type === 'hideMenu') { appEl.style.display = 'none'; return; }
   if (d.type === 'cycleBanner') { cycleBanner(); return; }
+
+  if (d.type === 'setBanner') {
+    bannerIdx = d.index || 0;
+    const src = BANNERS[bannerIdx] || BANNERS[0];
+    const test = new Image();
+    test.onload  = () => { bannerImg.src = src; };
+    test.onerror = () => { bannerImg.src = BANNERS[0]; bannerIdx = 0; };
+    test.src = src;
+    return;
+  }
 
   if (d.type === 'applyTheme') {
     applyTheme(d.theme || currentTheme, d.twotone === true);
