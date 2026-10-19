@@ -463,6 +463,12 @@ function openColorPicker(colors) {
 function closeColorPicker() {
   const modal = document.getElementById('color-picker-modal');
   modal.classList.remove('show');
+  // Envoyer signal au Lua pour cacher la souris
+  if (window.__yariCallback) {
+    window.__yariCallback(JSON.stringify({
+      type: 'closeColorPicker'
+    }));
+  }
 }
 
 function updateMenuColorUI(colors) {
