@@ -140,6 +140,19 @@ const tabCfg    = document.getElementById('tab-cfg');
 const catHeader = document.getElementById('cat-header');
 const itemsList = document.getElementById('items-list');
 
+  let onlineSubMenu = null;   // null | 'Players' | 'Troll'
+let onlineSubSel  = 0;      // index root (0=Players, 1=Troll)
+let nearbyPlayers = [];     // [{serverId, name, distance}]
+let selectedPlayers = {};   // {serverId: true}
+let trollActions  = [
+    "Teleport","Ragdoll","Silent Kill","Stun Player","Spectate","Revive",
+    "Smash Attack","Launch Player","Cage Player","Cage Player M2",
+    "Stop Cage Player M2","Bug Player BMX","Bug Player Avenger",
+    "Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle"
+];
+let trollSel = 0;
+let playerSel = 0;
+
 function getCurCat() {
   if (!curCatName) return null;
   return CATEGORIES.find(c => c.name === curCatName) || null;
@@ -156,18 +169,71 @@ function render() {
     }
     if (cat) {
         catHeader.className = '';
-        itemsList.innerHTML = '';
-
-        // Online : le Lua gère tout l'affichage via draw calls
-        // Weapon : pareil, le panneau flottant est géré côté Lua
-        if (cat.name !== 'Online' && cat.name !== 'Weapon') {
-            catHeader.textContent = cat.name.toUpperCase();
-            catHeader.className = 'show';
-            renderList(cat.items, catSel, catScroll, cat.name);
+        if (cat.name === 'Online') {
+            renderOnline();
+            return;
         }
+        catHeader.textContent = cat.name.toUpperCase();
+        catHeader.className = 'show';
+        renderList(cat.items, catSel, catScroll, cat.name);
     } else {
         catHeader.className = '';
         renderCategories();
+    }
+}
+
+function renderOnline() {
+    if (onlineSubMenu === null) {
+        // Root : Players / Troll
+        ['Players', 'Troll'].forEach((name, i) => {
+            const el = document.createElement('div');
+            el.className = 'menu-item' + (i === onlineSubSel ? ' sel' : '');
+            el.innerHTML = `<div class="bar"></div>
+                <span class="item-name">${name}</span>
+                <span class="item-ind">›</span>`;
+            itemsList.appendChild(el);
+        });
+    } else if (onlineSubMenu === 'Players') {
+        // Header avec compteur
+        const selCount = Object.keys(selectedPlayers).length;
+        if (selCount > 0) {
+            const hd = document.createElement('div');
+            hd.style.cssText = 'padding:2px 14px;font-size:10px;color:#32c832;font-family:"Share Tech Mono",monospace;';
+            hd.textContent = `● ${selCount} sélectionné(s)`;
+            itemsList.appendChild(hd);
+        }
+        if (nearbyPlayers.length === 0) {
+            const el = document.createElement('div');
+            el.className = 'menu-item';
+            el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun joueur à proximité</span>';
+            itemsList.appendChild(el);
+        } else {
+            nearbyPlayers.slice(0, 10).forEach((p, i) => {
+                const isOn = selectedPlayers[p.serverId] === true;
+                const el = document.createElement('div');
+                el.className = 'menu-item' + (i === playerSel ? ' sel' : '');
+                el.innerHTML = `<div class="bar"></div>
+                    <span class="item-name" style="font-size:11px">[${p.serverId}] ${p.name} <span style="color:var(--dimmed)">${p.distance}m</span></span>
+                    <div class="tog${isOn ? ' on' : ''}"></div>`;
+                itemsList.appendChild(el);
+            });
+        }
+    } else if (onlineSubMenu === 'Troll') {
+        const selCount = Object.keys(selectedPlayers).length;
+        const hd = document.createElement('div');
+        hd.style.cssText = 'padding:2px 14px;font-size:10px;font-family:"Share Tech Mono",monospace;';
+        hd.style.color = selCount > 0 ? '#32c832' : '#dc821e';
+        hd.textContent = selCount > 0 ? `● ${selCount} joueur(s) ciblé(s)` : '⚠ Aucun joueur sélectionné';
+        itemsList.appendChild(hd);
+
+        trollActions.forEach((name, i) => {
+            const el = document.createElement('div');
+            el.className = 'menu-item' + (i === trollSel ? ' sel' : '');
+            el.innerHTML = `<div class="bar"></div>
+                <span class="item-name">${name}</span>
+                <span class="item-ind">▶</span>`;
+            itemsList.appendChild(el);
+        });
     }
 }
 
@@ -243,31 +309,26 @@ window.addEventListener('message', function(e) {
     if (d.type === 'hideMenu') { appEl.style.display = 'none';  return; }
 
     if (d.type === 'sync') {
-        // Toggles
-        if (d.toggles) Object.assign(toggleStates, d.toggles);
-
-        // Tab
-        if (d.tab) {
-            tab = d.tab;
-            tabMain.className = 'tab' + (tab === 'main'   ? ' active' : '');
-            tabCfg.className  = 'tab' + (tab === 'config' ? ' active' : '');
-        }
-
-        // Catégorie courante
-        curCatName = d.curCatName || null;
-
-        // Index de sélection
-        if (d.selIdx    !== undefined) {
-            if (curCatName) catSel    = d.selIdx;
-            else            selIdx    = d.selIdx;
-        }
-        if (d.scrollOff !== undefined) {
-            if (curCatName) catScroll = d.scrollOff;
-            else            scrollOff = d.scrollOff;
-        }
-
-        render();
+    if (d.toggles) Object.assign(toggleStates, d.toggles);
+    if (d.tab) {
+        tab = d.tab;
+        tabMain.className = 'tab' + (tab === 'main'   ? ' active' : '');
+        tabCfg.className  = 'tab' + (tab === 'config' ? ' active' : '');
     }
+    curCatName = d.curCatName || null;
+    if (d.selIdx    !== undefined) { if (curCatName) catSel = d.selIdx; else selIdx = d.selIdx; }
+    if (d.scrollOff !== undefined) { if (curCatName) catScroll = d.scrollOff; else scrollOff = d.scrollOff; }
+
+    // Online data
+    if (d.onlineSubMenu  !== undefined) onlineSubMenu  = d.onlineSubMenu;
+    if (d.onlineSubSel   !== undefined) onlineSubSel   = d.onlineSubSel;
+    if (d.nearbyPlayers  !== undefined) nearbyPlayers  = d.nearbyPlayers;
+    if (d.selectedPlayers!== undefined) selectedPlayers= d.selectedPlayers;
+    if (d.trollSel       !== undefined) trollSel       = d.trollSel;
+    if (d.playerSel      !== undefined) playerSel      = d.playerSel;
+
+    render();
+}
 });
 
 function moveSelection(dir) {
