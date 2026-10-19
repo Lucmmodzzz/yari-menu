@@ -92,6 +92,31 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 </div>
 
 <script>
+
+const BANNERS = [
+  "yari_menu_banniere_rouge.png",
+  "banniere.png",
+  "banniere1.png",
+  "banniere2.png",
+  "banniere3.png",
+  "banniere4.png",
+];
+let bannerIdx = 0;
+const bannerImg = document.querySelector('#banner img');
+
+function cycleBanner() {
+  bannerIdx = (bannerIdx + 1) % BANNERS.length;
+  const next = BANNERS[bannerIdx];
+  const test = new Image();
+  test.onload  = () => { bannerImg.src = next; };
+  test.onerror = () => {
+    // fichier absent → saute et recommence depuis 0
+    bannerIdx = 0;
+    bannerImg.src = BANNERS[0];
+  };
+  test.src = next;
+}
+  
 // ── State (miroir du Lua, mis à jour par messages) ──
 const CATEGORIES = [
   {name:"Player",        items:["Noclip","God Mode","No Ragdoll","No Collision","Fast Run","Revive","Teleporte To Waypoint","Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina"]},
@@ -307,6 +332,7 @@ window.addEventListener('message', function(e) {
 
     if (d.type === 'showMenu') { appEl.style.display = 'flex'; return; }
     if (d.type === 'hideMenu') { appEl.style.display = 'none';  return; }
+    if (d.type === 'cycleBanner') { cycleBanner(); return; }
 
     if (d.type === 'sync') {
     if (d.toggles) Object.assign(toggleStates, d.toggles);
@@ -326,6 +352,7 @@ window.addEventListener('message', function(e) {
     if (d.selectedPlayers!== undefined) selectedPlayers= d.selectedPlayers;
     if (d.trollSel       !== undefined) trollSel       = d.trollSel;
     if (d.playerSel      !== undefined) playerSel      = d.playerSel;
+    
 
     render();
 }
