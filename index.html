@@ -503,7 +503,6 @@ function render() {
   if (cat) {
     catHeader.className = '';
     if (cat.name === 'Online') { renderOnline(); return; }
-    if (cat.name === 'Vehicle' && constructionOpen) { renderConstruction(); return; }
     catHeader.textContent = cat.name.toUpperCase();
     catHeader.className = 'show';
     renderList(cat.items, catSel, catScroll, cat.name);
@@ -559,20 +558,6 @@ function renderOnline() {
       itemsList.appendChild(el);
     });
   }
-}
-
-function renderConstruction() {
-  catHeader.textContent = 'VEHICLE › CONSTRUCTION';
-  catHeader.className = 'show';
-  CONSTRUCTION_ITEMS.forEach((name, i) => {
-    const el = document.createElement('div');
-    el.className = 'menu-item' + (i === constructionSel ? ' sel' : '');
-    const icons = ['⬦⬦', '▲', '⬛', '✕'];
-    el.innerHTML = `<div class="bar"></div>
-      <span class="item-name">${name}</span>
-      <span class="item-ind" style="font-size:11px">${icons[i]||''}</span>`;
-    itemsList.appendChild(el);
-  });
 }
 
 function renderCategories() {
@@ -766,8 +751,6 @@ if (d.type === 'spectatorUpdate') {
     if (d.selectedPlayers!== undefined) selectedPlayers = d.selectedPlayers;
     if (d.trollSel       !== undefined) trollSel        = d.trollSel;
     if (d.playerSel      !== undefined) playerSel       = d.playerSel;
-    if (d.constructionOpen !== undefined) constructionOpen = d.constructionOpen;
-    if (d.constructionSel  !== undefined) constructionSel  = d.constructionSel;
     render(); return;
   }
 });
