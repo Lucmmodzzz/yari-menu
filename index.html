@@ -535,8 +535,40 @@ function applyColor() {
 document.getElementById('slider-r').addEventListener('input', updateColorPreview);
 document.getElementById('slider-g').addEventListener('input', updateColorPreview);
 document.getElementById('slider-b').addEventListener('input', updateColorPreview);
-document.getElementById('btn-apply').addEventListener('click', applyColor);
-document.getElementById('btn-close').addEventListener('click', closeColorPicker);
+
+// Ajouter les vrais clics
+document.getElementById('btn-apply').addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  applyColor();
+});
+document.getElementById('btn-close').addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  closeColorPicker();
+});
+
+// Détection des clics sur les boutons +/-
+document.querySelectorAll('.modal-btn[onclick]').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+});
+
+// Permettre les clics sur les sliders directement
+document.getElementById('slider-r').addEventListener('mousedown', function(e) {
+  e.preventDefault();
+  updateColorPreview();
+});
+document.getElementById('slider-g').addEventListener('mousedown', function(e) {
+  e.preventDefault();
+  updateColorPreview();
+});
+document.getElementById('slider-b').addEventListener('mousedown', function(e) {
+  e.preventDefault();
+  updateColorPreview();
+});
 
 render();
 </script>
