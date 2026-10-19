@@ -8,73 +8,208 @@
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── THEME VARIABLES ── */
 :root {
-  --red:      #DC1E1E;
-  --red-glow: #FF3232;
-  --red-dark: #8C0A0A;
-  --bg:       #0A0A0A;
-  --dimmed:   #B0B0B0;
-  --sep:      rgba(50,15,15,0.9);
+  --accent:      #DC1E1E;
+  --accent-glow: #FF3232;
+  --accent-dark: #8C0A0A;
+  --accent-l:    #DC1E1E;   /* two-tone left  */
+  --accent-r:    #8B1FDC;   /* two-tone right */
+  --bg:          #0A0A0A;
+  --dimmed:      #B0B0B0;
+  --sep:         rgba(50,15,15,0.9);
 }
+
+/* ── SINGLE-COLOUR THEMES ── */
+.theme-red    { --accent:#DC1E1E; --accent-glow:#FF3232; --accent-dark:#8C0A0A; --sep:rgba(50,15,15,0.9); }
+.theme-purple { --accent:#8B1FDC; --accent-glow:#AA44FF; --accent-dark:#4A0A8C; --sep:rgba(35,10,50,0.9); }
+.theme-blue   { --accent:#1E5ADC; --accent-glow:#3278FF; --accent-dark:#0A2A8C; --sep:rgba(10,20,50,0.9); }
+.theme-green  { --accent:#1EDC4A; --accent-glow:#32FF6E; --accent-dark:#0A8C26; --sep:rgba(10,40,20,0.9); }
+
 html, body { width:100%; height:100%; background:transparent; overflow:hidden; font-family:'Rajdhani',sans-serif; }
 
 #app {
   position:fixed; top:150px; left:200px; width:350px;
   display:none; flex-direction:column;
   background:var(--bg);
-  border-top:3px solid var(--red);
-  border-bottom:3px solid var(--red);
-  box-shadow:0 0 20px rgba(220,30,30,0.4),0 0 6px rgba(220,30,30,0.3) inset;
+  border-top:3px solid var(--accent);
+  border-bottom:3px solid var(--accent);
+  box-shadow:0 0 20px rgba(0,0,0,0.45), 0 0 6px rgba(0,0,0,0.3) inset;
   user-select:none;
+  transition: border-color 0.25s;
 }
 
+/* ── TWO-TONE: gradient border via outline trick ── */
+#app.twotone {
+  border-top-color:   transparent;
+  border-bottom-color:transparent;
+  /* layered box-shadows fake the gradient border */
+  position:fixed;
+}
+#app.twotone::before,
+#app.twotone::after { display:none !important; } /* reset banner pseudo if needed */
+
+/* Real gradient top/bottom borders via a pseudo on #app wrapper */
+#app.twotone {
+  outline: none;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+/* We draw the gradient border as an inset element */
+#top-border, #bot-border {
+  display:none; height:3px; flex-shrink:0; width:100%;
+  background: linear-gradient(90deg, var(--accent-l) 0%, var(--accent-l) 38%, var(--accent-r) 62%, var(--accent-r) 100%);
+}
+#app.twotone #top-border,
+#app.twotone #bot-border { display:block; }
+#app.twotone { border-top:none; border-bottom:none; }
+
+/* ── BANNER ── */
 #banner {
   position:relative; height:90px; flex-shrink:0;
   background:linear-gradient(180deg,rgba(40,5,5,0.95) 0%,rgba(10,10,10,1) 100%);
   display:flex; align-items:center; justify-content:center;
   flex-direction:column; gap:5px; overflow:hidden;
 }
-#banner::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg,var(--red),var(--red-dark)); }
-#banner::after  { content:''; position:absolute; right:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg,var(--red),var(--red-dark)); opacity:0.7; }
-.banner-main { font-size:30px; font-weight:700; letter-spacing:6px; color:#fff; text-shadow:0 0 14px var(--red-glow),0 0 30px rgba(220,30,30,0.45),2px 2px 0 rgba(140,10,10,0.5); }
+#banner::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:5px;
+  background:linear-gradient(180deg,var(--accent-l),var(--accent-dark));
+  transition: background 0.25s;
+}
+#banner::after {
+  content:''; position:absolute; right:0; top:0; bottom:0; width:5px;
+  background:linear-gradient(180deg,var(--accent-r),var(--accent-dark));
+  opacity:0.7; transition: background 0.25s;
+}
+/* single-colour mode: right stripe matches accent */
+#app:not(.twotone) #banner::before { background:linear-gradient(180deg,var(--accent),var(--accent-dark)); }
+#app:not(.twotone) #banner::after  { background:linear-gradient(180deg,var(--accent),var(--accent-dark)); opacity:0.7; }
+
+.banner-main { font-size:30px; font-weight:700; letter-spacing:6px; color:#fff; text-shadow:0 0 14px var(--accent-glow),0 0 30px rgba(220,30,30,0.45),2px 2px 0 rgba(140,10,10,0.5); }
 .banner-sub  { font-size:10px; letter-spacing:3px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; }
 
-#subbanner { height:18px; flex-shrink:0; background:rgba(5,5,5,0.98); display:flex; align-items:center; justify-content:center; font-size:9px; letter-spacing:3px; color:rgba(200,200,200,0.6); font-family:'Share Tech Mono',monospace; border-top:1px solid rgba(30,5,5,0.7); }
+#subbanner {
+  height:18px; flex-shrink:0; background:rgba(5,5,5,0.98);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; letter-spacing:3px; color:rgba(200,200,200,0.6);
+  font-family:'Share Tech Mono',monospace;
+  border-top:1px solid rgba(30,5,5,0.7);
+}
 
-#tabs { height:28px; flex-shrink:0; display:flex; border-bottom:2px solid var(--red); }
-.tab { flex:1; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; letter-spacing:2px; color:var(--dimmed); background:rgba(12,12,12,0.98); border-right:1px solid rgba(60,60,60,0.35); cursor:pointer; }
+/* ── TABS ── */
+#tabs { height:28px; flex-shrink:0; display:flex; border-bottom:2px solid var(--accent); transition: border-color 0.25s; }
+#app.twotone #tabs {
+  border-bottom: none;
+  position: relative;
+}
+#app.twotone #tabs::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, var(--accent-l) 0%, var(--accent-l) 38%, var(--accent-r) 62%, var(--accent-r) 100%);
+}
+
+.tab {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:600; letter-spacing:2px; color:var(--dimmed);
+  background:rgba(12,12,12,0.98); border-right:1px solid rgba(60,60,60,0.35); cursor:pointer;
+  transition: background 0.2s;
+}
 .tab:last-child { border-right:none; }
-.tab.active { background:rgba(220,30,30,0.88); color:#fff; }
+.tab.active { background:var(--accent); color:#fff; }
 
-#cat-header { padding:4px 14px; font-size:10px; letter-spacing:2px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; background:rgba(10,10,10,0.95); border-bottom:1px solid rgba(60,20,20,0.5); flex-shrink:0; display:none; }
+/* two-tone: active tab uses left accent */
+#app.twotone .tab.active { background:var(--accent-l); }
+
+#cat-header {
+  padding:4px 14px; font-size:10px; letter-spacing:2px; color:var(--dimmed);
+  font-family:'Share Tech Mono',monospace; background:rgba(10,10,10,0.95);
+  border-bottom:1px solid rgba(60,20,20,0.5); flex-shrink:0; display:none;
+}
 #cat-header.show { display:block; }
 
+/* ── LIST ITEMS ── */
 #items-list { flex-shrink:0; }
-.menu-item { height:30px; display:flex; align-items:center; padding:0 16px 0 28px; position:relative; border-bottom:1px solid var(--sep); }
-.menu-item .bar { position:absolute; left:0; top:3px; bottom:3px; width:3px; background:var(--red); box-shadow:0 0 6px var(--red-glow); display:none; }
-.menu-item.sel { background:rgba(220,30,30,0.13); }
+.menu-item {
+  height:30px; display:flex; align-items:center;
+  padding:0 16px 0 28px; position:relative;
+  border-bottom:1px solid var(--sep);
+}
+.menu-item .bar {
+  position:absolute; left:0; top:3px; bottom:3px; width:3px;
+  background:var(--accent); box-shadow:0 0 6px var(--accent-glow); display:none;
+  transition: background 0.2s;
+}
+.menu-item.sel { background:rgba(220,30,30,0.07); }
 .menu-item.sel .bar { display:block; }
 .item-name { flex:1; font-size:13px; font-weight:500; color:rgba(255,255,255,0.85); letter-spacing:0.4px; }
 .menu-item.sel .item-name { color:#fff; font-weight:600; }
-.item-ind { font-size:13px; font-weight:700; color:var(--red); margin-left:6px; }
+.item-ind { font-size:13px; font-weight:700; color:var(--accent); margin-left:6px; }
 .menu-item.sel .item-ind { opacity:1; }
 .menu-item:not(.sel) .item-ind { opacity:0.65; }
 
-.tog { width:34px; height:14px; border-radius:7px; background:#333; position:relative; flex-shrink:0; }
-.tog.on { background:var(--red); box-shadow:0 0 7px rgba(220,30,30,0.55); }
-.tog::after { content:''; position:absolute; top:2px; left:2px; width:10px; height:10px; border-radius:50%; background:#fff; transition:left 0.12s; }
+/* selected bar in twotone uses gradient */
+#app.twotone .menu-item.sel .bar {
+  background: linear-gradient(180deg, var(--accent-l), var(--accent-r));
+  box-shadow: 0 0 6px var(--accent-l);
+}
+#app.twotone .menu-item.sel .item-name { color:#fff; }
+#app.twotone .item-ind { color: var(--accent-r); }
+
+/* ── TOGGLE ── */
+.tog {
+  width:34px; height:14px; border-radius:7px;
+  background:#333; position:relative; flex-shrink:0;
+  transition: background 0.15s;
+}
+.tog.on { background:var(--accent); box-shadow:0 0 7px var(--accent-glow); }
+#app.twotone .tog.on { background: linear-gradient(90deg, var(--accent-l), var(--accent-r)); box-shadow:0 0 7px var(--accent-l); }
+.tog::after {
+  content:''; position:absolute; top:2px; left:2px;
+  width:10px; height:10px; border-radius:50%; background:#fff; transition:left 0.12s;
+}
 .tog.on::after { left:calc(100% - 12px); }
 
-#footer { height:36px; flex-shrink:0; display:flex; align-items:center; justify-content:center; gap:16px; background:rgba(8,8,8,0.99); border-top:1px solid rgba(40,10,10,0.6); }
+/* ── FOOTER ── */
+#footer {
+  height:36px; flex-shrink:0; display:flex;
+  align-items:center; justify-content:center; gap:16px;
+  background:rgba(8,8,8,0.99);
+  border-top:1px solid rgba(40,10,10,0.6);
+}
 .kh { display:flex; align-items:center; gap:4px; font-size:10px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; }
-.k { display:inline-flex; align-items:center; justify-content:center; width:18px; height:14px; border:1px solid rgba(220,30,30,0.5); border-radius:2px; font-size:9px; color:var(--red); font-weight:700; background:rgba(220,30,30,0.07); }
+.k {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:18px; height:14px;
+  border:1px solid rgba(220,30,30,0.5); border-radius:2px;
+  font-size:9px; color:var(--accent); font-weight:700;
+  background:rgba(220,30,30,0.07);
+}
+
+/* ── COLOUR PICKER STRIP ── */
+.color-strip {
+  display:flex; gap:6px; align-items:center; padding:4px 14px 0;
+  flex-shrink:0;
+}
+.color-dot {
+  width:14px; height:14px; border-radius:50%; cursor:pointer;
+  border:2px solid transparent; transition:border-color 0.15s, transform 0.1s;
+  flex-shrink:0;
+}
+.color-dot.active { border-color:#fff; transform:scale(1.25); }
+.color-dot.red    { background:#DC1E1E; }
+.color-dot.purple { background:#8B1FDC; }
+.color-dot.blue   { background:#1E5ADC; }
+.color-dot.green  { background:#1EDC4A; }
 </style>
 </head>
 <body>
-<div id="app">
+<div id="app" class="theme-red">
+  <div id="top-border"></div>
   <div id="banner">
-  <img src="yari_menu_banniere_rouge.png" alt="banner"
-       style="width:100%; height:90px; object-fit:cover; object-position:center; display:block;" />
+    <img src="yari_menu_banniere_rouge.png" alt="banner"
+         style="width:100%; height:90px; object-fit:cover; object-position:center; display:block;" />
   </div>
   <div id="subbanner">YARI MENU</div>
   <div id="tabs">
@@ -83,6 +218,7 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   </div>
   <div id="cat-header"></div>
   <div id="items-list"></div>
+  <div id="bot-border"></div>
   <div id="footer">
     <div class="kh"><span class="k">↑</span><span class="k">↓</span> Nav</div>
     <div class="kh"><span class="k">↵</span> OK</div>
@@ -92,32 +228,67 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 </div>
 
 <script>
+// ── THEME STATE ─────────────────────────────────────────────────────
+const THEMES = {
+  red:    { accent:'#DC1E1E', glow:'#FF3232', dark:'#8C0A0A', sep:'rgba(50,15,15,0.9)' },
+  purple: { accent:'#8B1FDC', glow:'#AA44FF', dark:'#4A0A8C', sep:'rgba(35,10,50,0.9)' },
+  blue:   { accent:'#1E5ADC', glow:'#3278FF', dark:'#0A2A8C', sep:'rgba(10,20,50,0.9)' },
+  green:  { accent:'#1EDC4A', glow:'#32FF6E', dark:'#0A8C26', sep:'rgba(10,40,20,0.9)' },
+};
+const TWOTONE_LEFT  = '#DC1E1E';  // rouge — côté gauche
+const TWOTONE_RIGHT = '#8B1FDC'; // violet — côté droit
 
+let currentTheme   = 'red';
+let twoToneEnabled = false;
+
+const appEl = document.getElementById('app');
+const root  = document.documentElement;
+
+function applyTheme(name, twotone) {
+  currentTheme   = name;
+  twoToneEnabled = twotone;
+
+  // Remove all theme classes
+  appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green','twotone');
+
+  if (twotone) {
+    appEl.classList.add('twotone');
+    root.style.setProperty('--accent-l',   TWOTONE_LEFT);
+    root.style.setProperty('--accent-r',   TWOTONE_RIGHT);
+    // derive accent from left for toggles/bars
+    root.style.setProperty('--accent',      TWOTONE_LEFT);
+    root.style.setProperty('--accent-glow', '#FF3232');
+    root.style.setProperty('--accent-dark', '#8C0A0A');
+    root.style.setProperty('--sep', 'rgba(50,10,40,0.9)');
+  } else {
+    appEl.classList.add('theme-' + name);
+    const t = THEMES[name];
+    root.style.setProperty('--accent',      t.accent);
+    root.style.setProperty('--accent-glow', t.glow);
+    root.style.setProperty('--accent-dark', t.dark);
+    root.style.setProperty('--sep',         t.sep);
+    root.style.setProperty('--accent-l',    t.accent);
+    root.style.setProperty('--accent-r',    t.accent);
+  }
+}
+
+// ── BANNER CYCLING ───────────────────────────────────────────────────
 const BANNERS = [
   "yari_menu_banniere_rouge.png",
-  "banniere.png",
-  "banniere1.png",
-  "banniere2.png",
-  "banniere3.png",
-  "banniere4.png",
+  "banniere.png","banniere1.png","banniere2.png","banniere3.png","banniere4.png",
 ];
 let bannerIdx = 0;
 const bannerImg = document.querySelector('#banner img');
-
 function cycleBanner() {
   bannerIdx = (bannerIdx + 1) % BANNERS.length;
   const next = BANNERS[bannerIdx];
   const test = new Image();
   test.onload  = () => { bannerImg.src = next; };
-  test.onerror = () => {
-    // fichier absent → saute et recommence depuis 0
-    bannerIdx = 0;
-    bannerImg.src = BANNERS[0];
-  };
+  test.onerror = () => { bannerIdx = 0; bannerImg.src = BANNERS[0]; };
   test.src = next;
 }
-  
-// ── State (miroir du Lua, mis à jour par messages) ──
+
+// ── MENU DATA ────────────────────────────────────────────────────────
 const CATEGORIES = [
   {name:"Player",        items:["Noclip","God Mode","No Ragdoll","No Collision","Fast Run","Revive","Teleporte To Waypoint","Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina"]},
   {name:"Online",        items:[]},
@@ -126,7 +297,7 @@ const CATEGORIES = [
   {name:"Vehicle",       items:["Spawn Véhicule Personnalisé","Porter/Lancer Véhicule","Full Performance","Delete Close Véhicule","Réparer Véhicule","Vehicle God Mode","Shift Boost","Unlock Vehicle","Lock Vehicle"]},
   {name:"Misc",          items:["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll Player","Ragdoll All Players","Anti Aim"]},
   {name:"Server",        items:["Bypass Sunlife","Prime Bypass"]},
-  {name:"Settings",      items:["Auto Load Config", "Change Banner"]},
+  {name:"Settings",      items:["Auto Load Config","Change Banner","Couleur du Menu","Activer Deux Couleurs"]},
   {name:"Keybind",       items:["Delete All Keybinds"]},
   {name:"Sunlife/Prime", items:["Buy Phone/radio"]},
   {name:"Protection",    items:["Anti-teleport","Panic Button"]},
@@ -134,11 +305,7 @@ const CATEGORIES = [
 ];
 const CONFIG_ITEMS = ["Save Config","Load Config"];
 
-// toggleStates[key] = bool  — key = "CategoryName_itemIndex1Based"
-// Mis à jour exclusivement par des messages Lua (setToggleStates)
 const toggleStates = {};
-
-// Items qui ont un toggle (doivent correspondre à configurableToggles côté Lua)
 const TOGGLE_KEYS = new Set([
   "Player_1","Player_2","Player_3","Player_4","Player_5",
   "Player_8","Player_9","Player_10","Player_11","Player_12",
@@ -146,120 +313,148 @@ const TOGGLE_KEYS = new Set([
   "Misc_1","Misc_2","Misc_3","Misc_4",
   "Combat_1","Combat_2",
   "Protection_1",
-  "Settings_1",
+  "Settings_1",   // Auto Load Config
+  "Settings_4",   // Deux Couleurs
   "Destroyer_5",
 ]);
 
-// ── UI state (miroir de la navigation Lua) ──
-// Le Lua est maître — le HTML ne fait que refléter ce qu'il lui dit.
-// Les nav keys du HTML sont désactivées : c'est le Lua qui envoie nav via sendNav().
-let tab        = 'main';
-let selIdx     = 0, scrollOff = 0;
-let curCatName = null;   // null = liste des catégories
-let catSel     = 0, catScroll = 0;
-const MAX_VIS  = 10;
+// ── UI STATE ─────────────────────────────────────────────────────────
+let tab         = 'main';
+let selIdx      = 0, scrollOff = 0;
+let curCatName  = null;
+let catSel      = 0, catScroll = 0;
+const MAX_VIS   = 10;
 
-const appEl     = document.getElementById('app');
-const tabMain   = document.getElementById('tab-main');
-const tabCfg    = document.getElementById('tab-cfg');
-const catHeader = document.getElementById('cat-header');
-const itemsList = document.getElementById('items-list');
-
-  let onlineSubMenu = null;   // null | 'Players' | 'Troll'
-let onlineSubSel  = 0;      // index root (0=Players, 1=Troll)
-let nearbyPlayers = [];     // [{serverId, name, distance}]
-let selectedPlayers = {};   // {serverId: true}
-let trollActions  = [
-    "Teleport","Ragdoll","Silent Kill","Stun Player","Spectate","Revive",
-    "Smash Attack","Launch Player","Cage Player","Cage Player M2",
-    "Stop Cage Player M2","Bug Player BMX","Bug Player Avenger",
-    "Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle"
+let onlineSubMenu   = null;
+let onlineSubSel    = 0;
+let nearbyPlayers   = [];
+let selectedPlayers = {};
+let trollActions    = [
+  "Teleport","Ragdoll","Silent Kill","Stun Player","Spectate","Revive",
+  "Smash Attack","Launch Player","Cage Player","Cage Player M2",
+  "Stop Cage Player M2","Bug Player BMX","Bug Player Avenger",
+  "Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle"
 ];
-let trollSel = 0;
-let playerSel = 0;
+let trollSel = 0, playerSel = 0;
 
+const tabMainEl  = document.getElementById('tab-main');
+const tabCfgEl   = document.getElementById('tab-cfg');
+const catHeader  = document.getElementById('cat-header');
+const itemsList  = document.getElementById('items-list');
+
+// ── COLOUR THEME PICKER ──────────────────────────────────────────────
+// Rendered inline when "Couleur du Menu" is selected
+function renderColorPicker() {
+  itemsList.innerHTML = '';
+  const strip = document.createElement('div');
+  strip.className = 'color-strip';
+  strip.style.padding = '8px 28px';
+  strip.style.gap = '10px';
+
+  ['red','purple','blue','green'].forEach(c => {
+    const dot = document.createElement('div');
+    dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
+    dot.title = c;
+    itemsList.appendChild(dot);
+    // clicking sends action back to Lua via the callback bridge
+    dot.addEventListener('click', () => {
+      applyTheme(c, false);
+      // notify Lua
+      sendToLua({ type:'colorChange', theme: c, twotone: false });
+      render();
+    });
+  });
+
+  // Dots direct to itemsList
+  strip.innerHTML = '';
+  ['red','purple','blue','green'].forEach(c => {
+    const dot = document.createElement('div');
+    dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
+    strip.appendChild(dot);
+    dot.addEventListener('click', () => {
+      applyTheme(c, false);
+      sendToLua({ type:'colorChange', theme: c, twotone: false });
+      render();
+    });
+  });
+
+  itemsList.innerHTML = '';
+  itemsList.appendChild(strip);
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────
 function getCurCat() {
   if (!curCatName) return null;
   return CATEGORIES.find(c => c.name === curCatName) || null;
 }
 
 function render() {
-    itemsList.innerHTML = '';
-    const cat = getCurCat();
+  itemsList.innerHTML = '';
+  const cat = getCurCat();
 
-    if (tab === 'config') {
-        catHeader.className = '';
-        renderList(CONFIG_ITEMS, selIdx, scrollOff, null);
-        return;
-    }
-    if (cat) {
-        catHeader.className = '';
-        if (cat.name === 'Online') {
-            renderOnline();
-            return;
-        }
-        catHeader.textContent = cat.name.toUpperCase();
-        catHeader.className = 'show';
-        renderList(cat.items, catSel, catScroll, cat.name);
-    } else {
-        catHeader.className = '';
-        renderCategories();
-    }
+  if (tab === 'config') {
+    catHeader.className = '';
+    renderList(CONFIG_ITEMS, selIdx, scrollOff, null);
+    return;
+  }
+  if (cat) {
+    catHeader.className = '';
+    if (cat.name === 'Online') { renderOnline(); return; }
+    catHeader.textContent = cat.name.toUpperCase();
+    catHeader.className = 'show';
+    renderList(cat.items, catSel, catScroll, cat.name);
+  } else {
+    catHeader.className = '';
+    renderCategories();
+  }
 }
 
 function renderOnline() {
-    if (onlineSubMenu === null) {
-        // Root : Players / Troll
-        ['Players', 'Troll'].forEach((name, i) => {
-            const el = document.createElement('div');
-            el.className = 'menu-item' + (i === onlineSubSel ? ' sel' : '');
-            el.innerHTML = `<div class="bar"></div>
-                <span class="item-name">${name}</span>
-                <span class="item-ind">›</span>`;
-            itemsList.appendChild(el);
-        });
-    } else if (onlineSubMenu === 'Players') {
-        // Header avec compteur
-        const selCount = Object.keys(selectedPlayers).length;
-        if (selCount > 0) {
-            const hd = document.createElement('div');
-            hd.style.cssText = 'padding:2px 14px;font-size:10px;color:#32c832;font-family:"Share Tech Mono",monospace;';
-            hd.textContent = `● ${selCount} sélectionné(s)`;
-            itemsList.appendChild(hd);
-        }
-        if (nearbyPlayers.length === 0) {
-            const el = document.createElement('div');
-            el.className = 'menu-item';
-            el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun joueur à proximité</span>';
-            itemsList.appendChild(el);
-        } else {
-            nearbyPlayers.slice(0, 10).forEach((p, i) => {
-                const isOn = selectedPlayers[p.serverId] === true;
-                const el = document.createElement('div');
-                el.className = 'menu-item' + (i === playerSel ? ' sel' : '');
-                el.innerHTML = `<div class="bar"></div>
-                    <span class="item-name" style="font-size:11px">[${p.serverId}] ${p.name} <span style="color:var(--dimmed)">${p.distance}m</span></span>
-                    <div class="tog${isOn ? ' on' : ''}"></div>`;
-                itemsList.appendChild(el);
-            });
-        }
-    } else if (onlineSubMenu === 'Troll') {
-        const selCount = Object.keys(selectedPlayers).length;
-        const hd = document.createElement('div');
-        hd.style.cssText = 'padding:2px 14px;font-size:10px;font-family:"Share Tech Mono",monospace;';
-        hd.style.color = selCount > 0 ? '#32c832' : '#dc821e';
-        hd.textContent = selCount > 0 ? `● ${selCount} joueur(s) ciblé(s)` : '⚠ Aucun joueur sélectionné';
-        itemsList.appendChild(hd);
-
-        trollActions.forEach((name, i) => {
-            const el = document.createElement('div');
-            el.className = 'menu-item' + (i === trollSel ? ' sel' : '');
-            el.innerHTML = `<div class="bar"></div>
-                <span class="item-name">${name}</span>
-                <span class="item-ind">▶</span>`;
-            itemsList.appendChild(el);
-        });
+  if (onlineSubMenu === null) {
+    ['Players','Troll'].forEach((name,i) => {
+      const el = document.createElement('div');
+      el.className = 'menu-item' + (i === onlineSubSel ? ' sel' : '');
+      el.innerHTML = `<div class="bar"></div><span class="item-name">${name}</span><span class="item-ind">›</span>`;
+      itemsList.appendChild(el);
+    });
+  } else if (onlineSubMenu === 'Players') {
+    const selCount = Object.keys(selectedPlayers).length;
+    if (selCount > 0) {
+      const hd = document.createElement('div');
+      hd.style.cssText = 'padding:2px 14px;font-size:10px;color:#32c832;font-family:"Share Tech Mono",monospace;';
+      hd.textContent = `● ${selCount} sélectionné(s)`;
+      itemsList.appendChild(hd);
     }
+    if (nearbyPlayers.length === 0) {
+      const el = document.createElement('div');
+      el.className = 'menu-item';
+      el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun joueur à proximité</span>';
+      itemsList.appendChild(el);
+    } else {
+      nearbyPlayers.slice(0,10).forEach((p,i) => {
+        const isOn = selectedPlayers[p.serverId] === true;
+        const el = document.createElement('div');
+        el.className = 'menu-item' + (i === playerSel ? ' sel' : '');
+        el.innerHTML = `<div class="bar"></div>
+          <span class="item-name" style="font-size:11px">[${p.serverId}] ${p.name} <span style="color:var(--dimmed)">${p.distance}m</span></span>
+          <div class="tog${isOn ? ' on' : ''}"></div>`;
+        itemsList.appendChild(el);
+      });
+    }
+  } else if (onlineSubMenu === 'Troll') {
+    const selCount = Object.keys(selectedPlayers).length;
+    const hd = document.createElement('div');
+    hd.style.cssText = 'padding:2px 14px;font-size:10px;font-family:"Share Tech Mono",monospace;';
+    hd.style.color = selCount > 0 ? '#32c832' : '#dc821e';
+    hd.textContent = selCount > 0 ? `● ${selCount} joueur(s) ciblé(s)` : '⚠ Aucun joueur sélectionné';
+    itemsList.appendChild(hd);
+    trollActions.forEach((name,i) => {
+      const el = document.createElement('div');
+      el.className = 'menu-item' + (i === trollSel ? ' sel' : '');
+      el.innerHTML = `<div class="bar"></div><span class="item-name">${name}</span><span class="item-ind">▶</span>`;
+      itemsList.appendChild(el);
+    });
+  }
 }
 
 function renderCategories() {
@@ -281,11 +476,41 @@ function renderList(items, si, so, catName) {
     return;
   }
   for (let i = 0; i < MAX_VIS; i++) {
-    const idx = i + so;
+    const idx  = i + so;
     if (idx >= items.length) break;
     const name = items[idx];
     const key  = catName ? catName + '_' + (idx + 1) : null;
     const isTog = key !== null && TOGGLE_KEYS.has(key);
+    // Special: "Couleur du Menu" shows colour dots inline
+    if (catName === 'Settings' && name === 'Couleur du Menu') {
+      const el = document.createElement('div');
+      el.className = 'menu-item' + (idx === si ? ' sel' : '');
+      el.style.height = 'auto'; el.style.padding = '4px 14px 4px 28px';
+      el.style.flexWrap = 'wrap'; el.style.gap = '6px';
+      el.innerHTML = `<div class="bar"></div><span class="item-name" style="font-size:12px">Couleur</span>`;
+      const strip = document.createElement('div');
+      strip.style.cssText = 'display:flex;gap:6px;align-items:center;margin-left:auto;';
+      ['red','purple','blue','green'].forEach(c => {
+        const dot = document.createElement('div');
+        dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
+        dot.style.cursor = 'pointer';
+        dot.addEventListener('click', () => {
+          applyTheme(c, false);
+          sendToLua({ type:'colorChange', theme:c, twotone:false });
+          render();
+        });
+        strip.appendChild(dot);
+      });
+      el.appendChild(strip);
+      itemsList.appendChild(el);
+      continue;
+    }
+    // Special: "Activer Deux Couleurs" — dynamic toggle label
+    if (catName === 'Settings' && name === 'Activer Deux Couleurs') {
+      const togVal = twoToneEnabled;
+      makeItem(name, idx === si, null, togVal);
+      continue;
+    }
     const togVal = isTog ? (toggleStates[key] === true) : null;
     makeItem(name, idx === si, isTog ? null : '+', togVal);
   }
@@ -294,16 +519,13 @@ function renderList(items, si, so, catName) {
 function makeItem(name, selected, ind, togState) {
   const el = document.createElement('div');
   el.className = 'menu-item' + (selected ? ' sel' : '');
-
   const bar = document.createElement('div');
   bar.className = 'bar';
   el.appendChild(bar);
-
   const nm = document.createElement('span');
   nm.className = 'item-name';
   nm.textContent = name;
   el.appendChild(nm);
-
   if (togState !== null && togState !== undefined) {
     const t = document.createElement('div');
     t.className = 'tog' + (togState ? ' on' : '');
@@ -319,73 +541,67 @@ function makeItem(name, selected, ind, togState) {
 
 function setTab(t) {
   tab = t; curCatName = null; selIdx = 0; scrollOff = 0;
-  tabMain.className = 'tab' + (t === 'main'   ? ' active' : '');
-  tabCfg.className  = 'tab' + (t === 'config' ? ' active' : '');
+  tabMainEl.className = 'tab' + (t === 'main'   ? ' active' : '');
+  tabCfgEl.className  = 'tab' + (t === 'config' ? ' active' : '');
   render();
 }
 
-// ── Messages entrants depuis Lua ─────────────────────
+// ── LUA BRIDGE ───────────────────────────────────────────────────────
+function sendToLua(obj) {
+  if (!window.__yariCallback) return;
+  try { window.__yariCallback(JSON.stringify(obj)); } catch(_) {}
+}
+
 window.addEventListener('message', function(e) {
-    let d = e.data;
-    if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
-    if (!d || !d.type) return;
+  let d = e.data;
+  if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
+  if (!d || !d.type) return;
 
-    if (d.type === 'showMenu') { appEl.style.display = 'flex'; return; }
-    if (d.type === 'hideMenu') { appEl.style.display = 'none';  return; }
-    if (d.type === 'cycleBanner') { cycleBanner(); return; }
+  if (d.type === 'showMenu') { appEl.style.display = 'flex'; render(); return; }
+  if (d.type === 'hideMenu') { appEl.style.display = 'none'; return; }
+  if (d.type === 'cycleBanner') { cycleBanner(); return; }
 
-    if (d.type === 'sync') {
-    if (d.toggles) Object.assign(toggleStates, d.toggles);
+  if (d.type === 'applyTheme') {
+    applyTheme(d.theme || currentTheme, d.twotone === true);
+    render(); return;
+  }
+
+  if (d.type === 'setToggleStates') {
+    if (d.states) Object.assign(toggleStates, d.states);
+    // sync two-tone from toggle state
+    if ('Settings_4' in (d.states || {})) {
+      twoToneEnabled = d.states['Settings_4'] === true;
+      applyTheme(currentTheme, twoToneEnabled);
+    }
+    render(); return;
+  }
+
+  if (d.type === 'sync') {
+    if (d.toggles) {
+      Object.assign(toggleStates, d.toggles);
+      if ('Settings_4' in d.toggles) {
+        twoToneEnabled = d.toggles['Settings_4'] === true;
+        applyTheme(currentTheme, twoToneEnabled);
+      }
+    }
     if (d.tab) {
-        tab = d.tab;
-        tabMain.className = 'tab' + (tab === 'main'   ? ' active' : '');
-        tabCfg.className  = 'tab' + (tab === 'config' ? ' active' : '');
+      tab = d.tab;
+      tabMainEl.className = 'tab' + (tab === 'main'   ? ' active' : '');
+      tabCfgEl.className  = 'tab' + (tab === 'config' ? ' active' : '');
     }
     curCatName = d.curCatName || null;
-    if (d.selIdx    !== undefined) { if (curCatName) catSel = d.selIdx; else selIdx = d.selIdx; }
+    if (d.selIdx    !== undefined) { if (curCatName) catSel    = d.selIdx;    else selIdx    = d.selIdx; }
     if (d.scrollOff !== undefined) { if (curCatName) catScroll = d.scrollOff; else scrollOff = d.scrollOff; }
-
-    // Online data
-    if ('onlineSubMenu' in d) onlineSubMenu = d.onlineSubMenu;
-    if (d.onlineSubSel   !== undefined) onlineSubSel   = d.onlineSubSel;
-    if (d.nearbyPlayers  !== undefined) nearbyPlayers  = d.nearbyPlayers;
-    if (d.selectedPlayers!== undefined) selectedPlayers= d.selectedPlayers;
-    if (d.trollSel       !== undefined) trollSel       = d.trollSel;
-    if (d.playerSel      !== undefined) playerSel      = d.playerSel;
-    
-
-    render();
-}
+    if ('onlineSubMenu'    in d) onlineSubMenu   = d.onlineSubMenu;
+    if (d.onlineSubSel   !== undefined) onlineSubSel    = d.onlineSubSel;
+    if (d.nearbyPlayers  !== undefined) nearbyPlayers   = d.nearbyPlayers;
+    if (d.selectedPlayers!== undefined) selectedPlayers = d.selectedPlayers;
+    if (d.trollSel       !== undefined) trollSel        = d.trollSel;
+    if (d.playerSel      !== undefined) playerSel       = d.playerSel;
+    render(); return;
+  }
 });
 
-function moveSelection(dir) {
-  const cat = getCurCat();
-  if (tab === 'config') {
-    selIdx = clamp(selIdx + dir, 0, CONFIG_ITEMS.length - 1);
-    adjustScroll(selIdx, CONFIG_ITEMS.length, 'main');
-  } else if (cat) {
-    catSel = clamp(catSel + dir, 0, cat.items.length - 1);
-    adjustScroll(catSel, cat.items.length, 'cat');
-  } else {
-    selIdx = clamp(selIdx + dir, 0, CATEGORIES.length - 1);
-    adjustScroll(selIdx, CATEGORIES.length, 'main');
-  }
-}
-
-function adjustScroll(si, total, mode) {
-  if (mode === 'cat') {
-    if (si < catScroll) catScroll = si;
-    if (si >= catScroll + MAX_VIS) catScroll = si - MAX_VIS + 1;
-  } else {
-    if (si < scrollOff) scrollOff = si;
-    if (si >= scrollOff + MAX_VIS) scrollOff = si - MAX_VIS + 1;
-  }
-}
-
-function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-
-// ── Init ─────────────────────────────────────────────
-// Menu caché par défaut, affiché par le Lua via showMenu
 render();
 </script>
 </body>
