@@ -110,22 +110,28 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   <div id="color-preview"></div>
   <div class="color-slider-group">
     <div class="color-label">RED</div>
-    <div class="slider-container">
-      <input type="range" id="slider-r" class="color-slider" min="0" max="255" value="220" style="background:linear-gradient(90deg,rgb(0,0,0),rgb(255,0,0));">
+    <div class="slider-container" style="flex-wrap:wrap;">
+      <button class="modal-btn" style="flex:0.3;padding:4px;" onclick="adjustColor('r',-10)">−</button>
+      <input type="range" id="slider-r" class="color-slider" min="0" max="255" value="220" style="background:linear-gradient(90deg,rgb(0,0,0),rgb(255,0,0));flex:1;margin:0 4px;">
+      <button class="modal-btn" style="flex:0.3;padding:4px;" onclick="adjustColor('r',10)">+</button>
       <span class="slider-value" id="value-r">220</span>
     </div>
   </div>
   <div class="color-slider-group">
     <div class="color-label">GREEN</div>
-    <div class="slider-container">
-      <input type="range" id="slider-g" class="color-slider" min="0" max="255" value="30" style="background:linear-gradient(90deg,rgb(0,0,0),rgb(0,255,0));">
+    <div class="slider-container" style="flex-wrap:wrap;">
+      <button class="modal-btn" style="flex:0.3;padding:4px;" onclick="adjustColor('g',-10)">−</button>
+      <input type="range" id="slider-g" class="color-slider" min="0" max="255" value="30" style="background:linear-gradient(90deg,rgb(0,0,0),rgb(0,255,0));flex:1;margin:0 4px;">
+      <button class="modal-btn" style="flex:0.3;padding:4px;" onclick="adjustColor('g',10)">+</button>
       <span class="slider-value" id="value-g">30</span>
     </div>
   </div>
   <div class="color-slider-group">
     <div class="color-label">BLUE</div>
-    <div class="slider-container">
-      <input type="range" id="slider-b" class="color-slider" min="0" max="255" value="30" style="background:linear-gradient(90deg,rgb(0,0,0),rgb(0,0,255));">
+    <div class="slider-container" style="flex-wrap:wrap;">
+      <button class="modal-btn" style="flex:0.3;padding:4px;" onclick="adjustColor('b',-10)">−</button>
+      <input type="range" id="slider-b" class="color-slider" min="0" max="255" value="30" style="background:linear-gradient(90deg,rgb(0,0,0),rgb(0,0,255));flex:1;margin:0 4px;">
+      <button class="modal-btn" style="flex:0.3;padding:4px;" onclick="adjustColor('b',10)">+</button>
       <span class="slider-value" id="value-b">30</span>
     </div>
   </div>
@@ -432,6 +438,14 @@ function adjustScroll(si, total, mode) {
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
 // ── Color Picker Functions ─────────────────────────────
+function adjustColor(channel, delta) {
+  const slider = document.getElementById('slider-' + channel);
+  let newValue = parseInt(slider.value) + delta;
+  newValue = Math.max(0, Math.min(255, newValue));
+  slider.value = newValue;
+  updateColorPreview();
+}
+
 function updateColorPreview() {
   const r = parseInt(document.getElementById('slider-r').value);
   const g = parseInt(document.getElementById('slider-g').value);
