@@ -1,522 +1,1105 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YARI MENU HUD</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YARI MENU</title>
+<style>
+  /* ── RESET & BASE ───────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        :root {
-            --color-bg: #0A0A0A;
-            --color-red: #DC1E1E;
-            --color-red-dark: #8C0A0A;
-            --color-red-neon: #FF3232;
-            --color-text: #FFFFFF;
-            --color-dimmed: #B0B0B0;
-            --color-border: #3C3C3C;
-        }
+  :root {
+    --accent:    #DC1E1E;
+    --accent-dim:#8C0A0A;
+    --bg:        #0A0A0A;
+    --bg-item:   #111111;
+    --bg-sel:    rgba(220,30,30,0.14);
+    --border:    rgba(220,30,30,0.55);
+    --text:      #FFFFFF;
+    --text-dim:  #B0B0B0;
+    --glow:      rgba(220,30,30,0.22);
+    --sep:       rgba(50,15,15,0.7);
+    --w: 350px;
+  }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background: transparent;
-            color: var(--color-text);
-            overflow: hidden;
-            display: flex;
-            justify-content: flex-start;
-            align-items: flex-start;
-            height: 100vh;
-            padding: 20px;
-        }
+  body {
+    background: #1a1a1a;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 20px;
+    min-height: 100vh;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    overflow-y: auto;
+    overflow-x: hidden;
+    user-select: none;
+  }
 
-        .menu-container {
-            width: 350px;
-            background: var(--color-bg);
-            border: 2px solid var(--color-red);
-            box-shadow: 0 0 20px rgba(220, 30, 30, 0.3);
-            border-radius: 4px;
-            overflow: hidden;
-            animation: slideIn 0.3s ease-out;
-        }
+  /* ── MENU SHELL ─────────────────────────────────────────────── */
+  #menu {
+    width: var(--w);
+    background: var(--bg);
+    border-top:    3px solid var(--accent);
+    border-bottom: 3px solid var(--accent);
+    display: flex;
+    flex-direction: column;
+    max-height: 580px;
+    box-shadow:
+      0 0 18px rgba(220,30,30,.35),
+      0 0 40px rgba(220,30,30,.1);
+    transition: opacity .12s;
+  }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
+  #menu.hidden { opacity: 0; pointer-events: none; }
 
-        .menu-header {
-            background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%);
-            padding: 20px;
-            border-bottom: 3px solid var(--color-red);
-            position: relative;
-        }
+  /* ── BANNER ─────────────────────────────────────────────────── */
+  #banner {
+    height: 90px;
+    background:
+      linear-gradient(to bottom, rgba(40,5,5,.9) 0%, rgba(10,10,10,1) 100%);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
 
-        .menu-header::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: rgba(220, 30, 30, 0.4);
-        }
+  #banner::before, #banner::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 5px;
+    background: rgba(220,30,30,.55);
+  }
+  #banner::before { left: 0; }
+  #banner::after  { right: 0; }
 
-        .menu-title {
-            font-size: 32px;
-            font-weight: bold;
-            text-align: center;
-            text-shadow: 0 0 10px rgba(220, 30, 30, 0.5);
-            letter-spacing: 2px;
-            color: var(--color-red-neon);
-            margin-bottom: 15px;
-        }
+  .banner-title {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: #fff;
+    text-shadow:
+      0 0  8px rgba(220,30,30,.9),
+      0 0 18px rgba(220,30,30,.5),
+      2px 2px 0 rgba(140,10,10,.6);
+    line-height: 1;
+  }
 
-        .menu-subtitle {
-            text-align: center;
-            font-size: 12px;
-            color: var(--color-dimmed);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+  .banner-sub {
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    text-transform: uppercase;
+  }
 
-        .menu-tabs {
-            display: flex;
-            border-top: 1px solid var(--color-border);
-            background: #0F0F0F;
-        }
+  /* ── TABS ───────────────────────────────────────────────────── */
+  #tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 28px;
+    border-bottom: 2px solid var(--accent);
+    flex-shrink: 0;
+  }
 
-        .tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            border-right: 1px solid var(--color-border);
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            color: var(--color-dimmed);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+  .tab-btn {
+    background: #0C0C0C;
+    border: none;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: background .1s, color .1s;
+  }
 
-        .tab:last-child {
-            border-right: none;
-        }
+  .tab-btn.active {
+    background: var(--accent);
+    color: #fff;
+  }
 
-        .tab:hover {
-            background: rgba(220, 30, 30, 0.2);
-            color: var(--color-text);
-        }
+  .tab-sep {
+    width: 1px;
+    background: rgba(60,60,60,.7);
+  }
 
-        .tab.active {
-            background: linear-gradient(135deg, rgba(220, 30, 30, 0.3), rgba(220, 30, 30, 0.1));
-            color: var(--color-red-neon);
-            border-bottom: 2px solid var(--color-red);
-            box-shadow: 0 0 10px rgba(220, 30, 30, 0.2);
-        }
+  /* ── CATEGORY HEADER ────────────────────────────────────────── */
+  #cat-header {
+    padding: 4px 14px 3px;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(60,20,20,.6);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 22px;
+  }
 
-        .menu-content {
-            height: 400px;
-            overflow-y: auto;
-            background: var(--color-bg);
-            padding: 15px;
-        }
+  #cat-header .back-arrow {
+    color: var(--accent);
+    font-size: 14px;
+    cursor: pointer;
+    line-height: 1;
+    flex-shrink: 0;
+  }
 
-        .menu-content::-webkit-scrollbar {
-            width: 6px;
-        }
+  #cat-header .back-arrow:hover { opacity: .7; }
 
-        .menu-content::-webkit-scrollbar-track {
-            background: rgba(220, 30, 30, 0.1);
-        }
+  /* ── ITEM LIST ──────────────────────────────────────────────── */
+  #item-list {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+  }
 
-        .menu-content::-webkit-scrollbar-thumb {
-            background: var(--color-red);
-            border-radius: 3px;
-        }
+  #item-list::-webkit-scrollbar { display: none; }
 
-        .menu-content::-webkit-scrollbar-thumb:hover {
-            background: var(--color-red-neon);
-        }
+  .menu-item {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 8px 0 14px;
+    border-bottom: 1px solid var(--sep);
+    cursor: pointer;
+    position: relative;
+    transition: background .07s;
+  }
 
-        .category {
-            margin-bottom: 15px;
-        }
+  .menu-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 2px; bottom: 2px;
+    width: 3px;
+    background: transparent;
+    transition: background .07s;
+  }
 
-        .category-header {
-            font-size: 11px;
-            color: var(--color-dimmed);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            padding-left: 10px;
-            border-left: 2px solid var(--color-red);
-        }
+  .menu-item.selected {
+    background: var(--bg-sel);
+  }
 
-        .menu-item {
-            padding: 12px 15px;
-            margin-bottom: 6px;
-            background: rgba(30, 30, 30, 0.6);
-            border-left: 3px solid transparent;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 2px;
-            color: var(--color-text);
-        }
+  .menu-item.selected::before {
+    background: var(--accent);
+  }
 
-        .menu-item:hover {
-            background: rgba(220, 30, 30, 0.15);
-            border-left-color: var(--color-red);
-            padding-left: 12px;
-            text-shadow: 0 0 5px rgba(220, 30, 30, 0.5);
-        }
+  .item-label {
+    flex: 1;
+    font-size: 12px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 16px;
+  }
 
-        .menu-item.active {
-            background: linear-gradient(90deg, rgba(220, 30, 30, 0.25), rgba(220, 30, 30, 0.05));
-            border-left-color: var(--color-red-neon);
-            padding-left: 12px;
-            box-shadow: inset 0 0 10px rgba(220, 30, 30, 0.1);
-        }
+  .item-indicator {
+    flex-shrink: 0;
+    font-size: 13px;
+    color: var(--accent);
+    width: 18px;
+    text-align: right;
+  }
 
-        .menu-item-toggle {
-            width: 35px;
-            height: 14px;
-            background: #333333;
-            border-radius: 7px;
-            position: relative;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
+  /* toggle switch */
+  .toggle {
+    width: 35px;
+    height: 14px;
+    border-radius: 7px;
+    background: #333;
+    position: relative;
+    flex-shrink: 0;
+    transition: background .15s, box-shadow .15s;
+  }
 
-        .menu-item-toggle.active {
-            background: var(--color-red);
-            box-shadow: 0 0 10px rgba(220, 30, 30, 0.5);
-        }
+  .toggle.on {
+    background: var(--accent);
+    box-shadow: 0 0 6px rgba(220,30,30,.55);
+  }
 
-        .menu-item-toggle::before {
-            content: '';
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: white;
-            border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s ease;
-        }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fff;
+    top: 2px;
+    left: 2px;
+    transition: left .15s;
+  }
 
-        .menu-item-toggle.active::before {
-            left: 23px;
-        }
+  .toggle.on::after { left: 23px; }
 
-        .menu-item-arrow {
-            font-size: 11px;
-            color: var(--color-red);
-            transition: all 0.2s ease;
-        }
+  /* ── FOOTER ─────────────────────────────────────────────────── */
+  #footer {
+    height: 36px;
+    background: #080808;
+    border-top: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    flex-shrink: 0;
+    gap: 0;
+  }
 
-        .menu-footer {
-            background: #0F0F0F;
-            padding: 12px 15px;
-            border-top: 2px solid var(--color-red);
-            font-size: 11px;
-            color: var(--color-dimmed);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+  .footer-avatar {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(220,60,60,.8);
+    flex-shrink: 0;
+  }
 
-        .footer-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+  .footer-user {
+    font-size: 11px;
+    color: #fff;
+    margin-left: 6px;
+    flex: 1;
+  }
 
-        .profile-icon {
-            width: 16px;
-            height: 16px;
-            background: var(--color-red);
-            border-radius: 50%;
-            box-shadow: 0 0 8px rgba(220, 30, 30, 0.5);
-        }
+  .footer-logo {
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--accent);
+    text-shadow: 0 0 6px rgba(220,30,30,.6);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 
-        .footer-center {
-            color: var(--color-red-neon);
-            font-weight: bold;
-            text-shadow: 0 0 5px rgba(220, 30, 30, 0.5);
-        }
+  .footer-page {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+  }
 
-        .footer-right {
-            text-align: right;
-        }
+  /* ── ONLINE SUB-PANEL ───────────────────────────────────────── */
+  .online-player-row {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 8px 0 14px;
+    border-bottom: 1px solid var(--sep);
+    cursor: pointer;
+    position: relative;
+  }
 
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(10, 10, 10, 0.95);
-            border: 2px solid var(--color-red);
-            color: var(--color-text);
-            padding: 15px 20px;
-            border-radius: 4px;
-            font-size: 12px;
-            animation: notifyIn 0.3s ease-out;
-            z-index: 1000;
-            max-width: 300px;
-            box-shadow: 0 0 15px rgba(220, 30, 30, 0.4);
-        }
+  .online-player-row.selected { background: var(--bg-sel); }
+  .online-player-row.selected::before {
+    content: ''; position: absolute; left: 0; top: 2px; bottom: 2px;
+    width: 4px; background: rgba(220,20,60,.9);
+  }
 
-        @keyframes notifyIn {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-    </style>
+  .player-name { font-size: 11px; color: #CCC; flex: 1; padding-left: 4px; }
+  .player-dist { font-size: 10px; color: #888; }
+
+  /* ── WEAPON PANEL ───────────────────────────────────────────── */
+  .weapon-cat-nav {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    gap: 6px;
+    border-bottom: 1px solid var(--sep);
+    flex-shrink: 0;
+  }
+
+  .weapon-cat-label {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .nav-arrow {
+    font-size: 16px;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+  }
+  .nav-arrow:hover { color: var(--accent); }
+
+  /* ── NOTIFICATION TOAST ─────────────────────────────────────── */
+  #toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(10,10,10,.92);
+    border: 1px solid var(--accent);
+    color: #fff;
+    font-size: 12px;
+    padding: 6px 16px;
+    border-radius: 3px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s, transform .2s;
+    white-space: nowrap;
+    z-index: 999;
+    box-shadow: 0 0 10px rgba(220,30,30,.3);
+  }
+
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── ONLINE TROLL SECTION ───────────────────────────────────── */
+  .troll-row {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 8px 0 18px;
+    border-bottom: 1px solid var(--sep);
+    cursor: pointer;
+    position: relative;
+  }
+
+  .troll-row.selected { background: var(--bg-sel); }
+  .troll-row.selected::before {
+    content: ''; position: absolute; left: 0; top: 2px; bottom: 2px;
+    width: 4px; background: var(--accent);
+  }
+
+  .troll-label { flex: 1; font-size: 12px; color: #CCC; }
+  .troll-arrow { color: rgba(220,20,60,.8); font-size: 10px; }
+
+  /* ── INPUT OVERLAY (for Give Weapon by Name, etc.) ──────────── */
+  #input-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.65);
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+  }
+
+  #input-overlay.show { display: flex; }
+
+  .input-box {
+    background: #111;
+    border: 1px solid var(--accent);
+    padding: 16px;
+    width: 300px;
+    box-shadow: 0 0 18px rgba(220,30,30,.35);
+  }
+
+  .input-box label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .input-box input {
+    width: 100%;
+    background: #0A0A0A;
+    border: 1px solid var(--border);
+    color: #fff;
+    font-size: 13px;
+    padding: 6px 8px;
+    outline: none;
+  }
+
+  .input-box input:focus { border-color: var(--accent); }
+
+  .input-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .input-actions button {
+    flex: 1;
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    padding: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .input-actions button.cancel {
+    background: #2A2A2A;
+  }
+
+  /* ── VEHICLE SPAWN INPUT ─────────────────────────────────────── */
+  #spawn-overlay { display: none; }
+  #spawn-overlay.show { display: flex; }
+
+  /* dark theme for @media prefers-color-scheme: nothing needed — always dark */
+</style>
 </head>
 <body>
-    <div class="menu-container">
-        <!-- Header -->
-        <div class="menu-header">
-            <div class="menu-title">YARI MENU</div>
-            <div class="menu-subtitle">Cyberpunk Edition</div>
-        </div>
 
-        <!-- Tabs -->
-        <div class="menu-tabs">
-            <div class="tab active" data-tab="main">MAIN</div>
-            <div class="tab" data-tab="config">CONFIG</div>
-        </div>
+<!-- ═══════════════ MENU WRAPPER ══════════════════════════════════ -->
+<div id="menu">
 
-        <!-- Content -->
-        <div class="menu-content" id="menuContent">
-            <div class="category">
-                <div class="category-header">Player</div>
-                <div class="menu-item">
-                    <span>Noclip</span>
-                    <div class="menu-item-toggle"></div>
-                </div>
-                <div class="menu-item">
-                    <span>God Mode</span>
-                    <div class="menu-item-toggle"></div>
-                </div>
-                <div class="menu-item">
-                    <span>Fast Run</span>
-                    <div class="menu-item-toggle"></div>
-                </div>
-                <div class="menu-item">
-                    <span>Max Heal</span>
-                    <div class="menu-item-toggle"></div>
-                </div>
-                <div class="menu-item">
-                    <span>Invisible</span>
-                    <div class="menu-item-toggle"></div>
-                </div>
-            </div>
+  <!-- BANNER -->
+  <div id="banner">
+    <div class="banner-title">YARI MENU</div>
+    <div class="banner-sub">YARI MENU</div>
+  </div>
 
-            <div class="category">
-                <div class="category-header">Vehicle</div>
-                <div class="menu-item">
-                    <span>Spawn Vehicle</span>
-                    <span class="menu-item-arrow">→</span>
-                </div>
-                <div class="menu-item">
-                    <span>Full Performance</span>
-                    <span class="menu-item-arrow">→</span>
-                </div>
-                <div class="menu-item">
-                    <span>Vehicle God Mode</span>
-                    <div class="menu-item-toggle"></div>
-                </div>
-                <div class="menu-item">
-                    <span>Lock Vehicle</span>
-                    <span class="menu-item-arrow">→</span>
-                </div>
-            </div>
+  <!-- TABS -->
+  <div id="tabs">
+    <button class="tab-btn active" id="tab-main" onclick="switchTab('main')">MAIN</button>
+    <button class="tab-btn"        id="tab-cfg"  onclick="switchTab('config')">CONFIG</button>
+  </div>
 
-            <div class="category">
-                <div class="category-header">Combat</div>
-                <div class="menu-item">
-                    <span>Laser Eye</span>
-                    <div class="menu-item-toggle"></div>
-                </div>
-                <div class="menu-item">
-                    <span>Fast Punch</span>
-                    <div class="menu-item-toggle"></div>
-                </div>
-            </div>
+  <!-- CATEGORY HEADER -->
+  <div id="cat-header" style="display:none;">
+    <span class="back-arrow" onclick="goBack()">‹</span>
+    <span id="cat-header-label">—</span>
+  </div>
 
-            <div class="category">
-                <div class="category-header">Protection</div>
-                <div class="menu-item">
-                    <span>Anti-Teleport</span>
-                    <div class="menu-item-toggle"></div>
-                </div>
-                <div class="menu-item">
-                    <span>Panic Button</span>
-                    <span class="menu-item-arrow">→</span>
-                </div>
-            </div>
-        </div>
+  <!-- ITEM LIST -->
+  <div id="item-list"></div>
 
-        <!-- Footer -->
-        <div class="menu-footer">
-            <div class="footer-left">
-                <div class="profile-icon"></div>
-                <span>Shinto2733</span>
-            </div>
-            <div class="footer-center">Y</div>
-            <div class="footer-right">
-                <span id="pageIndicator">1 / 11</span>
-            </div>
-        </div>
+  <!-- FOOTER -->
+  <div id="footer" style="position:relative;">
+    <div class="footer-avatar"></div>
+    <span class="footer-user">Shinto2733</span>
+    <span class="footer-logo">Y</span>
+    <span class="footer-page" id="footer-page">1 / 12</span>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- INPUT OVERLAY (Give Weapon by Name / Vehicle Name) -->
+<div id="input-overlay">
+  <div class="input-box">
+    <label id="input-label">Nom :</label>
+    <input type="text" id="input-field" />
+    <div class="input-actions">
+      <button onclick="inputConfirm()">Confirmer</button>
+      <button class="cancel" onclick="inputCancel()">Annuler</button>
     </div>
+  </div>
+</div>
 
-    <script>
-        // NUI Communication with Lapsus
-        const NUI = {
-            send(action, data = {}) {
-                fetch(`https://cfx-nui-yari_hud/event`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action, data })
-                }).catch(() => {
-                    // Silently fail if game is not running
-                });
-            },
+<script>
+"use strict";
 
-            receive(callback) {
-                window.addEventListener('message', (event) => {
-                    callback(event.data);
-                });
-            }
-        };
+/* ═══════════════════════════════════════════════════════════════
+   MENU DATA  (mirrors menu_structure from Lua)
+   ═══════════════════════════════════════════════════════════════ */
+const MENU_STRUCTURE = [
+  { name: "Player",     items: ["Noclip","God Mode","No Ragdoll","No Collision","Fast Run","Revive","Teleporte To Waypoint","Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina"] },
+  { name: "Online",     items: [] },  // handled specially
+  { name: "Weapon",     items: ["Give Weapons","Give Weapon by Name","Remove All Weapons"] },
+  { name: "Combat",     items: ["Laser Eye","Fast Punch"] },
+  { name: "Vehicle",    items: ["Spawn Véhicule Personnalisé","Porter/Lancer Véhicule","Full Performance","Delete Close Véhicule","Réparer Véhicule","Vehicle God Mode","Shift Boost","Unlock Vehicle","Lock Vehicle"] },
+  { name: "Misc",       items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll Player","Ragdoll All Players","Anti Aim"] },
+  { name: "Server",     items: ["Bypass Sunlife","Prime Bypass"] },
+  { name: "Settings",   items: ["Auto Load Config"] },
+  { name: "Keybind",    items: ["Delete All Keybinds"] },
+  { name: "Sunlife/Prime", items: ["Buy Phone/radio"] },
+  { name: "Protection", items: ["Anti-teleport","Panic Button"] },
+  { name: "Destroyer",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos"] },
+];
 
-        // Receive data from Lua script
-        NUI.receive((data) => {
-            if (data.type === 'updateMenu') {
-                updateMenuData(data.payload);
-            } else if (data.type === 'notify') {
-                showNotification(data.message, data.color);
-            }
-        });
+const CONFIG_ITEMS = ["Save Config", "Load Config"];
 
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
+// Keys that are toggles (category → 1-based indices)
+const TOGGLE_KEYS = {
+  "Player":    [1,2,3,4,5,8,9,10,11,12],
+  "Vehicle":   [2,6,7],
+  "Misc":      [1,2,3],
+  "Combat":    [2],
+  "Settings":  [1],
+  "Protection":[1],
+  "Destroyer": [5],
+};
 
-                const tabType = tab.dataset.tab;
-                NUI.send('switchTab', { tab: tabType });
+const WEAPON_CATEGORIES = ["Pistol","SMG","Rifle","Shotgun","Sniper","Machine Gun","Melee","Heavy","Throwables","Tools","Stun"];
 
-                if (tabType === 'config') {
-                    loadConfigTab();
-                } else {
-                    loadMainTab();
-                }
-            });
-        });
+const TROLL_ACTIONS = [
+  "Teleport","Ragdoll","Silent Kill","Stun Player","Spectate",
+  "Revive","Smash Attack","Launch Player","Cage Player",
+  "Cage Player M2","Stop Cage Player M2","Bug Player BMX",
+  "Bug Player Avenger","Block Player Vehicle",
+  "Rain Vehicle","Stop Rain Vehicle"
+];
 
-        // Menu item interactions
-        document.addEventListener('click', (e) => {
-            const menuItem = e.target.closest('.menu-item');
-            if (!menuItem) return;
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════════════════════ */
+let menuVisible    = false;
+let currentTab     = 'main';          // 'main' | 'config'
+let currentCat     = null;            // null = root list
+let selectedIndex  = 0;
 
-            const itemName = menuItem.querySelector('span').textContent;
-            const toggle = menuItem.querySelector('.menu-item-toggle');
+// Online sub-state
+let onlineSubMenu  = null;            // null | 'Players' | 'Troll'
+let nearbyPlayers  = [];              // [{id, name, dist, serverId}]
+let selectedOnlinePlayers = {};       // serverId → true
+let selectedPlayerIdx = 0;
+let trollSelectedIdx = 0;
 
-            if (toggle) {
-                toggle.classList.toggle('active');
-                NUI.send('toggleAction', {
-                    name: itemName,
-                    state: toggle.classList.contains('active')
-                });
-            } else {
-                menuItem.classList.toggle('active');
-                NUI.send('executeAction', { name: itemName });
-            }
-        });
+// Weapon sub-state
+let weaponMenuOpen  = false;
+let weaponCatIdx    = 0;
+let weaponSelIdx    = 0;
 
-        // Load main tab
-        function loadMainTab() {
-            NUI.send('loadMainTab', {});
-        }
+// Toggle state cache (synced from Lua)
+let toggleStates = {};
 
-        // Load config tab
-        function loadConfigTab() {
-            const content = document.getElementById('menuContent');
-            content.innerHTML = `
-                <div class="category">
-                    <div class="category-header">Configuration</div>
-                    <div class="menu-item">
-                        <span>Save Config</span>
-                        <span class="menu-item-arrow">→</span>
-                    </div>
-                    <div class="menu-item">
-                        <span>Load Config</span>
-                        <span class="menu-item-arrow">→</span>
-                    </div>
-                </div>
-                <div class="category">
-                    <div class="category-header">Keybinds</div>
-                    <div class="menu-item">
-                        <span>Delete All Keybinds</span>
-                        <span class="menu-item-arrow">→</span>
-                    </div>
-                </div>
-            `;
+// Input callback
+let inputCallback = null;
 
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const action = item.querySelector('span').textContent;
-                    NUI.send('configAction', { action });
-                    showNotification(`${action} activé`, '#00FF00');
-                });
-            });
-        }
+/* ═══════════════════════════════════════════════════════════════
+   BRIDGE: send action to Lua via postMessage (Lapsus.CreateNui)
+   ═══════════════════════════════════════════════════════════════ */
+function sendToLua(data) {
+  // Lapsus NUI bridge – postMessage to parent window
+  if (window.invokeNative) {
+    window.invokeNative('nuiCallback', JSON.stringify(data));
+  } else {
+    // FiveM NUI standard: fetch back to game
+    fetch(`https://menu_yari/${data.type}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }).catch(() => {});
+    // Also try postMessage for Lapsus NUI
+    window.parent.postMessage(data, '*');
+  }
+}
 
-        // Show notification
-        function showNotification(message, color = '#DC1E1E') {
-            const notif = document.createElement('div');
-            notif.className = 'notification';
-            notif.textContent = message;
-            notif.style.borderColor = color;
-            notif.style.color = color;
-            document.body.appendChild(notif);
+function execAction(category, index) {
+  sendToLua({ type: 'executeAction', category, index });
+}
 
-            setTimeout(() => {
-                notif.style.opacity = '0';
-                setTimeout(() => notif.remove(), 300);
-            }, 3000);
-        }
+/* ═══════════════════════════════════════════════════════════════
+   RECEIVE from Lua
+   ═══════════════════════════════════════════════════════════════ */
+window.addEventListener('message', function(e) {
+  const d = e.data;
+  if (!d || !d.type) return;
 
-        // Initialize
-        window.addEventListener('load', () => {
-            loadMainTab();
-            showNotification('Menu chargé avec succès!', '#00FF00');
-        });
+  switch (d.type) {
+    case 'showMenu':
+      showMenu();
+      break;
+    case 'hideMenu':
+      hideMenu();
+      break;
+    case 'toggleMenu':
+      menuVisible ? hideMenu() : showMenu();
+      break;
+    case 'updateToggle':
+      // { type, category, index, state }
+      const tKey = d.category + '_' + d.index;
+      toggleStates[tKey] = d.state;
+      renderList();
+      break;
+    case 'updatePlayers':
+      // { type, players: [{id, name, dist, serverId}] }
+      nearbyPlayers = d.players || [];
+      if (currentCat && currentCat.name === 'Online' && onlineSubMenu === 'Players') {
+        renderList();
+      }
+      break;
+    case 'notification':
+      showToast(d.message || '');
+      break;
+    case 'setToggleStates':
+      // bulk: { type, states: { 'Player_1': true, ... } }
+      toggleStates = Object.assign(toggleStates, d.states || {});
+      renderList();
+      break;
+    case 'inputRequest':
+      // { type, label, defaultValue, callback_id }
+      showInput(d.label || 'Entrez une valeur', d.defaultValue || '', function(val) {
+        sendToLua({ type: 'inputResult', callback_id: d.callback_id, value: val });
+      });
+      break;
+  }
+});
 
-        // Prevent context menu
-        document.addEventListener('contextmenu', e => e.preventDefault());
-    </script>
+/* ═══════════════════════════════════════════════════════════════
+   SHOW / HIDE
+   ═══════════════════════════════════════════════════════════════ */
+function showMenu() {
+  menuVisible = true;
+  document.getElementById('menu').classList.remove('hidden');
+  sendToLua({ type: 'menuOpened' });
+  renderList();
+}
+
+function hideMenu() {
+  menuVisible = false;
+  document.getElementById('menu').classList.add('hidden');
+  sendToLua({ type: 'menuClosed' });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TAB SWITCH
+   ═══════════════════════════════════════════════════════════════ */
+function switchTab(tab) {
+  currentTab = tab;
+  currentCat = null;
+  selectedIndex = 0;
+  weaponMenuOpen = false;
+  onlineSubMenu = null;
+  document.getElementById('tab-main').classList.toggle('active', tab === 'main');
+  document.getElementById('tab-cfg').classList.toggle('active', tab === 'config');
+  renderList();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════════════════════ */
+function goBack() {
+  if (weaponMenuOpen) {
+    weaponMenuOpen = false;
+    renderList();
+    return;
+  }
+  if (onlineSubMenu !== null) {
+    onlineSubMenu = null;
+    selectedIndex = 0;
+    renderList();
+    return;
+  }
+  if (currentCat) {
+    currentCat = null;
+    selectedIndex = 0;
+    renderList();
+    return;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER
+   ═══════════════════════════════════════════════════════════════ */
+function renderList() {
+  const list = document.getElementById('item-list');
+  const catHeader = document.getElementById('cat-header');
+  const catLabel  = document.getElementById('cat-header-label');
+
+  list.innerHTML = '';
+
+  // ── CONFIG tab ───────────────────────────────────────────────
+  if (currentTab === 'config' && !currentCat) {
+    catHeader.style.display = 'none';
+    updateFooterPage('CFG');
+    CONFIG_ITEMS.forEach((name, i) => {
+      const el = makeItem(name, null, i === selectedIndex);
+      el.addEventListener('click', () => handleConfigSelect(i));
+      list.appendChild(el);
+    });
+    return;
+  }
+
+  // ── MAIN tab, root ───────────────────────────────────────────
+  if (!currentCat) {
+    catHeader.style.display = 'none';
+    updateFooterPage((selectedIndex + 1) + ' / ' + MENU_STRUCTURE.length);
+    MENU_STRUCTURE.forEach((cat, i) => {
+      const hasItems = cat.items.length > 0 || cat.name === 'Online';
+      const el = makeItem(cat.name, hasItems ? '>' : null, i === selectedIndex);
+      el.addEventListener('click', () => openCategory(i));
+      list.appendChild(el);
+    });
+    return;
+  }
+
+  // ── CATEGORY open ────────────────────────────────────────────
+  catHeader.style.display = 'flex';
+  catLabel.textContent = currentCat.name;
+
+  // ONLINE special
+  if (currentCat.name === 'Online') {
+    renderOnline(list);
+    return;
+  }
+
+  // WEAPON special
+  if (currentCat.name === 'Weapon') {
+    renderWeapon(list);
+    return;
+  }
+
+  // Generic items
+  updateFooterPage('');
+  currentCat.items.forEach((name, i) => {
+    const idx1 = i + 1;
+    const isToggle = TOGGLE_KEYS[currentCat.name] && TOGGLE_KEYS[currentCat.name].includes(idx1);
+    const key = currentCat.name + '_' + idx1;
+    const state = isToggle ? (toggleStates[key] || false) : null;
+    const indicator = isToggle ? null : ('+');
+    const el = makeItem(name, indicator, i === selectedIndex, state);
+    el.addEventListener('click', () => activateItem(i));
+    list.appendChild(el);
+  });
+}
+
+function renderOnline(list) {
+  updateFooterPage('');
+  if (onlineSubMenu === null) {
+    // Root online menu
+    ['Players', 'Troll'].forEach((name, i) => {
+      const el = makeItem(name, '>', i === selectedIndex);
+      el.addEventListener('click', () => openOnlineSubMenu(name));
+      list.appendChild(el);
+    });
+    return;
+  }
+
+  if (onlineSubMenu === 'Players') {
+    if (nearbyPlayers.length === 0) {
+      const el = document.createElement('div');
+      el.style.cssText = 'color:#888;font-size:12px;padding:14px 18px;';
+      el.textContent = 'Aucun joueur à proximité';
+      list.appendChild(el);
+      return;
+    }
+    nearbyPlayers.forEach((p, i) => {
+      const row = document.createElement('div');
+      row.className = 'online-player-row' + (i === selectedPlayerIdx ? ' selected' : '');
+      const isOn = selectedOnlinePlayers[p.serverId] === true;
+      row.innerHTML = `
+        <span class="player-name">[${p.serverId}] ${p.name}</span>
+        <span class="player-dist">${p.dist}m</span>
+        <div class="toggle${isOn ? ' on' : ''}" style="margin-left:8px;"></div>
+      `;
+      row.addEventListener('click', () => toggleOnlinePlayer(p.serverId, i));
+      list.appendChild(row);
+    });
+    return;
+  }
+
+  if (onlineSubMenu === 'Troll') {
+    const selCount = Object.keys(selectedOnlinePlayers).length;
+    if (selCount > 0) {
+      const badge = document.createElement('div');
+      badge.style.cssText = 'font-size:10px;color:#32C832;padding:3px 14px;border-bottom:1px solid var(--sep);';
+      badge.textContent = `● ${selCount} joueur(s) ciblé(s)`;
+      list.appendChild(badge);
+    }
+    TROLL_ACTIONS.forEach((name, i) => {
+      const row = document.createElement('div');
+      row.className = 'troll-row' + (i === trollSelectedIdx ? ' selected' : '');
+      row.innerHTML = `<span class="troll-label">${name}</span><span class="troll-arrow">▶</span>`;
+      row.addEventListener('click', () => executeTrollAction(i));
+      list.appendChild(row);
+    });
+  }
+}
+
+function renderWeapon(list) {
+  updateFooterPage('');
+  // Category selector
+  const nav = document.createElement('div');
+  nav.className = 'weapon-cat-nav';
+  nav.innerHTML = `
+    <span class="nav-arrow" onclick="weaponCatPrev()">◄</span>
+    <span class="weapon-cat-label">${WEAPON_CATEGORIES[weaponCatIdx]}</span>
+    <span class="nav-arrow" onclick="weaponCatNext()">►</span>
+  `;
+  list.appendChild(nav);
+
+  if (!weaponMenuOpen) {
+    // Show weapon sub-actions
+    currentCat.items.forEach((name, i) => {
+      const el = makeItem(name, '+', i === selectedIndex);
+      el.addEventListener('click', () => activateItem(i));
+      list.appendChild(el);
+    });
+    return;
+  }
+
+  // Weapon list in category — tell Lua via message
+  const hint = document.createElement('div');
+  hint.style.cssText = 'font-size:10px;color:#888;padding:4px 14px;border-bottom:1px solid var(--sep);text-align:center;';
+  hint.textContent = "Cliquer pour donner l\u2019arme";
+  list.appendChild(hint);
+
+  sendToLua({ type: 'getWeaponList', category: WEAPON_CATEGORIES[weaponCatIdx] });
+}
+
+function makeItem(label, indicator, selected, toggleState) {
+  const el = document.createElement('div');
+  el.className = 'menu-item' + (selected ? ' selected' : '');
+  const indicatorHTML = toggleState !== null && toggleState !== undefined
+    ? `<div class="toggle${toggleState ? ' on' : ''}"></div>`
+    : (indicator ? `<span class="item-indicator">${indicator}</span>` : '');
+  el.innerHTML = `<span class="item-label">${label}</span>${indicatorHTML}`;
+  return el;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACTIONS
+   ═══════════════════════════════════════════════════════════════ */
+function openCategory(i) {
+  const cat = MENU_STRUCTURE[i];
+  if (!cat) return;
+  if (cat.items.length === 0 && cat.name !== 'Online') {
+    showToast('Catégorie vide : ' + cat.name);
+    return;
+  }
+  currentCat = cat;
+  selectedIndex = 0;
+  weaponMenuOpen = false;
+  onlineSubMenu = null;
+  renderList();
+  sendToLua({ type: 'openCategory', category: cat.name });
+}
+
+function openOnlineSubMenu(name) {
+  onlineSubMenu = name;
+  selectedPlayerIdx = 0;
+  trollSelectedIdx = 0;
+  renderList();
+}
+
+function toggleOnlinePlayer(serverId, idx) {
+  selectedPlayerIdx = idx;
+  if (selectedOnlinePlayers[serverId]) {
+    delete selectedOnlinePlayers[serverId];
+  } else {
+    selectedOnlinePlayers[serverId] = true;
+  }
+  sendToLua({ type: 'togglePlayerSelection', serverId, selected: !!selectedOnlinePlayers[serverId] });
+  renderList();
+}
+
+function executeTrollAction(idx) {
+  trollSelectedIdx = idx;
+  renderList();
+  sendToLua({ type: 'trollAction', actionIndex: idx + 1 });
+  showToast('Action : ' + TROLL_ACTIONS[idx]);
+}
+
+function activateItem(i) {
+  if (!currentCat) return;
+  selectedIndex = i;
+  const idx1 = i + 1;
+  const name = currentCat.items[i];
+
+  // Special: weapon Give Weapons opens weapon browser
+  if (currentCat.name === 'Weapon' && idx1 === 1) {
+    weaponMenuOpen = true;
+    renderList();
+    return;
+  }
+
+  // Special: Give Weapon by Name — show input
+  if (currentCat.name === 'Weapon' && idx1 === 2) {
+    showInput('Nom de l\'arme (ex: weapon_pistol)', 'weapon_', function(val) {
+      if (val) sendToLua({ type: 'executeAction', category: 'Weapon_ByName', weapon: val });
+    });
+    return;
+  }
+
+  // Special: Spawn Véhicule Personnalisé — show input
+  if (currentCat.name === 'Vehicle' && idx1 === 1) {
+    showInput('Nom du véhicule (ex: adder)', '', function(val) {
+      if (val) sendToLua({ type: 'executeAction', category: 'Vehicle_SpawnCustom', vehicleName: val });
+    });
+    return;
+  }
+
+  renderList();
+  execAction(currentCat.name, idx1);
+  showToast('Sélectionné : ' + name);
+}
+
+function handleConfigSelect(i) {
+  selectedIndex = i;
+  renderList();
+  const actions = ['saveConfig', 'loadConfig'];
+  sendToLua({ type: actions[i] });
+  showToast(CONFIG_ITEMS[i]);
+}
+
+function weaponCatPrev() {
+  weaponCatIdx = (weaponCatIdx - 1 + WEAPON_CATEGORIES.length) % WEAPON_CATEGORIES.length;
+  weaponSelIdx = 0;
+  renderList();
+  sendToLua({ type: 'weaponCatChange', catIndex: weaponCatIdx, catName: WEAPON_CATEGORIES[weaponCatIdx] });
+}
+
+function weaponCatNext() {
+  weaponCatIdx = (weaponCatIdx + 1) % WEAPON_CATEGORIES.length;
+  weaponSelIdx = 0;
+  renderList();
+  sendToLua({ type: 'weaponCatChange', catIndex: weaponCatIdx, catName: WEAPON_CATEGORIES[weaponCatIdx] });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYBOARD NAVIGATION
+   ═══════════════════════════════════════════════════════════════ */
+document.addEventListener('keydown', function(e) {
+  if (!menuVisible) return;
+
+  if (document.getElementById('input-overlay').classList.contains('show')) return;
+
+  const key = e.key;
+
+  if (key === 'ArrowUp'   || key === 'Up')   { moveUp();    e.preventDefault(); }
+  if (key === 'ArrowDown' || key === 'Down')  { moveDown();  e.preventDefault(); }
+  if (key === 'ArrowLeft' || key === 'Left')  { moveLeft();  e.preventDefault(); }
+  if (key === 'ArrowRight'|| key === 'Right') { moveRight(); e.preventDefault(); }
+  if (key === 'Enter')                         { confirm();   e.preventDefault(); }
+  if (key === 'Backspace' || key === 'Escape') { goBack();    e.preventDefault(); }
+  if (key === 'PageUp'  || key === 'q' || key === 'Q') { prevPage(); e.preventDefault(); }
+  if (key === 'PageDown'|| key === 'e' || key === 'E') { nextPage(); e.preventDefault(); }
+});
+
+function currentItemCount() {
+  if (!currentCat) {
+    return currentTab === 'config' ? CONFIG_ITEMS.length : MENU_STRUCTURE.length;
+  }
+  if (currentCat.name === 'Online') {
+    if (onlineSubMenu === null)      return 2;
+    if (onlineSubMenu === 'Players') return Math.max(1, nearbyPlayers.length);
+    if (onlineSubMenu === 'Troll')   return TROLL_ACTIONS.length;
+  }
+  return currentCat.items.length;
+}
+
+function moveUp() {
+  const n = currentItemCount();
+  if (n <= 0) return;
+  selectedIndex = (selectedIndex - 1 + n) % n;
+  renderList();
+  sendToLua({ type: 'navigate', direction: 'up', index: selectedIndex });
+}
+
+function moveDown() {
+  const n = currentItemCount();
+  if (n <= 0) return;
+  selectedIndex = (selectedIndex + 1) % n;
+  renderList();
+  sendToLua({ type: 'navigate', direction: 'down', index: selectedIndex });
+}
+
+function moveLeft() {
+  if (currentCat && currentCat.name === 'Weapon' && weaponMenuOpen) {
+    weaponCatPrev();
+  }
+}
+
+function moveRight() {
+  if (currentCat && currentCat.name === 'Weapon' && weaponMenuOpen) {
+    weaponCatNext();
+  }
+}
+
+function confirm() {
+  if (!currentCat) {
+    if (currentTab === 'config') { handleConfigSelect(selectedIndex); return; }
+    openCategory(selectedIndex);
+    return;
+  }
+  if (currentCat.name === 'Online') {
+    if (onlineSubMenu === null) {
+      openOnlineSubMenu(['Players','Troll'][selectedIndex]);
+      return;
+    }
+    if (onlineSubMenu === 'Troll') {
+      executeTrollAction(selectedIndex);
+      return;
+    }
+    if (onlineSubMenu === 'Players' && nearbyPlayers.length > 0) {
+      const p = nearbyPlayers[selectedIndex];
+      if (p) toggleOnlinePlayer(p.serverId, selectedIndex);
+      return;
+    }
+    return;
+  }
+  if (currentCat.name === 'Weapon' && weaponMenuOpen) {
+    sendToLua({ type: 'giveWeaponFromList', catName: WEAPON_CATEGORIES[weaponCatIdx], weaponIndex: selectedIndex });
+    showToast('Arme sélectionnée');
+    return;
+  }
+  activateItem(selectedIndex);
+}
+
+function prevPage() {
+  if (currentCat || currentTab === 'config') return;
+  selectedIndex = (selectedIndex - 1 + MENU_STRUCTURE.length) % MENU_STRUCTURE.length;
+  renderList();
+  sendToLua({ type: 'navigate', direction: 'prevPage', index: selectedIndex });
+}
+
+function nextPage() {
+  if (currentCat || currentTab === 'config') return;
+  selectedIndex = (selectedIndex + 1) % MENU_STRUCTURE.length;
+  renderList();
+  sendToLua({ type: 'navigate', direction: 'nextPage', index: selectedIndex });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER PAGE COUNTER
+   ═══════════════════════════════════════════════════════════════ */
+function updateFooterPage(text) {
+  document.getElementById('footer-page').textContent = text;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════════════════════════ */
+let toastTimer = null;
+function showToast(msg) {
+  // Strip GTA color tags (~g~, ~r~, etc.)
+  msg = msg.replace(/~[a-z]~/g, '');
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INPUT OVERLAY
+   ═══════════════════════════════════════════════════════════════ */
+function showInput(label, defaultVal, callback) {
+  inputCallback = callback;
+  document.getElementById('input-label').textContent = label;
+  const field = document.getElementById('input-field');
+  field.value = defaultVal || '';
+  document.getElementById('input-overlay').classList.add('show');
+  setTimeout(() => field.focus(), 50);
+}
+
+function inputConfirm() {
+  const val = document.getElementById('input-field').value.trim();
+  document.getElementById('input-overlay').classList.remove('show');
+  if (inputCallback) { inputCallback(val); inputCallback = null; }
+}
+
+function inputCancel() {
+  document.getElementById('input-overlay').classList.remove('show');
+  inputCallback = null;
+}
+
+document.getElementById('input-field').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter')  { e.preventDefault(); inputConfirm(); }
+  if (e.key === 'Escape') { e.preventDefault(); inputCancel();  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT — tell Lua the NUI is ready
+   ═══════════════════════════════════════════════════════════════ */
+window.addEventListener('load', function() {
+  sendToLua({ type: 'nuiReady' });
+});
+
+</script>
 </body>
 </html>
