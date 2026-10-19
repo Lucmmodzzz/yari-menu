@@ -29,7 +29,7 @@ html, body {
   position: fixed;
   top: 150px; left: 200px;
   width: 350px;
-  display: flex;
+  display: none;
   flex-direction: column;
   background: var(--bg);
   border-top: 3px solid var(--red);
@@ -423,8 +423,13 @@ window.addEventListener('message', function(e) {
   if (d.type === 'nuiReady') sendLua('ready', {});
 });
 
-// ── Keyboard (CEF window = focus natif) ──────────────
+// ── Keyboard ─────────────────────────────────────────
+// La fenêtre CEF Lapsus est une fenêtre séparée.
+// Elle capte les touches SEULEMENT quand elle est au premier plan.
+// Lapsus la met au premier plan quand nuiOpen = true.
+// On vérifie appEl.style.display pour ne pas intercepter inutilement.
 document.addEventListener('keydown', function(e) {
+  if (appEl.style.display === 'none') return;
   switch(e.key) {
     case 'ArrowUp':    e.preventDefault(); nav(-1);      break;
     case 'ArrowDown':  e.preventDefault(); nav(1);       break;
@@ -438,9 +443,8 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-// ── Init : toujours visible ──────────────────────────
-// Lapsus contrôle show/hide via SendNuiMessage.
-// Par défaut le menu est affiché (la fenêtre CEF est cachée par Lua).
+// ── Init ─────────────────────────────────────────────
+// Menu caché par défaut. Lua appelle showMenu via SendNuiMessage au F9.
 render();
 sendLua('ready', {});
 </script>
