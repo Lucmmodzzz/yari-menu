@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YARI MENU HUD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-bg: #0A0A0A;
+            --color-red: #DC1E1E;
+            --color-red-dark: #8C0A0A;
+            --color-red-neon: #FF3232;
+            --color-text: #FFFFFF;
+            --color-dimmed: #B0B0B0;
+            --color-border: #3C3C3C;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: transparent;
+            color: var(--color-text);
+            overflow: hidden;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .menu-container {
+            width: 350px;
+            background: var(--color-bg);
+            border: 2px solid var(--color-red);
+            box-shadow: 0 0 20px rgba(220, 30, 30, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .menu-header {
+            background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%);
+            padding: 20px;
+            border-bottom: 3px solid var(--color-red);
+            position: relative;
+        }
+
+        .menu-header::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(220, 30, 30, 0.4);
+        }
+
+        .menu-title {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(220, 30, 30, 0.5);
+            letter-spacing: 2px;
+            color: var(--color-red-neon);
+            margin-bottom: 15px;
+        }
+
+        .menu-subtitle {
+            text-align: center;
+            font-size: 12px;
+            color: var(--color-dimmed);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .menu-tabs {
+            display: flex;
+            border-top: 1px solid var(--color-border);
+            background: #0F0F0F;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-right: 1px solid var(--color-border);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            color: var(--color-dimmed);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tab:last-child {
+            border-right: none;
+        }
+
+        .tab:hover {
+            background: rgba(220, 30, 30, 0.2);
+            color: var(--color-text);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, rgba(220, 30, 30, 0.3), rgba(220, 30, 30, 0.1));
+            color: var(--color-red-neon);
+            border-bottom: 2px solid var(--color-red);
+            box-shadow: 0 0 10px rgba(220, 30, 30, 0.2);
+        }
+
+        .menu-content {
+            height: 400px;
+            overflow-y: auto;
+            background: var(--color-bg);
+            padding: 15px;
+        }
+
+        .menu-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .menu-content::-webkit-scrollbar-track {
+            background: rgba(220, 30, 30, 0.1);
+        }
+
+        .menu-content::-webkit-scrollbar-thumb {
+            background: var(--color-red);
+            border-radius: 3px;
+        }
+
+        .menu-content::-webkit-scrollbar-thumb:hover {
+            background: var(--color-red-neon);
+        }
+
+        .category {
+            margin-bottom: 15px;
+        }
+
+        .category-header {
+            font-size: 11px;
+            color: var(--color-dimmed);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            padding-left: 10px;
+            border-left: 2px solid var(--color-red);
+        }
+
+        .menu-item {
+            padding: 12px 15px;
+            margin-bottom: 6px;
+            background: rgba(30, 30, 30, 0.6);
+            border-left: 3px solid transparent;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 2px;
+            color: var(--color-text);
+        }
+
+        .menu-item:hover {
+            background: rgba(220, 30, 30, 0.15);
+            border-left-color: var(--color-red);
+            padding-left: 12px;
+            text-shadow: 0 0 5px rgba(220, 30, 30, 0.5);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(90deg, rgba(220, 30, 30, 0.25), rgba(220, 30, 30, 0.05));
+            border-left-color: var(--color-red-neon);
+            padding-left: 12px;
+            box-shadow: inset 0 0 10px rgba(220, 30, 30, 0.1);
+        }
+
+        .menu-item-toggle {
+            width: 35px;
+            height: 14px;
+            background: #333333;
+            border-radius: 7px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .menu-item-toggle.active {
+            background: var(--color-red);
+            box-shadow: 0 0 10px rgba(220, 30, 30, 0.5);
+        }
+
+        .menu-item-toggle::before {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item-toggle.active::before {
+            left: 23px;
+        }
+
+        .menu-item-arrow {
+            font-size: 11px;
+            color: var(--color-red);
+            transition: all 0.2s ease;
+        }
+
+        .menu-footer {
+            background: #0F0F0F;
+            padding: 12px 15px;
+            border-top: 2px solid var(--color-red);
+            font-size: 11px;
+            color: var(--color-dimmed);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-icon {
+            width: 16px;
+            height: 16px;
+            background: var(--color-red);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(220, 30, 30, 0.5);
+        }
+
+        .footer-center {
+            color: var(--color-red-neon);
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(220, 30, 30, 0.5);
+        }
+
+        .footer-right {
+            text-align: right;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(10, 10, 10, 0.95);
+            border: 2px solid var(--color-red);
+            color: var(--color-text);
+            padding: 15px 20px;
+            border-radius: 4px;
+            font-size: 12px;
+            animation: notifyIn 0.3s ease-out;
+            z-index: 1000;
+            max-width: 300px;
+            box-shadow: 0 0 15px rgba(220, 30, 30, 0.4);
+        }
+
+        @keyframes notifyIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-container">
+        <!-- Header -->
+        <div class="menu-header">
+            <div class="menu-title">YARI MENU</div>
+            <div class="menu-subtitle">Cyberpunk Edition</div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="menu-tabs">
+            <div class="tab active" data-tab="main">MAIN</div>
+            <div class="tab" data-tab="config">CONFIG</div>
+        </div>
+
+        <!-- Content -->
+        <div class="menu-content" id="menuContent">
+            <div class="category">
+                <div class="category-header">Player</div>
+                <div class="menu-item">
+                    <span>Noclip</span>
+                    <div class="menu-item-toggle"></div>
+                </div>
+                <div class="menu-item">
+                    <span>God Mode</span>
+                    <div class="menu-item-toggle"></div>
+                </div>
+                <div class="menu-item">
+                    <span>Fast Run</span>
+                    <div class="menu-item-toggle"></div>
+                </div>
+                <div class="menu-item">
+                    <span>Max Heal</span>
+                    <div class="menu-item-toggle"></div>
+                </div>
+                <div class="menu-item">
+                    <span>Invisible</span>
+                    <div class="menu-item-toggle"></div>
+                </div>
+            </div>
+
+            <div class="category">
+                <div class="category-header">Vehicle</div>
+                <div class="menu-item">
+                    <span>Spawn Vehicle</span>
+                    <span class="menu-item-arrow">→</span>
+                </div>
+                <div class="menu-item">
+                    <span>Full Performance</span>
+                    <span class="menu-item-arrow">→</span>
+                </div>
+                <div class="menu-item">
+                    <span>Vehicle God Mode</span>
+                    <div class="menu-item-toggle"></div>
+                </div>
+                <div class="menu-item">
+                    <span>Lock Vehicle</span>
+                    <span class="menu-item-arrow">→</span>
+                </div>
+            </div>
+
+            <div class="category">
+                <div class="category-header">Combat</div>
+                <div class="menu-item">
+                    <span>Laser Eye</span>
+                    <div class="menu-item-toggle"></div>
+                </div>
+                <div class="menu-item">
+                    <span>Fast Punch</span>
+                    <div class="menu-item-toggle"></div>
+                </div>
+            </div>
+
+            <div class="category">
+                <div class="category-header">Protection</div>
+                <div class="menu-item">
+                    <span>Anti-Teleport</span>
+                    <div class="menu-item-toggle"></div>
+                </div>
+                <div class="menu-item">
+                    <span>Panic Button</span>
+                    <span class="menu-item-arrow">→</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="menu-footer">
+            <div class="footer-left">
+                <div class="profile-icon"></div>
+                <span>Shinto2733</span>
+            </div>
+            <div class="footer-center">Y</div>
+            <div class="footer-right">
+                <span id="pageIndicator">1 / 11</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // NUI Communication with Lapsus
+        const NUI = {
+            send(action, data = {}) {
+                fetch(`https://cfx-nui-yari_hud/event`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, data })
+                }).catch(() => {
+                    // Silently fail if game is not running
+                });
+            },
+
+            receive(callback) {
+                window.addEventListener('message', (event) => {
+                    callback(event.data);
+                });
+            }
+        };
+
+        // Receive data from Lua script
+        NUI.receive((data) => {
+            if (data.type === 'updateMenu') {
+                updateMenuData(data.payload);
+            } else if (data.type === 'notify') {
+                showNotification(data.message, data.color);
+            }
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const tabType = tab.dataset.tab;
+                NUI.send('switchTab', { tab: tabType });
+
+                if (tabType === 'config') {
+                    loadConfigTab();
+                } else {
+                    loadMainTab();
+                }
+            });
+        });
+
+        // Menu item interactions
+        document.addEventListener('click', (e) => {
+            const menuItem = e.target.closest('.menu-item');
+            if (!menuItem) return;
+
+            const itemName = menuItem.querySelector('span').textContent;
+            const toggle = menuItem.querySelector('.menu-item-toggle');
+
+            if (toggle) {
+                toggle.classList.toggle('active');
+                NUI.send('toggleAction', {
+                    name: itemName,
+                    state: toggle.classList.contains('active')
+                });
+            } else {
+                menuItem.classList.toggle('active');
+                NUI.send('executeAction', { name: itemName });
+            }
+        });
+
+        // Load main tab
+        function loadMainTab() {
+            NUI.send('loadMainTab', {});
+        }
+
+        // Load config tab
+        function loadConfigTab() {
+            const content = document.getElementById('menuContent');
+            content.innerHTML = `
+                <div class="category">
+                    <div class="category-header">Configuration</div>
+                    <div class="menu-item">
+                        <span>Save Config</span>
+                        <span class="menu-item-arrow">→</span>
+                    </div>
+                    <div class="menu-item">
+                        <span>Load Config</span>
+                        <span class="menu-item-arrow">→</span>
+                    </div>
+                </div>
+                <div class="category">
+                    <div class="category-header">Keybinds</div>
+                    <div class="menu-item">
+                        <span>Delete All Keybinds</span>
+                        <span class="menu-item-arrow">→</span>
+                    </div>
+                </div>
+            `;
+
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const action = item.querySelector('span').textContent;
+                    NUI.send('configAction', { action });
+                    showNotification(`${action} activé`, '#00FF00');
+                });
+            });
+        }
+
+        // Show notification
+        function showNotification(message, color = '#DC1E1E') {
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.textContent = message;
+            notif.style.borderColor = color;
+            notif.style.color = color;
+            document.body.appendChild(notif);
+
+            setTimeout(() => {
+                notif.style.opacity = '0';
+                setTimeout(() => notif.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            loadMainTab();
+            showNotification('Menu chargé avec succès!', '#00FF00');
+        });
+
+        // Prevent context menu
+        document.addEventListener('contextmenu', e => e.preventDefault());
+    </script>
+</body>
+</html>
