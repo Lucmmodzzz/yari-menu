@@ -5,419 +5,322 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YARI MENU</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --purple:       #8B38F0;
-  --purple-b:     #A348FF;
-  --purple-glow:  rgba(139, 56, 240, 0.55);
-  --purple-sel:   rgba(120, 30, 210, 0.92);
-  --purple-sel2:  rgba(155, 60, 255, 0.85);
-  --bg:           #0C0B0F;
-  --bg2:          #100F14;
-  --bg3:          #141218;
-  --text:         #EEEEFF;
-  --text-dim:     #777790;
-  --text-mid:     #AAAACC;
-  --sep:          rgba(255,255,255,0.055);
-  --tab-bg:       rgba(20,18,26,0.95);
-  --tab-active:   var(--purple);
-  --tog-on:       #2563EB;
-  --tog-off:      #2A2A3A;
-  --warn:         #EF4444;
-  --border:       rgba(139, 56, 240, 0.35);
+  --p:        #8B2FEF;
+  --p-b:      #9B40FF;
+  --p-sel:    #7B28E0;
+  --p-glow:   rgba(139, 47, 239, 0.5);
+  --bg:       #18141F;
+  --bg-row:   #1C1825;
+  --bg-row2:  #1A1622;
+  --text:     #F0ECF8;
+  --text-dim: #6A6480;
+  --text-mid: #C4BADC;
+  --sep:      rgba(255,255,255,0.045);
+  --tog-on:   #2563EB;
+  --tog-off:  #2C2838;
+  --warn:     #EF4444;
 }
 
 html, body {
   width: 100%; height: 100%;
   background: transparent; overflow: hidden;
-  font-family: 'Inter', 'Rajdhani', sans-serif;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ── CONTAINER ── */
 #app {
-  position: fixed; top: 120px; left: 180px;
-  width: 370px;
+  position: fixed; top: 100px; left: 160px;
+  width: 420px;
   display: none; flex-direction: column;
   background: var(--bg);
-  border: 1px solid var(--border);
   border-radius: 4px;
   overflow: hidden;
+  border: 1px solid rgba(139,47,239,0.3);
   box-shadow:
-    0 0 0 1px rgba(139,56,240,0.2),
-    0 0 30px rgba(100,20,200,0.35),
-    0 8px 40px rgba(0,0,0,0.8);
+    0 0 0 1px rgba(0,0,0,0.6),
+    0 0 40px rgba(90,10,160,0.4),
+    0 12px 60px rgba(0,0,0,0.85);
   user-select: none;
 }
 
-/* ─── BANNER ─────────────────────────────────────────── */
+/* ── BANNER ── */
 #banner {
   position: relative;
-  height: 88px;
+  height: 95px; flex-shrink: 0;
   overflow: hidden;
-  flex-shrink: 0;
-  background: linear-gradient(135deg,#1a0838 0%,#0e0618 40%,#180630 100%);
+  background: #0e0918;
 }
-#banner-img {
+#banner img {
   width: 100%; height: 100%;
   object-fit: cover; object-position: center top;
-  display: block; opacity: 0.9;
+  display: block;
 }
+/* CSS fallback banner when image is missing */
 #banner-fallback {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 3px;
-  background: linear-gradient(135deg,#1f0845 0%,#0d0519 55%,#1b0638 100%);
+  background: linear-gradient(135deg, #1f0848 0%, #0e0618 50%, #180830 100%);
 }
-.banner-glow {
+.bf-glow {
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse 60% 80% at 50% 120%, rgba(139,56,240,0.25) 0%, transparent 70%);
-  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 100% at 50% 110%, rgba(139,47,239,0.4) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 60% at 20% 50%, rgba(100,20,200,0.2) 0%, transparent 60%);
 }
-.banner-line-top {
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent 0%, var(--purple-b) 30%, var(--purple) 50%, var(--purple-b) 70%, transparent 100%);
-  box-shadow: 0 0 12px var(--purple-glow);
-}
-.banner-line-bot {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(139,56,240,0.6) 50%, transparent 100%);
-}
-.banner-title {
+.bf-title {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 34px; font-weight: 700;
-  letter-spacing: 8px;
+  font-size: 46px; font-weight: 700;
+  letter-spacing: 10px;
   color: #fff;
+  position: relative; z-index: 1;
   text-shadow:
-    0 0 16px var(--purple-b),
-    0 0 40px rgba(163,72,255,0.6),
-    0 2px 0 rgba(0,0,0,0.8);
+    0 0 20px var(--p-b),
+    0 0 50px rgba(155,64,255,0.7),
+    0 3px 0 rgba(0,0,0,0.9);
 }
-.banner-sub {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 9px; letter-spacing: 4px;
-  color: var(--text-dim);
-  text-transform: uppercase;
+/* bottom edge line on banner */
+#banner::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--p-b) 40%, var(--p) 60%, transparent 100%);
+  opacity: 0.6;
 }
 
-/* ─── BREADCRUMB ─────────────────────────────────────── */
+/* ── BREADCRUMB ── */
 #breadcrumb {
   height: 22px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(8,6,12,0.98);
-  border-bottom: 1px solid rgba(139,56,240,0.18);
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 9px; letter-spacing: 2.5px;
-  color: var(--text-dim);
-  text-transform: uppercase;
   gap: 6px;
+  background: #141018;
+  border-bottom: 1px solid rgba(139,47,239,0.15);
+  font-size: 9px; letter-spacing: 3px;
+  color: var(--text-dim);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
 }
-#breadcrumb .crumb-sep {
-  color: var(--purple-b);
-  font-size: 9px;
-}
-#breadcrumb .crumb-active {
-  color: var(--text-mid);
-}
+#breadcrumb .sep { color: var(--p-b); opacity: 0.8; }
+#breadcrumb .active { color: var(--text-mid); }
 
-/* ─── TABS ───────────────────────────────────────────── */
+/* ── TABS ── */
 #tabs {
-  height: 30px; flex-shrink: 0;
+  height: 38px; flex-shrink: 0;
   display: flex;
-  background: var(--bg2);
-  border-bottom: 2px solid rgba(139,56,240,0.4);
+  background: #141018;
+  border-bottom: 1px solid rgba(139,47,239,0.25);
 }
 .tab {
   flex: 1; display: flex; align-items: center; justify-content: center;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  font-size: 12px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase;
   color: var(--text-dim);
   background: transparent;
-  border-right: 1px solid rgba(139,56,240,0.15);
   cursor: pointer;
-  text-transform: uppercase;
-  transition: background 0.1s, color 0.1s;
   position: relative;
+  transition: color 0.1s;
 }
-.tab:last-child { border-right: none; }
+.tab + .tab {
+  border-left: 1px solid rgba(139,47,239,0.2);
+}
 .tab.active {
-  background: var(--purple);
+  background: var(--p);
   color: #fff;
-  box-shadow: 0 0 14px rgba(139,56,240,0.5) inset;
-}
-.tab.active::after {
-  content: '';
-  position: absolute; bottom: -2px; left: 0; right: 0;
-  height: 2px;
-  background: var(--purple-b);
-  box-shadow: 0 0 8px var(--purple-b);
+  box-shadow: 0 0 18px rgba(139,47,239,0.45) inset;
 }
 
-/* ─── CATEGORY HEADER ────────────────────────────────── */
+/* ── CAT HEADER ── */
 #cat-header {
-  padding: 3px 14px;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 9px; letter-spacing: 2.5px;
-  color: rgba(163,72,255,0.7);
-  background: rgba(20,15,30,0.98);
-  border-bottom: 1px solid rgba(139,56,240,0.2);
-  flex-shrink: 0;
-  display: none;
+  padding: 3px 16px;
+  background: #111018;
+  border-bottom: 1px solid rgba(139,47,239,0.18);
+  font-size: 9px; letter-spacing: 3px;
+  color: rgba(155,64,255,0.65);
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
   text-transform: uppercase;
+  flex-shrink: 0; display: none;
 }
 #cat-header.show { display: block; }
 
-/* ─── ITEMS LIST ─────────────────────────────────────── */
+/* ── ITEMS ── */
 #items-list { flex-shrink: 0; }
 
 .menu-item {
-  height: 33px;
+  height: 37px;
   display: flex; align-items: center;
-  padding: 0 14px 0 16px;
+  padding: 0 16px;
   border-bottom: 1px solid var(--sep);
   position: relative;
   background: transparent;
-  transition: background 0.06s;
 }
+.menu-item:nth-child(even) { background: rgba(0,0,0,0.06); }
 .menu-item.sel {
-  background: var(--purple-sel);
-  box-shadow: 0 0 20px rgba(139,56,240,0.3) inset;
-}
-.menu-item.sel .item-name {
-  color: #fff;
-  font-weight: 600;
+  background: var(--p-sel) !important;
 }
 
 .item-name {
   flex: 1;
-  font-family: 'Inter', sans-serif;
-  font-size: 12.5px; font-weight: 400;
+  font-size: 13px; font-weight: 400;
   color: var(--text);
-  letter-spacing: 0.2px;
+  letter-spacing: 0.1px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.menu-item.sel .item-name {
+  font-weight: 600; color: #fff;
+}
 
-/* Right-side indicators */
 .item-arrow {
-  font-size: 11px; font-weight: 600;
-  color: var(--text-dim);
-  margin-left: 6px;
+  font-size: 16px; color: var(--text-dim);
+  margin-left: 8px; line-height: 1;
 }
-.menu-item.sel .item-arrow { color: rgba(255,255,255,0.7); }
-
-.item-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px; letter-spacing: 1px;
-  color: var(--text-dim);
-  margin-left: 4px;
-  white-space: nowrap;
-}
-.menu-item.sel .item-label { color: rgba(255,255,255,0.75); }
+.menu-item.sel .item-arrow { color: rgba(255,255,255,0.6); }
 
 .item-plus {
-  font-size: 13px; font-weight: 400;
-  color: var(--text-dim);
-  margin-left: 6px;
+  font-size: 14px; color: var(--text-dim);
+  margin-left: 8px;
 }
-.menu-item.sel .item-plus { color: rgba(255,255,255,0.6); }
+.menu-item.sel .item-plus { color: rgba(255,255,255,0.55); }
 
-/* Warning badge */
+.item-label {
+  font-size: 10px; letter-spacing: 1px;
+  color: var(--text-dim);
+  font-family: 'Rajdhani', sans-serif; font-weight: 600;
+  margin-left: 8px; white-space: nowrap;
+}
+.menu-item.sel .item-label { color: rgba(255,255,255,0.7); }
+
+/* warn badge */
 .warn-badge {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 16px; height: 16px;
+  width: 15px; height: 15px;
   background: var(--warn);
   border-radius: 2px;
-  font-size: 9px; font-weight: 700; color: #fff;
-  margin-left: 7px;
-  flex-shrink: 0;
-  line-height: 1;
+  font-size: 8px; font-weight: 700; color: #fff;
+  margin-left: 7px; flex-shrink: 0;
 }
 
-/* ─── SEPARATORS ─────────────────────────────────────── */
-.section-sep {
-  height: 22px;
-  display: flex; align-items: center;
-  padding: 0 14px;
-  position: relative;
-  border-bottom: 1px solid var(--sep);
-}
-.section-sep::before {
-  content: '';
-  position: absolute; left: 14px; right: 14px;
-  top: 50%; height: 1px;
-  background: rgba(139,56,240,0.3);
-}
-.sep-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 8px; letter-spacing: 3px;
-  color: rgba(139,56,240,0.6);
-  background: var(--bg);
-  padding: 0 8px;
-  position: relative; z-index: 1;
-  margin: 0 auto;
-  text-transform: uppercase;
-}
-.menu-item.sel .sep-label {
-  background: var(--purple-sel);
-}
-
-/* ─── TOGGLES ────────────────────────────────────────── */
+/* ── TOGGLES ── */
 .tog {
-  width: 30px; height: 14px;
-  border-radius: 7px;
+  width: 30px; height: 14px; border-radius: 7px;
   background: var(--tog-off);
-  position: relative; flex-shrink: 0;
-  margin-left: 6px;
-  border: 1px solid rgba(255,255,255,0.08);
+  position: relative; flex-shrink: 0; margin-left: 8px;
+  border: 1px solid rgba(255,255,255,0.07);
 }
 .tog.on {
   background: var(--tog-on);
-  box-shadow: 0 0 8px rgba(37,99,235,0.6);
+  box-shadow: 0 0 7px rgba(37,99,235,0.55);
   border-color: rgba(37,99,235,0.4);
 }
 .tog::after {
-  content: '';
-  position: absolute; top: 1px; left: 1px;
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: #fff;
-  transition: left 0.1s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  content: ''; position: absolute;
+  top: 1px; left: 1px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #fff; transition: left 0.1s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 .tog.on::after { left: calc(100% - 11px); }
 
-/* ─── ONLINE PLAYER ROWS ─────────────────────────────── */
-.player-row .player-dist {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 10px;
-  color: var(--text-dim);
-  margin-left: 4px;
-}
-.player-row .player-name {
-  font-size: 11px;
-}
-
-/* ─── STATUS BAR (under cat-header) ─────────────────── */
+/* ── STATUS BAR ── */
 .status-bar {
-  padding: 2px 14px;
-  font-family: 'Share Tech Mono', monospace;
+  padding: 2px 16px;
   font-size: 9px; letter-spacing: 1.5px;
+  font-family: 'Rajdhani', sans-serif; font-weight: 600;
   border-bottom: 1px solid var(--sep);
 }
-.status-bar.green { color: #32C832; }
+.status-bar.green  { color: #32C832; }
 .status-bar.orange { color: #DC821E; }
 
-/* ─── FOOTER ─────────────────────────────────────────── */
+/* ── FOOTER ── */
 #footer {
   height: 34px; flex-shrink: 0;
   display: flex; align-items: center;
-  padding: 0 12px;
-  background: rgba(6,5,10,0.99);
-  border-top: 1px solid rgba(139,56,240,0.2);
-  gap: 0;
+  padding: 0 10px 0 12px;
+  background: #111018;
+  border-top: 1px solid rgba(139,47,239,0.2);
+  gap: 8px;
 }
-.footer-player {
-  display: flex; align-items: center; gap: 6px;
-  flex: 1;
-}
-.footer-icon {
-  width: 20px; height: 20px;
-  border-radius: 3px;
-  background: var(--purple);
+.f-icon {
+  width: 20px; height: 20px; border-radius: 3px;
+  background: var(--p);
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700; color: #fff;
   font-family: 'Rajdhani', sans-serif;
-  box-shadow: 0 0 8px var(--purple-glow);
+  font-size: 11px; font-weight: 700; color: #fff;
+  box-shadow: 0 0 8px var(--p-glow);
+  flex-shrink: 0;
 }
-.footer-name {
-  font-family: 'Inter', sans-serif;
+.f-name {
   font-size: 11px; font-weight: 500;
-  color: var(--text);
+  color: var(--text); flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.footer-keys {
-  display: flex; align-items: center; gap: 10px;
-}
-.kh {
-  display: flex; align-items: center; gap: 3px;
-  font-size: 9px; color: var(--text-dim);
-  font-family: 'Share Tech Mono', monospace;
+.f-keys {
+  display: flex; align-items: center; gap: 4px;
 }
 .k {
   display: inline-flex; align-items: center; justify-content: center;
-  min-width: 16px; height: 13px;
-  border: 1px solid rgba(139,56,240,0.45);
-  border-radius: 2px; padding: 0 2px;
-  font-size: 8px; color: var(--purple-b); font-weight: 700;
-  background: rgba(139,56,240,0.08);
+  min-width: 16px; height: 14px; padding: 0 2px;
+  border: 1px solid rgba(139,47,239,0.45);
+  border-radius: 2px;
+  font-size: 8px; color: rgba(155,64,255,0.9);
+  font-weight: 700;
+  background: rgba(139,47,239,0.08);
+  font-family: 'Inter', sans-serif;
 }
-.footer-counter {
-  font-family: 'Share Tech Mono', monospace;
+.f-counter {
   font-size: 10px; color: var(--text-dim);
-  letter-spacing: 1px;
-  margin-left: 10px;
+  font-family: 'Rajdhani', sans-serif; font-weight: 600;
+  letter-spacing: 1px; margin-left: 4px; white-space: nowrap;
 }
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- BANNER -->
   <div id="banner">
-    <img id="banner-img" src="banniere.png" alt=""
-         style="width:100%;height:88px;object-fit:cover;object-position:center;"
-         onerror="this.style.display='none';document.getElementById('banner-fallback').style.display='flex';" />
-    <div id="banner-fallback" style="display:none;position:absolute;inset:0;">
-      <span class="banner-title">YARI</span>
-      <span class="banner-sub">cheat menu</span>
+    <img src="yari_menu_banniere_rouge.png" alt=""
+         onerror="this.style.display='none';document.getElementById('bfb').style.display='flex';" />
+    <div id="bfb" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:linear-gradient(135deg,#1f0848 0%,#0e0618 50%,#180830 100%);">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 100% at 50% 110%,rgba(139,47,239,0.45) 0%,transparent 65%);"></div>
+      <span style="font-family:'Rajdhani',sans-serif;font-size:44px;font-weight:700;letter-spacing:10px;color:#fff;position:relative;text-shadow:0 0 20px #9B40FF,0 0 50px rgba(155,64,255,0.7);">YARI</span>
     </div>
-    <div class="banner-glow"></div>
-    <div class="banner-line-top"></div>
-    <div class="banner-line-bot"></div>
   </div>
 
-  <!-- BREADCRUMB -->
   <div id="breadcrumb">
-    <span id="bc-root">MENU</span>
-    <span id="bc-sep" class="crumb-sep" style="display:none">›</span>
-    <span id="bc-cat" class="crumb-active" style="display:none"></span>
-    <span id="bc-sep2" class="crumb-sep" style="display:none">›</span>
-    <span id="bc-sub" class="crumb-active" style="display:none"></span>
+    <span id="bc0">MENU</span>
+    <span id="bc1" class="sep" style="display:none">›</span>
+    <span id="bc2" class="active" style="display:none"></span>
+    <span id="bc3" class="sep" style="display:none">›</span>
+    <span id="bc4" class="active" style="display:none"></span>
   </div>
 
-  <!-- TABS -->
   <div id="tabs">
     <div class="tab active" id="tab-main">MAIN</div>
     <div class="tab"        id="tab-cfg">CONFIG</div>
   </div>
 
-  <!-- CAT HEADER -->
   <div id="cat-header"></div>
-
-  <!-- ITEMS -->
   <div id="items-list"></div>
 
-  <!-- FOOTER -->
   <div id="footer">
-    <div class="footer-player">
-      <div class="footer-icon" id="footer-icon">Y</div>
-      <span class="footer-name" id="footer-name">Player</span>
+    <div class="f-icon" id="fi">Y</div>
+    <span class="f-name" id="fn">Player</span>
+    <div class="f-keys">
+      <span class="k">↑</span><span class="k">↓</span>
+      <span class="k">↵</span>
+      <span class="k">⌫</span>
+      <span class="k">Q</span><span class="k">E</span>
     </div>
-    <div class="footer-keys">
-      <div class="kh"><span class="k">↑</span><span class="k">↓</span></div>
-      <div class="kh"><span class="k">↵</span></div>
-      <div class="kh"><span class="k">⌫</span></div>
-      <div class="kh"><span class="k">Q</span><span class="k">E</span></div>
-    </div>
-    <span class="footer-counter" id="footer-counter"></span>
+    <span class="f-counter" id="fc"></span>
   </div>
 
 </div>
-
 <script>
-/* ── Data ── */
 const CATEGORIES = [
   {name:"Player",        items:["Noclip","God Mode","No Ragdoll","No Collision","Fast Run","Revive","Teleporte To Waypoint","Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina"]},
   {name:"Online",        items:[]},
@@ -433,290 +336,142 @@ const CATEGORIES = [
   {name:"Destroyer",     items:["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos"]},
 ];
 const CONFIG_ITEMS = ["Save Config","Load Config"];
-
 const toggleStates = {};
 const TOGGLE_KEYS = new Set([
   "Player_1","Player_2","Player_3","Player_4","Player_5",
   "Player_8","Player_9","Player_10","Player_11","Player_12",
   "Vehicle_2","Vehicle_6","Vehicle_7",
   "Misc_1","Misc_2","Misc_3","Misc_4",
-  "Combat_1","Combat_2",
-  "Protection_1",
-  "Settings_1",
-  "Destroyer_5",
+  "Combat_1","Combat_2","Protection_1","Settings_1","Destroyer_5",
 ]);
-
-/* Items that have a warning badge */
 const WARN_KEYS = new Set([
   "Player_1","Player_2","Player_10",
   "Misc_4","Misc_5",
   "Destroyer_1","Destroyer_2","Destroyer_3","Destroyer_4",
 ]);
-
-/* Items that should show a sub-label like "- ACTIVE -" */
 const LABEL_MAP = {};
 
-/* ── State ── */
-let tab = 'main';
-let selIdx = 0, scrollOff = 0;
-let curCatName = null;
-let catSel = 0, catScroll = 0;
-const MAX_VIS = 10;
+let tab='main', selIdx=0, scrollOff=0, curCatName=null, catSel=0, catScroll=0;
+const MAX_VIS=10;
+let onlineSubMenu=null, onlineSubSel=0, nearbyPlayers=[], selectedPlayers={};
+let trollActions=["Teleport","Ragdoll","Silent Kill","Stun Player","Spectate","Revive","Smash Attack","Launch Player","Cage Player","Cage Player M2","Stop Cage Player M2","Bug Player BMX","Bug Player Avenger","Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle"];
+let trollSel=0, playerSel=0;
 
-let onlineSubMenu = null;
-let onlineSubSel  = 0;
-let nearbyPlayers = [];
-let selectedPlayers = {};
-let trollActions = [
-  "Teleport","Ragdoll","Silent Kill","Stun Player","Spectate","Revive",
-  "Smash Attack","Launch Player","Cage Player","Cage Player M2",
-  "Stop Cage Player M2","Bug Player BMX","Bug Player Avenger",
-  "Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle"
-];
-let trollSel = 0;
-let playerSel = 0;
+const appEl=document.getElementById('app');
+const catHeader=document.getElementById('cat-header');
+const itemsList=document.getElementById('items-list');
 
-/* ── DOM refs ── */
-const appEl     = document.getElementById('app');
-const tabMain   = document.getElementById('tab-main');
-const tabCfg    = document.getElementById('tab-cfg');
-const catHeader = document.getElementById('cat-header');
-const itemsList = document.getElementById('items-list');
-const bcRoot    = document.getElementById('bc-root');
-const bcSep     = document.getElementById('bc-sep');
-const bcCat     = document.getElementById('bc-cat');
-const bcSep2    = document.getElementById('bc-sep2');
-const bcSub     = document.getElementById('bc-sub');
+function getCurCat(){return curCatName?CATEGORIES.find(c=>c.name===curCatName)||null:null;}
 
-function getCurCat() {
-  if (!curCatName) return null;
-  return CATEGORIES.find(c => c.name === curCatName) || null;
+function updateBC(){
+  const cat=getCurCat();
+  const [b0,b1,b2,b3,b4]=[0,1,2,3,4].map(i=>document.getElementById('bc'+i));
+  [b1,b2,b3,b4].forEach(e=>e.style.display='none');
+  b0.textContent='MENU';
+  if(tab==='config'){b1.style.display='inline';b2.style.display='inline';b2.textContent='CONFIG';}
+  else if(cat){b1.style.display='inline';b2.style.display='inline';b2.textContent=cat.name.toUpperCase();
+    if(cat.name==='Online'&&onlineSubMenu){b3.style.display='inline';b4.style.display='inline';b4.textContent=onlineSubMenu.toUpperCase();}}
 }
 
-/* ── Breadcrumb ── */
-function updateBreadcrumb() {
-  const cat = getCurCat();
-  bcSep.style.display  = 'none';
-  bcCat.style.display  = 'none';
-  bcSep2.style.display = 'none';
-  bcSub.style.display  = 'none';
-
-  if (tab === 'config') {
-    bcRoot.textContent = 'MENU';
-    bcSep.style.display = 'inline'; bcCat.style.display = 'inline';
-    bcCat.textContent = 'CONFIG';
-  } else if (cat) {
-    bcRoot.textContent = 'MENU';
-    bcSep.style.display = 'inline'; bcCat.style.display = 'inline';
-    bcCat.textContent = cat.name.toUpperCase();
-    if (cat.name === 'Online' && onlineSubMenu) {
-      bcSep2.style.display = 'inline'; bcSub.style.display = 'inline';
-      bcSub.textContent = onlineSubMenu.toUpperCase();
-    }
-  } else {
-    bcRoot.textContent = 'MENU';
-  }
+function updateCounter(){
+  const cat=getCurCat();
+  let items,si;
+  if(tab==='config'){items=CONFIG_ITEMS;si=selIdx;}
+  else if(cat&&cat.name!=='Online'){items=cat.items;si=catSel;}
+  else{items=CATEGORIES;si=selIdx;}
+  document.getElementById('fc').textContent=items.length?`${si+1} / ${items.length}`:'';
 }
 
-/* ── Counter ── */
-function updateCounter() {
-  const cat = getCurCat();
-  const el  = document.getElementById('footer-counter');
-  let items;
-  if (tab === 'config') items = CONFIG_ITEMS;
-  else if (cat && cat.name !== 'Online') items = cat.items;
-  else items = CATEGORIES;
-  const si = cat ? catSel : selIdx;
-  el.textContent = items.length > 0 ? `${si + 1} / ${items.length}` : '';
+function render(){
+  itemsList.innerHTML='';
+  updateBC(); updateCounter();
+  const cat=getCurCat();
+  if(tab==='config'){catHeader.className='';renderList(CONFIG_ITEMS,selIdx,scrollOff,null);return;}
+  if(cat){
+    if(cat.name==='Online'){catHeader.className='';renderOnline();return;}
+    catHeader.textContent=cat.name.toUpperCase();catHeader.className='show';
+    renderList(cat.items,catSel,catScroll,cat.name);
+  }else{catHeader.className='';renderCats();}
 }
 
-/* ── Render ── */
-function render() {
-  itemsList.innerHTML = '';
-  updateBreadcrumb();
-  updateCounter();
-
-  const cat = getCurCat();
-  if (tab === 'config') {
-    catHeader.className = '';
-    renderList(CONFIG_ITEMS, selIdx, scrollOff, null);
-    return;
-  }
-  if (cat) {
-    if (cat.name === 'Online') {
-      catHeader.className = '';
-      renderOnline(); return;
-    }
-    catHeader.textContent = cat.name.toUpperCase();
-    catHeader.className = 'show';
-    renderList(cat.items, catSel, catScroll, cat.name);
-  } else {
-    catHeader.className = '';
-    renderCategories();
-  }
-}
-
-function renderOnline() {
-  if (onlineSubMenu === null) {
-    ['Players','Troll'].forEach((name, i) => {
-      makeItem({ name, selected: i === onlineSubSel, arrow: '›' });
+function renderOnline(){
+  if(onlineSubMenu===null){
+    ['Players','Troll'].forEach((n,i)=>row({name:n,sel:i===onlineSubSel,arrow:'›'}));
+  }else if(onlineSubMenu==='Players'){
+    const sc=Object.keys(selectedPlayers).length;
+    if(sc>0){const h=document.createElement('div');h.className='status-bar green';h.textContent=`● ${sc} sélectionné(s)`;itemsList.appendChild(h);}
+    if(!nearbyPlayers.length){const e=document.createElement('div');e.className='menu-item';e.innerHTML='<span class="item-name" style="color:var(--text-dim)">Aucun joueur</span>';itemsList.appendChild(e);}
+    else nearbyPlayers.slice(0,10).forEach((p,i)=>{
+      const e=document.createElement('div');e.className='menu-item'+(i===playerSel?' sel':'');
+      e.innerHTML=`<span class="item-name" style="font-size:11px">[${p.serverId}] ${p.name} <span style="color:var(--text-dim)">${p.distance}m</span></span><div class="tog${selectedPlayers[p.serverId]?' on':''}"></div>`;
+      itemsList.appendChild(e);
     });
-  } else if (onlineSubMenu === 'Players') {
-    const selCount = Object.keys(selectedPlayers).length;
-    if (selCount > 0) {
-      const hd = document.createElement('div');
-      hd.className = 'status-bar green';
-      hd.textContent = `● ${selCount} sélectionné(s)`;
-      itemsList.appendChild(hd);
-    }
-    if (nearbyPlayers.length === 0) {
-      const el = document.createElement('div');
-      el.className = 'menu-item';
-      el.innerHTML = '<span class="item-name" style="color:var(--text-dim);font-size:11px">Aucun joueur à proximité</span>';
-      itemsList.appendChild(el);
-    } else {
-      nearbyPlayers.slice(0, 10).forEach((p, i) => {
-        const isOn = selectedPlayers[p.serverId] === true;
-        const el = document.createElement('div');
-        el.className = 'menu-item player-row' + (i === playerSel ? ' sel' : '');
-        el.innerHTML = `<span class="item-name player-name" style="font-size:11px">[${p.serverId}] ${p.name} <span class="player-dist">${p.distance}m</span></span>
-          <div class="tog${isOn ? ' on' : ''}"></div>`;
-        itemsList.appendChild(el);
-      });
-    }
-  } else if (onlineSubMenu === 'Troll') {
-    const selCount = Object.keys(selectedPlayers).length;
-    const hd = document.createElement('div');
-    hd.className = 'status-bar ' + (selCount > 0 ? 'green' : 'orange');
-    hd.textContent = selCount > 0 ? `● ${selCount} joueur(s) ciblé(s)` : '⚠ Aucun joueur sélectionné';
-    itemsList.appendChild(hd);
-    trollActions.forEach((name, i) => {
-      makeItem({ name, selected: i === trollSel, arrow: '›' });
-    });
+  }else{
+    const sc=Object.keys(selectedPlayers).length;
+    const h=document.createElement('div');h.className='status-bar '+(sc>0?'green':'orange');
+    h.textContent=sc>0?`● ${sc} ciblé(s)`:'⚠ Aucun joueur';itemsList.appendChild(h);
+    trollActions.forEach((n,i)=>row({name:n,sel:i===trollSel,arrow:'›'}));
   }
 }
 
-function renderCategories() {
-  for (let i = 0; i < MAX_VIS; i++) {
-    const idx = i + scrollOff;
-    if (idx >= CATEGORIES.length) break;
-    const c   = CATEGORIES[idx];
-    const has = c.items.length > 0 || c.name === 'Online';
-    makeItem({ name: c.name, selected: idx === selIdx, arrow: has ? '›' : null });
+function renderCats(){
+  for(let i=0;i<MAX_VIS;i++){
+    const idx=i+scrollOff;if(idx>=CATEGORIES.length)break;
+    const c=CATEGORIES[idx];
+    row({name:c.name,sel:idx===selIdx,arrow:c.items.length||c.name==='Online'?'›':null});
   }
 }
 
-function renderList(items, si, so, catName) {
-  if (items.length === 0) {
-    const d = document.createElement('div');
-    d.className = 'menu-item';
-    d.innerHTML = '<span class="item-name" style="color:var(--text-dim);font-size:11px">Aucun élément</span>';
-    itemsList.appendChild(d); return;
-  }
-  for (let i = 0; i < MAX_VIS; i++) {
-    const idx = i + so;
-    if (idx >= items.length) break;
-    const name  = items[idx];
-    const key   = catName ? catName + '_' + (idx + 1) : null;
-    const isTog = key !== null && TOGGLE_KEYS.has(key);
-    const isWarn= key !== null && WARN_KEYS.has(key);
-    const togVal= isTog ? (toggleStates[key] === true) : null;
-    const label = key && LABEL_MAP[key] ? LABEL_MAP[key] : null;
-    makeItem({ name, selected: idx === si, togState: togVal, warn: isWarn, label });
+function renderList(items,si,so,catName){
+  if(!items.length){const d=document.createElement('div');d.className='menu-item';d.innerHTML='<span class="item-name" style="color:var(--text-dim)">Aucun élément</span>';itemsList.appendChild(d);return;}
+  for(let i=0;i<MAX_VIS;i++){
+    const idx=i+so;if(idx>=items.length)break;
+    const name=items[idx];
+    const key=catName?catName+'_'+(idx+1):null;
+    const isTog=key&&TOGGLE_KEYS.has(key);
+    const isWarn=key&&WARN_KEYS.has(key);
+    const label=key&&LABEL_MAP[key]||null;
+    row({name,sel:idx===si,tog:isTog?(toggleStates[key]===true):null,warn:isWarn,label});
   }
 }
 
-/*
-  makeItem options:
-  { name, selected, arrow, togState, warn, label }
-  - arrow: '›' or '+' or '▶'
-  - togState: bool | null
-  - warn: bool
-  - label: string like "- M1 -"
-*/
-function makeItem({ name, selected, arrow, togState, warn, label }) {
-  const el = document.createElement('div');
-  el.className = 'menu-item' + (selected ? ' sel' : '');
-
-  const nm = document.createElement('span');
-  nm.className = 'item-name';
-  nm.textContent = name;
-  el.appendChild(nm);
-
-  if (warn) {
-    const w = document.createElement('span');
-    w.className = 'warn-badge';
-    w.textContent = '▲';
-    el.appendChild(w);
-  }
-
-  if (togState !== null && togState !== undefined) {
-    const t = document.createElement('div');
-    t.className = 'tog' + (togState ? ' on' : '');
-    el.appendChild(t);
-  } else if (label) {
-    const l = document.createElement('span');
-    l.className = 'item-label';
-    l.textContent = label;
-    el.appendChild(l);
-  } else if (arrow === '›') {
-    const a = document.createElement('span');
-    a.className = 'item-arrow';
-    a.textContent = '›';
-    el.appendChild(a);
-  } else if (arrow === '+' || arrow === null && togState === null) {
-    const p = document.createElement('span');
-    p.className = 'item-plus';
-    p.textContent = '+';
-    el.appendChild(p);
-  }
-
-  itemsList.appendChild(el);
+function row({name,sel,arrow,tog,warn,label}){
+  const e=document.createElement('div');
+  e.className='menu-item'+(sel?' sel':'');
+  const nm=document.createElement('span');nm.className='item-name';nm.textContent=name;e.appendChild(nm);
+  if(warn){const w=document.createElement('span');w.className='warn-badge';w.textContent='▲';e.appendChild(w);}
+  if(tog!==null&&tog!==undefined){const t=document.createElement('div');t.className='tog'+(tog?' on':'');e.appendChild(t);}
+  else if(label){const l=document.createElement('span');l.className='item-label';l.textContent=label;e.appendChild(l);}
+  else if(arrow==='›'){const a=document.createElement('span');a.className='item-arrow';a.textContent='›';e.appendChild(a);}
+  else if(arrow===null&&tog===null&&!label){const p=document.createElement('span');p.className='item-plus';p.textContent='+';e.appendChild(p);}
+  itemsList.appendChild(e);
 }
 
-function setTab(t) {
-  tab = t; curCatName = null; selIdx = 0; scrollOff = 0;
-  tabMain.className = 'tab' + (t === 'main'   ? ' active' : '');
-  tabCfg.className  = 'tab' + (t === 'config' ? ' active' : '');
-  render();
-}
-
-/* ── Messages from Lua ── */
-window.addEventListener('message', function(e) {
-  let d = e.data;
-  if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
-  if (!d || !d.type) return;
-
-  if (d.type === 'showMenu') { appEl.style.display = 'flex'; return; }
-  if (d.type === 'hideMenu') { appEl.style.display = 'none';  return; }
-
-  if (d.type === 'setPlayerName') {
-    document.getElementById('footer-name').textContent = d.name || 'Player';
-    document.getElementById('footer-icon').textContent = (d.name || 'Y')[0].toUpperCase();
-    return;
+window.addEventListener('message',function(e){
+  let d=e.data;
+  if(typeof d==='string'){try{d=JSON.parse(d);}catch(_){return;}}
+  if(!d||!d.type)return;
+  if(d.type==='showMenu'){appEl.style.display='flex';return;}
+  if(d.type==='hideMenu'){appEl.style.display='none';return;}
+  if(d.type==='setPlayerName'){
+    document.getElementById('fn').textContent=d.name||'Player';
+    document.getElementById('fi').textContent=(d.name||'Y')[0].toUpperCase();return;
   }
-
-  if (d.type === 'sync') {
-    if (d.toggles) Object.assign(toggleStates, d.toggles);
-    if (d.tab) {
-      tab = d.tab;
-      tabMain.className = 'tab' + (tab === 'main'   ? ' active' : '');
-      tabCfg.className  = 'tab' + (tab === 'config' ? ' active' : '');
-    }
-    curCatName = d.curCatName || null;
-    if (d.selIdx    !== undefined) { if (curCatName) catSel = d.selIdx; else selIdx = d.selIdx; }
-    if (d.scrollOff !== undefined) { if (curCatName) catScroll = d.scrollOff; else scrollOff = d.scrollOff; }
-    if ('onlineSubMenu'   in d) onlineSubMenu  = d.onlineSubMenu;
-    if (d.onlineSubSel    !== undefined) onlineSubSel   = d.onlineSubSel;
-    if (d.nearbyPlayers   !== undefined) nearbyPlayers  = d.nearbyPlayers;
-    if (d.selectedPlayers !== undefined) selectedPlayers= d.selectedPlayers;
-    if (d.trollSel        !== undefined) trollSel       = d.trollSel;
-    if (d.playerSel       !== undefined) playerSel      = d.playerSel;
+  if(d.type==='sync'){
+    if(d.toggles)Object.assign(toggleStates,d.toggles);
+    if(d.tab){tab=d.tab;document.getElementById('tab-main').className='tab'+(tab==='main'?' active':'');document.getElementById('tab-cfg').className='tab'+(tab==='config'?' active':'');}
+    curCatName=d.curCatName||null;
+    if(d.selIdx!==undefined){if(curCatName)catSel=d.selIdx;else selIdx=d.selIdx;}
+    if(d.scrollOff!==undefined){if(curCatName)catScroll=d.scrollOff;else scrollOff=d.scrollOff;}
+    if('onlineSubMenu'in d)onlineSubMenu=d.onlineSubMenu;
+    if(d.onlineSubSel!==undefined)onlineSubSel=d.onlineSubSel;
+    if(d.nearbyPlayers!==undefined)nearbyPlayers=d.nearbyPlayers;
+    if(d.selectedPlayers!==undefined)selectedPlayers=d.selectedPlayers;
+    if(d.trollSel!==undefined)trollSel=d.trollSel;
+    if(d.playerSel!==undefined)playerSel=d.playerSel;
     render();
   }
 });
-
-function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
 render();
 </script>
