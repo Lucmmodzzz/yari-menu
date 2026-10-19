@@ -9,6 +9,102 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+#spec-hud {
+  display: none;
+  position: fixed;
+  top: 40px;
+  right: 18px;
+  width: 260px;
+  font-family: 'Share Tech Mono', monospace;
+  z-index: 9999;
+  pointer-events: none;
+}
+#spec-hud.visible { display: block; }
+
+.spec-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 10px;
+  background: rgba(0,0,0,0.82);
+  border-left: 3px solid var(--accent);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.spec-header .spec-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
+  animation: blink 1.2s ease-in-out infinite;
+}
+.spec-header .spec-count {
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.spec-header .spec-label {
+  font-size: 10px;
+  color: rgba(200,200,200,0.55);
+  letter-spacing: 2px;
+  margin-left: auto;
+}
+
+@keyframes blink {
+  0%,100% { opacity:1; }
+  50%      { opacity:0.3; }
+}
+
+.spec-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 10px 3px 13px;
+  background: rgba(0,0,0,0.72);
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: border-color 0.15s;
+}
+.spec-row.noclip { border-left-color: var(--accent); }
+.spec-row.admin  { border-left-color: #dcaa1e; }
+
+.spec-sid {
+  font-size: 10px;
+  color: var(--accent);
+  min-width: 26px;
+}
+.spec-name {
+  font-size: 11px;
+  color: #e8e8e8;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.spec-dist {
+  font-size: 10px;
+  color: rgba(180,180,180,0.6);
+  white-space: nowrap;
+}
+.spec-type {
+  font-size: 9px;
+  letter-spacing: 1px;
+  padding: 1px 4px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.spec-type.noclip { color: var(--accent); background: rgba(220,30,30,0.15); }
+.spec-type.admin  { color: #dcaa1e;       background: rgba(220,170,30,0.12); }
+.spec-type.both   { color: #ff9900;       background: rgba(255,153,0,0.13); }
+
+.spec-empty {
+  padding: 5px 13px;
+  font-size: 10px;
+  color: rgba(180,180,180,0.4);
+  background: rgba(0,0,0,0.72);
+  border-left: 3px solid transparent;
+  letter-spacing: 1px;
+}
+
 /* ── THEME VARIABLES ── */
 :root {
   --accent:      #DC1E1E;
@@ -226,6 +322,8 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
     <div class="kh"><span class="k">Q</span><span class="k">E</span> Tab</div>
   </div>
 </div>
+
+<div id="spec-hud"></div>
 
 <script>
 // ── THEME STATE ─────────────────────────────────────────────────────
@@ -573,6 +671,46 @@ window.addEventListener('message', function(e) {
     test.onload  = () => { bannerImg.src = src; };
     test.onerror = () => { bannerImg.src = BANNERS[0]; bannerIdx = 0; };
     test.src = src;
+    return;
+  }
+
+  if (d.type === 'spectatorToggle') {
+    document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
+    if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
+    return;
+  }
+  
+  if (d.type === 'spectatorUpdate') {
+    const hud = document.getElementById('spec-hud');
+    if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
+    hud.className = 'visible';
+  
+    const list = d.list || [];
+    let html = `
+      <div class="spec-header">
+        <div class="spec-dot"></div>
+        <span class="spec-count">${list.length}</span>
+        <span class="spec-label">SPECTATEURS</span>
+      </div>`;
+  
+    if (list.length === 0) {
+      html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
+    } else {
+      list.forEach(p => {
+        const isNoclip = p.type.includes('Noclip');
+        const isAdmin  = p.type.includes('Admin');
+        const rowCls   = (isNoclip && isAdmin) ? 'both' : isNoclip ? 'noclip' : 'admin';
+        const typeLabel = p.type.replace(/[\[\]]/g, '');
+        html += `
+          <div class="spec-row ${isNoclip ? 'noclip' : 'admin'}">
+            <span class="spec-sid">${p.serverId}</span>
+            <span class="spec-name">${p.name}</span>
+            <span class="spec-dist">${p.distance}m</span>
+            <span class="spec-type ${rowCls}">${typeLabel}</span>
+          </div>`;
+      });
+    }
+    hud.innerHTML = html;
     return;
   }
 
