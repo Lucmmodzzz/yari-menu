@@ -444,6 +444,19 @@ function adjustColor(channel, delta) {
   newValue = Math.max(0, Math.min(255, newValue));
   slider.value = newValue;
   updateColorPreview();
+
+  // Send to Lua via callback
+  if (window.__yariCallback) {
+    const r = parseInt(document.getElementById('slider-r').value);
+    const g = parseInt(document.getElementById('slider-g').value);
+    const b = parseInt(document.getElementById('slider-b').value);
+    window.__yariCallback(JSON.stringify({
+      type: 'colorChange',
+      r: r,
+      g: g,
+      b: b
+    }));
+  }
 }
 
 function updateColorPreview() {
@@ -477,14 +490,14 @@ function openColorPicker(colors) {
 }
 
 function closeColorPicker() {
-  const modal = document.getElementById('color-picker-modal');
-  modal.classList.remove('show');
   // Envoyer signal au Lua pour cacher la souris
   if (window.__yariCallback) {
     window.__yariCallback(JSON.stringify({
       type: 'closeColorPicker'
     }));
   }
+  const modal = document.getElementById('color-picker-modal');
+  modal.classList.remove('show');
 }
 
 function updateMenuColorUI(colors) {
@@ -499,7 +512,7 @@ function applyColor() {
   const g = parseInt(document.getElementById('slider-g').value);
   const b = parseInt(document.getElementById('slider-b').value);
 
-  // Envoyer au Lua
+  // Envoyer au Lua et fermer
   if (window.__yariCallback) {
     window.__yariCallback(JSON.stringify({
       type: 'colorChange',
@@ -507,6 +520,13 @@ function applyColor() {
       g: g,
       b: b
     }));
+    // Fermer après appliquer
+    setTimeout(() => {
+      window.__yariCallback(JSON.stringify({
+        type: 'closeColorPicker'
+      }));
+      closeColorPicker();
+    }, 100);
   }
 }
 
