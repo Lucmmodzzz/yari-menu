@@ -146,22 +146,28 @@ function getCurCat() {
 }
 
 function render() {
-  itemsList.innerHTML = '';
-  const cat = getCurCat();
+    itemsList.innerHTML = '';
+    const cat = getCurCat();
 
-  if (tab === 'config') {
-    catHeader.className = '';
-    renderList(CONFIG_ITEMS, selIdx, scrollOff, null);
-    return;
-  }
-  if (cat) {
-    catHeader.textContent = cat.name.toUpperCase();
-    catHeader.className = 'show';
-    renderList(cat.items, catSel, catScroll, cat.name);
-  } else {
-    catHeader.className = '';
-    renderCategories();
-  }
+    if (tab === 'config') {
+        catHeader.className = '';
+        renderList(CONFIG_ITEMS, selIdx, scrollOff, null);
+        return;
+    }
+    if (cat) {
+        // Online est géré 100% par le Lua (drawPlayerList) — le HTML reste vide
+        if (cat.name === 'Online') {
+            catHeader.className = '';
+            itemsList.innerHTML = '';
+            return;
+        }
+        catHeader.textContent = cat.name.toUpperCase();
+        catHeader.className = 'show';
+        renderList(cat.items, catSel, catScroll, cat.name);
+    } else {
+        catHeader.className = '';
+        renderCategories();
+    }
 }
 
 function renderCategories() {
