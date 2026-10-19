@@ -458,6 +458,8 @@ function openColorPicker(colors) {
   document.getElementById('slider-b').value = colors.primary_b || 30;
   updateColorPreview();
   modal.classList.add('show');
+  // Focus on first slider to enable mouse
+  document.getElementById('slider-r').focus();
 }
 
 function closeColorPicker() {
