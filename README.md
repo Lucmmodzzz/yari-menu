@@ -1,2 +1,0 @@
-# yari-menu
-test
