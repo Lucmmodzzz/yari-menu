@@ -9,6 +9,38 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+#spec-canvas {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+}
+#spec-canvas.visible { display: block; }
+
+.spec-line-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  background: rgba(0,0,0,0.72);
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.spec-line-btn .spec-line-label {
+  font-size: 10px;
+  color: rgba(180,180,180,0.55);
+  letter-spacing: 1px;
+  flex: 1;
+}
+.spec-line-btn .tog { transform: scale(0.85); }
+
+<canvas id="spec-canvas"></canvas>
+<div id="spec-hud"></div>
+  
 #spec-hud {
   display: none;
   position: fixed;
@@ -674,45 +706,130 @@ window.addEventListener('message', function(e) {
     return;
   }
 
-  if (d.type === 'spectatorToggle') {
-    document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
-    if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
+  let specLineEnabled = false;
+let specAdminPositions = []; // [{x, y}] en coords écran normalisées 0-1
+
+const specCanvas = document.getElementById('spec-canvas');
+const specCtx    = specCanvas.getContext('2d');
+
+function resizeCanvas() {
+  specCanvas.width  = window.innerWidth;
+  specCanvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function drawSpecLines() {
+  specCtx.clearRect(0, 0, specCanvas.width, specCanvas.height);
+  if (!specLineEnabled || specAdminPositions.length === 0) return;
+
+  // Centre de l'écran = position approximative du joueur
+  const cx = specCanvas.width  * 0.5;
+  const cy = specCanvas.height * 0.5;
+
+  const accentColor = getComputedStyle(document.documentElement)
+    .getPropertyValue('--accent').trim() || '#DC1E1E';
+
+  specAdminPositions.forEach(pos => {
+    // pos.x / pos.y sont des coords normalisées 0-1 envoyées par Lua (World3dToScreen2d)
+    const tx = pos.x * specCanvas.width;
+    const ty = pos.y * specCanvas.height;
+
+    // Ligne
+    specCtx.beginPath();
+    specCtx.moveTo(cx, cy);
+    specCtx.lineTo(tx, ty);
+    specCtx.strokeStyle = accentColor;
+    specCtx.lineWidth   = 1.2;
+    specCtx.globalAlpha = 0.55;
+    specCtx.setLineDash([5, 4]);
+    specCtx.stroke();
+
+    // Point à la cible
+    specCtx.beginPath();
+    specCtx.arc(tx, ty, 4, 0, Math.PI * 2);
+    specCtx.fillStyle   = accentColor;
+    specCtx.globalAlpha = 0.9;
+    specCtx.fill();
+    specCtx.globalAlpha = 1;
+  });
+
+  specCtx.setLineDash([]);
+}
+
+// Redraw lines à chaque frame si activé
+(function lineLoop() {
+  drawSpecLines();
+  requestAnimationFrame(lineLoop);
+})();
+
+// ── HANDLERS MESSAGE ────────────────────────────────────────────────
+if (d.type === 'spectatorToggle') {
+  const hud = document.getElementById('spec-hud');
+  hud.className = d.enabled ? 'visible' : '';
+  if (!d.enabled) {
+    hud.innerHTML = '';
+    specAdminPositions = [];
+    specCanvas.className = '';
+  }
+  return;
+}
+
+if (d.type === 'spectatorUpdate') {
+  const hud = document.getElementById('spec-hud');
+  if (!d.enabled) {
+    hud.className = ''; hud.innerHTML = '';
+    specAdminPositions = [];
+    specCanvas.className = '';
     return;
   }
-  
-  if (d.type === 'spectatorUpdate') {
-    const hud = document.getElementById('spec-hud');
-    if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
-    hud.className = 'visible';
-  
-    const list = d.list || [];
-    let html = `
-      <div class="spec-header">
-        <div class="spec-dot"></div>
-        <span class="spec-count">${list.length}</span>
-        <span class="spec-label">SPECTATEURS</span>
-      </div>`;
-  
-    if (list.length === 0) {
-      html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
-    } else {
-      list.forEach(p => {
-        const isNoclip = p.type.includes('Noclip');
-        const isAdmin  = p.type.includes('Admin');
-        const rowCls   = (isNoclip && isAdmin) ? 'both' : isNoclip ? 'noclip' : 'admin';
-        const typeLabel = p.type.replace(/[\[\]]/g, '');
-        html += `
-          <div class="spec-row ${isNoclip ? 'noclip' : 'admin'}">
-            <span class="spec-sid">${p.serverId}</span>
-            <span class="spec-name">${p.name}</span>
-            <span class="spec-dist">${p.distance}m</span>
-            <span class="spec-type ${rowCls}">${typeLabel}</span>
-          </div>`;
-      });
-    }
-    hud.innerHTML = html;
-    return;
+  hud.className = 'visible';
+
+  // Mettre à jour les positions écran pour les lignes
+  specAdminPositions = (d.list || [])
+    .filter(p => p.screenX !== undefined)
+    .map(p => ({ x: p.screenX, y: p.screenY }));
+
+  const list = d.list || [];
+  let html = `
+    <div class="spec-header">
+      <div class="spec-dot"></div>
+      <span class="spec-count">${list.length}</span>
+      <span class="spec-label">NOCLIP DÉTECTÉ</span>
+    </div>
+    <div class="spec-line-btn" id="spec-line-toggle">
+      <span class="spec-line-label">LINE TO ADMIN</span>
+      <div class="tog${specLineEnabled ? ' on' : ''}" id="spec-line-tog"></div>
+    </div>`;
+
+  if (list.length === 0) {
+    html += `<div class="spec-empty">Aucun noclip détecté</div>`;
+  } else {
+    list.forEach(p => {
+      html += `
+        <div class="spec-row noclip">
+          <span class="spec-sid">${p.serverId}</span>
+          <span class="spec-name">${p.name}</span>
+          <span class="spec-dist">${p.distance}m</span>
+          <span class="spec-type noclip">NOCLIP</span>
+        </div>`;
+    });
   }
+  hud.innerHTML = html;
+
+  // Rebind toggle click
+  const btn = document.getElementById('spec-line-toggle');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      specLineEnabled = !specLineEnabled;
+      const tog = document.getElementById('spec-line-tog');
+      if (tog) tog.className = 'tog' + (specLineEnabled ? ' on' : '');
+      specCanvas.className = specLineEnabled ? 'visible' : '';
+      if (!specLineEnabled) specCtx.clearRect(0, 0, specCanvas.width, specCanvas.height);
+    });
+  }
+  return;
+}
 
   if (d.type === 'applyTheme') {
     applyTheme(d.theme || currentTheme, d.twotone === true);
