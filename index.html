@@ -5,656 +5,444 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YARI MENU</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --red:       #DC1E1E;
-    --red-glow:  #FF3232;
-    --red-dark:  #8C0A0A;
-    --red-dim:   rgba(220,30,30,0.15);
-    --bg:        #0A0A0A;
-    --bg2:       #111111;
-    --border:    rgba(220,30,30,0.6);
-    --text:      #FFFFFF;
-    --dimmed:    #B0B0B0;
-    --sep:       rgba(50,15,15,0.8);
-    --w: 350px;
-    --h: 550px;
-  }
+:root {
+  --red:      #DC1E1E;
+  --red-glow: #FF3232;
+  --red-dark: #8C0A0A;
+  --bg:       #0A0A0A;
+  --dimmed:   #B0B0B0;
+  --sep:      rgba(50,15,15,0.9);
+}
 
-  html, body {
-    width: 100%; height: 100%;
-    background: transparent;
-    overflow: hidden;
-    font-family: 'Rajdhani', sans-serif;
-  }
+html, body {
+  width: 100%; height: 100%;
+  background: transparent;
+  overflow: hidden;
+  font-family: 'Rajdhani', sans-serif;
+}
 
-  #app {
-    position: fixed;
-    top: 150px; left: 200px;
-    width: var(--w);
-    height: var(--h);
-    display: none;
-    flex-direction: column;
-    background: var(--bg);
-    border-top: 3px solid var(--red);
-    border-bottom: 3px solid var(--red);
-    box-shadow:
-      0 0 18px rgba(220,30,30,0.35),
-      0 0 4px  rgba(220,30,30,0.5) inset,
-      0 4px 0  rgba(160,10,10,0.25);
-    user-select: none;
-  }
-  #app.visible { display: flex; }
+#app {
+  position: fixed;
+  top: 150px; left: 200px;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-top: 3px solid var(--red);
+  border-bottom: 3px solid var(--red);
+  box-shadow: 0 0 20px rgba(220,30,30,0.4), 0 0 6px rgba(220,30,30,0.3) inset;
+  user-select: none;
+}
 
-  /* ── BANNER ── */
-  #banner {
-    position: relative;
-    height: 90px;
-    overflow: hidden;
-    flex-shrink: 0;
-    background: linear-gradient(180deg,
-      rgba(40,5,5,0.9) 0%,
-      rgba(15,3,3,0.95) 55%,
-      rgba(10,10,10,1) 100%);
-  }
-  #banner::before, #banner::after {
-    content: '';
-    position: absolute; top: 0; bottom: 0; width: 5px;
-  }
-  #banner::before { left: 0; background: linear-gradient(180deg, var(--red), var(--red-dark)); }
-  #banner::after  { right: 0; background: linear-gradient(180deg, var(--red), var(--red-dark)); opacity: 0.8; }
+/* ── BANNER ── */
+#banner {
+  position: relative;
+  height: 90px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, rgba(40,5,5,0.95) 0%, rgba(10,10,10,1) 100%);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 5px;
+  overflow: hidden;
+}
+#banner::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+  background: linear-gradient(180deg, var(--red), var(--red-dark));
+}
+#banner::after {
+  content: '';
+  position: absolute; right: 0; top: 0; bottom: 0; width: 5px;
+  background: linear-gradient(180deg, var(--red), var(--red-dark));
+  opacity: 0.7;
+}
+.banner-main {
+  font-size: 30px; font-weight: 700; letter-spacing: 6px;
+  color: #fff;
+  text-shadow: 0 0 14px var(--red-glow), 0 0 30px rgba(220,30,30,0.45), 2px 2px 0 rgba(140,10,10,0.5);
+}
+.banner-sub {
+  font-size: 10px; letter-spacing: 3px; color: var(--dimmed);
+  font-family: 'Share Tech Mono', monospace;
+}
 
-  #banner-title {
-    position: absolute;
-    inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column;
-    gap: 4px;
-  }
-  #banner-title .main {
-    font-size: 30px; font-weight: 700; letter-spacing: 6px;
-    color: #fff;
-    text-shadow:
-      0 0 12px var(--red-glow),
-      0 0 28px rgba(220,30,30,0.5),
-      2px 2px 0 rgba(140,10,10,0.6);
-  }
-  #banner-title .sub {
-    font-size: 10px; letter-spacing: 3px; color: var(--dimmed); font-weight: 500;
-    font-family: 'Share Tech Mono', monospace;
-  }
+/* ── SUBBANNER ── */
+#subbanner {
+  height: 18px; flex-shrink: 0;
+  background: rgba(5,5,5,0.98);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; letter-spacing: 3px; color: rgba(200,200,200,0.6);
+  font-family: 'Share Tech Mono', monospace;
+  border-top: 1px solid rgba(30,5,5,0.7);
+}
 
-  /* ── SUBBANNER ── */
-  #subbanner {
-    height: 18px; flex-shrink: 0;
-    background: rgba(5,5,5,0.95);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 9px; letter-spacing: 3px; color: rgba(200,200,200,0.7);
-    font-family: 'Share Tech Mono', monospace;
-    border-top: 1px solid rgba(30,5,5,0.8);
-  }
+/* ── TABS ── */
+#tabs {
+  height: 28px; flex-shrink: 0;
+  display: flex;
+  border-bottom: 2px solid var(--red);
+}
+.tab {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  color: var(--dimmed);
+  background: rgba(12,12,12,0.98);
+  border-right: 1px solid rgba(60,60,60,0.35);
+  cursor: pointer;
+}
+.tab:last-child { border-right: none; }
+.tab.active { background: rgba(220,30,30,0.88); color: #fff; }
 
-  /* ── TABS ── */
-  #tabs {
-    height: 28px; flex-shrink: 0;
-    display: flex;
-    border-bottom: 2px solid var(--red);
-    box-shadow: 0 2px 0 rgba(120,10,10,0.3);
-  }
-  .tab {
-    flex: 1;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 600; letter-spacing: 2px;
-    color: var(--dimmed);
-    background: rgba(12,12,12,0.95);
-    cursor: pointer;
-    transition: background 0.1s, color 0.1s;
-    border-right: 1px solid rgba(60,60,60,0.4);
-  }
-  .tab:last-child { border-right: none; }
-  .tab.active {
-    background: rgba(220,30,30,0.85);
-    color: #fff;
-  }
+/* ── CAT HEADER ── */
+#cat-header {
+  padding: 4px 14px;
+  font-size: 10px; letter-spacing: 2px; color: var(--dimmed);
+  font-family: 'Share Tech Mono', monospace;
+  background: rgba(10,10,10,0.95);
+  border-bottom: 1px solid rgba(60,20,20,0.5);
+  flex-shrink: 0;
+  display: none;
+}
+#cat-header.show { display: block; }
 
-  /* ── BODY ── */
-  #menu-body {
-    flex: 1;
-    overflow: hidden;
-    position: relative;
-  }
+/* ── ITEMS ── */
+#items-list {
+  flex-shrink: 0;
+}
+.menu-item {
+  height: 30px;
+  display: flex; align-items: center;
+  padding: 0 16px 0 28px;
+  position: relative;
+  border-bottom: 1px solid var(--sep);
+}
+.menu-item .bar {
+  position: absolute; left: 0; top: 3px; bottom: 3px;
+  width: 3px; background: var(--red);
+  box-shadow: 0 0 6px var(--red-glow);
+  display: none;
+}
+.menu-item.sel { background: rgba(220,30,30,0.13); }
+.menu-item.sel .bar { display: block; }
+.item-name {
+  flex: 1; font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.85); letter-spacing: 0.4px;
+}
+.menu-item.sel .item-name { color: #fff; font-weight: 600; }
+.item-ind {
+  font-size: 13px; font-weight: 700;
+  color: var(--red); margin-left: 6px;
+}
+.menu-item.sel .item-ind { opacity: 1; }
+.menu-item:not(.sel) .item-ind { opacity: 0.65; }
 
-  /* ── CATEGORY HEADER ── */
-  #cat-header {
-    display: none;
-    padding: 4px 14px 3px;
-    font-size: 10px; letter-spacing: 2px;
-    color: var(--dimmed);
-    font-family: 'Share Tech Mono', monospace;
-    border-bottom: 1px solid rgba(60,20,20,0.5);
-    background: rgba(10,10,10,0.9);
-    flex-shrink: 0;
-  }
-  #cat-header.visible { display: block; }
+/* Toggle */
+.tog {
+  width: 34px; height: 14px; border-radius: 7px;
+  background: #333; position: relative; flex-shrink: 0;
+}
+.tog.on { background: var(--red); box-shadow: 0 0 7px rgba(220,30,30,0.55); }
+.tog::after {
+  content: ''; position: absolute;
+  top: 2px; left: 2px; width: 10px; height: 10px;
+  border-radius: 50%; background: #fff;
+  transition: left 0.12s;
+}
+.tog.on::after { left: calc(100% - 12px); }
 
-  #items-wrap {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  #items-list {
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* ── ITEM ── */
-  .menu-item {
-    height: 30px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    padding: 0 18px 0 28px;
-    position: relative;
-    border-bottom: 1px solid var(--sep);
-    transition: background 0.06s;
-  }
-  .menu-item .accent-bar {
-    position: absolute; left: 0; top: 3px; bottom: 3px;
-    width: 3px; background: var(--red);
-    display: none;
-    box-shadow: 0 0 6px var(--red-glow);
-  }
-  .menu-item.selected {
-    background: rgba(220,30,30,0.14);
-  }
-  .menu-item.selected .accent-bar { display: block; }
-
-  .item-name {
-    flex: 1;
-    font-size: 13px; font-weight: 500;
-    color: var(--text);
-    letter-spacing: 0.5px;
-  }
-  .menu-item.selected .item-name { color: #fff; font-weight: 600; }
-  .menu-item:not(.selected) .item-name { color: rgba(255,255,255,0.82); }
-
-  .item-indicator {
-    font-size: 13px; font-weight: 700;
-    color: var(--red);
-    opacity: 0.7;
-    margin-left: 6px;
-  }
-  .menu-item.selected .item-indicator { opacity: 1; }
-
-  /* Toggle switch */
-  .toggle {
-    width: 34px; height: 14px;
-    border-radius: 7px;
-    background: #333;
-    position: relative;
-    flex-shrink: 0;
-    transition: background 0.15s;
-  }
-  .toggle.on {
-    background: var(--red);
-    box-shadow: 0 0 6px rgba(220,30,30,0.6);
-  }
-  .toggle::after {
-    content: '';
-    position: absolute;
-    top: 2px; width: 10px; height: 10px;
-    border-radius: 50%;
-    background: #fff;
-    transition: left 0.15s;
-    left: 2px;
-  }
-  .toggle.on::after { left: calc(100% - 12px); }
-
-  /* ── FOOTER ── */
-  #footer {
-    height: 36px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; gap: 18px;
-    background: rgba(8,8,8,0.98);
-    border-top: 1px solid rgba(40,10,10,0.7);
-    padding: 0 12px;
-  }
-  .key-hint {
-    display: flex; align-items: center; gap: 5px;
-    font-size: 10px; color: var(--dimmed);
-    font-family: 'Share Tech Mono', monospace;
-  }
-  .key {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 18px; height: 14px;
-    border: 1px solid rgba(220,30,30,0.5);
-    border-radius: 2px;
-    font-size: 9px;
-    color: var(--red);
-    font-weight: 700;
-    background: rgba(220,30,30,0.08);
-  }
-
-  /* ── SCROLLBAR indicator ── */
-  #scroll-indicator {
-    position: absolute; right: 4px; top: 0; bottom: 0;
-    width: 3px;
-    display: flex; flex-direction: column; justify-content: flex-start;
-  }
-  #scroll-thumb {
-    width: 3px; border-radius: 2px;
-    background: rgba(220,30,30,0.5);
-    transition: top 0.1s, height 0.1s;
-  }
+/* ── FOOTER ── */
+#footer {
+  height: 36px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  background: rgba(8,8,8,0.99);
+  border-top: 1px solid rgba(40,10,10,0.6);
+}
+.kh { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--dimmed); font-family: 'Share Tech Mono', monospace; }
+.k {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 14px; border: 1px solid rgba(220,30,30,0.5);
+  border-radius: 2px; font-size: 9px; color: var(--red); font-weight: 700;
+  background: rgba(220,30,30,0.07);
+}
 </style>
 </head>
 <body>
-
 <div id="app">
-  <!-- BANNER -->
   <div id="banner">
-    <div id="banner-title">
-      <span class="main">YARI MENU</span>
-      <span class="sub">LAPSUS EXECUTOR</span>
-    </div>
+    <span class="banner-main">YARI MENU</span>
+    <span class="banner-sub">LAPSUS EXECUTOR</span>
   </div>
-
-  <!-- SUBBANNER -->
   <div id="subbanner">YARI MENU</div>
-
-  <!-- TABS -->
   <div id="tabs">
-    <div class="tab active" id="tab-main" onclick="switchTab('main')">MAIN</div>
-    <div class="tab"        id="tab-cfg"  onclick="switchTab('config')">CONFIG</div>
+    <div class="tab active" id="tab-main">MAIN</div>
+    <div class="tab"        id="tab-cfg">CONFIG</div>
   </div>
-
-  <!-- BODY -->
-  <div id="menu-body">
-    <div id="items-wrap">
-      <div id="cat-header"></div>
-      <div id="items-list" style="position:relative">
-        <!-- items injected here -->
-        <div id="scroll-indicator"><div id="scroll-thumb"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- FOOTER -->
+  <div id="cat-header"></div>
+  <div id="items-list"></div>
   <div id="footer">
-    <div class="key-hint"><span class="key">↑</span><span class="key">↓</span> Navigate</div>
-    <div class="key-hint"><span class="key">↵</span> Select</div>
-    <div class="key-hint"><span class="key">←</span> Back</div>
-    <div class="key-hint"><span class="key">Q</span><span class="key">E</span> Tab</div>
+    <div class="kh"><span class="k">↑</span><span class="k">↓</span> Nav</div>
+    <div class="kh"><span class="k">↵</span> OK</div>
+    <div class="kh"><span class="k">←</span> Back</div>
+    <div class="kh"><span class="k">Q</span><span class="k">E</span> Tab</div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  YARI MENU  —  HTML/JS side
-//  Bridge Lua → HTML : window.addEventListener('message')
-//  Bridge HTML → Lua : window.__yariCallback(action, data)
-//                      (injecté par ExecuteNuiScript côté Lua)
-// ═══════════════════════════════════════════════════════
-
-const MENU_STRUCTURE = [
-  {name:"Player",  items:["Noclip","God Mode","No Ragdoll","No Collision","Fast Run","Revive","Teleporte To Waypoint","Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina"]},
-  {name:"Online",  items:[]},
-  {name:"Weapon",  items:["Give Weapons","Give Weapon by Name","Remove All Weapons"]},
-  {name:"Combat",  items:["Laser Eye","Fast Punch"]},
-  {name:"Vehicle", items:["Spawn Véhicule Personnalisé","Porter/Lancer Véhicule","Full Performance","Delete Close Véhicule","Réparer Véhicule","Vehicle God Mode","Shift Boost","Unlock Vehicle","Lock Vehicle"]},
-  {name:"Misc",    items:["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll Player","Ragdoll All Players","Anti Aim"]},
-  {name:"Server",  items:["Bypass Sunlife","Prime Bypass"]},
-  {name:"Settings",items:["Auto Load Config"]},
-  {name:"Keybind", items:["Delete All Keybinds"]},
-  {name:"Sunlife/Prime", items:["Buy Phone/radio"]},
-  {name:"Protection", items:["Anti-teleport","Panic Button"]},
-  {name:"Destroyer",  items:["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos"]},
+const CATEGORIES = [
+  {name:"Player",       items:["Noclip","God Mode","No Ragdoll","No Collision","Fast Run","Revive","Teleporte To Waypoint","Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina"]},
+  {name:"Online",       items:[]},
+  {name:"Weapon",       items:["Give Weapons","Give Weapon by Name","Remove All Weapons"]},
+  {name:"Combat",       items:["Laser Eye","Fast Punch"]},
+  {name:"Vehicle",      items:["Spawn Véhicule Personnalisé","Porter/Lancer Véhicule","Full Performance","Delete Close Véhicule","Réparer Véhicule","Vehicle God Mode","Shift Boost","Unlock Vehicle","Lock Vehicle"]},
+  {name:"Misc",         items:["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll Player","Ragdoll All Players","Anti Aim"]},
+  {name:"Server",       items:["Bypass Sunlife","Prime Bypass"]},
+  {name:"Settings",     items:["Auto Load Config"]},
+  {name:"Keybind",      items:["Delete All Keybinds"]},
+  {name:"Sunlife/Prime",items:["Buy Phone/radio"]},
+  {name:"Protection",   items:["Anti-teleport","Panic Button"]},
+  {name:"Destroyer",    items:["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos"]},
 ];
-
 const CONFIG_ITEMS = ["Theme","Keybinds","Cloud Sync","Reset Config"];
+const TOGGLES = {
+  "Player_1":true,  // Noclip
+  "Player_2":false, // God Mode
+  "Player_12":false,// Infinite Stamina
+  "Player_6":false, // No Ragdoll
+  "Player_7":false, // No Collision
+  "Player_10":false,// Invisible
+  "Player_11":false,// Super Jump
+  "Combat_1":false, // Laser Eye
+  "Combat_2":false, // Fast Punch
+  "Misc_6":false,   // Anti Aim
+  "Protection_1":false,
+};
+const toggleStates = Object.assign({}, TOGGLES);
 
-// Toggles — catégorie + index → true/false
-const toggleStates = {};
+let tab = 'main';
+let selIdx = 0, scrollOff = 0;
+let curCat = null, catSel = 0, catScroll = 0;
+const MAX_VIS = 10;
 
-// State
-let visible        = false;
-let currentTab     = 'main';   // 'main' | 'config'
-let selectedIndex  = 0;
-let scrollOffset   = 0;
-let currentCat     = null;     // null = liste catégories, sinon {name, items}
-let catSelIndex    = 0;
-let catScrollOff   = 0;
-const MAX_VISIBLE  = 10;
+const appEl      = document.getElementById('app');
+const tabMain    = document.getElementById('tab-main');
+const tabCfg     = document.getElementById('tab-cfg');
+const catHeader  = document.getElementById('cat-header');
+const itemsList  = document.getElementById('items-list');
 
-// ─── DOM ─────────────────────────────────────────────
-const app       = document.getElementById('app');
-const tabMain   = document.getElementById('tab-main');
-const tabCfg    = document.getElementById('tab-cfg');
-const catHeader = document.getElementById('cat-header');
-const itemsList = document.getElementById('items-list');
-const scrollThumb = document.getElementById('scroll-thumb');
-
-// ─── RENDER ──────────────────────────────────────────
 function render() {
-  // Clear items (keep scroll indicator)
-  const oldItems = itemsList.querySelectorAll('.menu-item');
-  oldItems.forEach(e => e.remove());
+  itemsList.innerHTML = '';
 
-  if (currentTab === 'config') {
+  if (tab === 'config') {
     catHeader.className = '';
-    renderList(CONFIG_ITEMS, selectedIndex, scrollOffset, false);
+    drawList(CONFIG_ITEMS, selIdx, scrollOff, false);
     return;
   }
-
-  if (currentCat) {
-    catHeader.textContent = currentCat.name.toUpperCase();
-    catHeader.className = 'visible';
-    renderList(currentCat.items, catSelIndex, catScrollOff, true);
+  if (curCat) {
+    catHeader.textContent = curCat.name.toUpperCase();
+    catHeader.className = 'show';
+    drawList(curCat.items, catSel, catScroll, true);
   } else {
     catHeader.className = '';
-    renderCategoryList();
+    drawCategories();
   }
 }
 
-function renderCategoryList() {
-  const total = MENU_STRUCTURE.length;
-  for (let i = 0; i < MAX_VISIBLE; i++) {
-    const idx = i + scrollOffset;
-    if (idx >= total) break;
-    const cat  = MENU_STRUCTURE[idx];
-    const sel  = idx === selectedIndex;
-    const hasSubmenu = cat.items.length > 0 || cat.name === 'Online';
-    createItem(cat.name, sel, hasSubmenu ? '›' : '', null, idx);
+function drawCategories() {
+  for (let i = 0; i < MAX_VIS; i++) {
+    const idx = i + scrollOff;
+    if (idx >= CATEGORIES.length) break;
+    const c   = CATEGORIES[idx];
+    const has = c.items.length > 0 || c.name === 'Online';
+    makeItem(c.name, idx === selIdx, has ? '›' : '', null, idx, false);
   }
-  updateScrollThumb(total, scrollOffset, MAX_VISIBLE);
 }
 
-function renderList(items, selIdx, scrollOff, isSubMenu) {
+function drawList(items, si, so, isCat) {
   if (items.length === 0) {
-    const el = document.createElement('div');
-    el.className = 'menu-item';
-    el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun élément</span>';
-    itemsList.insertBefore(el, scrollThumb.parentElement);
+    const d = document.createElement('div');
+    d.className = 'menu-item';
+    d.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun élément</span>';
+    itemsList.appendChild(d);
     return;
   }
-  for (let i = 0; i < MAX_VISIBLE; i++) {
-    const idx = i + scrollOff;
+  for (let i = 0; i < MAX_VIS; i++) {
+    const idx = i + so;
     if (idx >= items.length) break;
     const name = items[idx];
-    const sel  = idx === selIdx;
-    const key  = isSubMenu
-      ? (currentCat ? currentCat.name + '_' + (idx+1) : null)
-      : null;
-    const togState = key ? toggleStates[key] : undefined;
-    createItem(name, sel, togState === undefined ? '+' : '', togState !== undefined ? togState : null, idx);
+    const key  = isCat && curCat ? curCat.name + '_' + (idx + 1) : null;
+    const tog  = key !== null ? toggleStates[key] : undefined;
+    makeItem(name, idx === si, tog === undefined ? '+' : '', tog !== undefined ? tog : null, idx, isCat);
   }
-  updateScrollThumb(items.length, scrollOff, MAX_VISIBLE);
 }
 
-function createItem(name, selected, indicator, toggleState, idx) {
+function makeItem(name, selected, ind, togState, idx, isCat) {
   const el = document.createElement('div');
-  el.className = 'menu-item' + (selected ? ' selected' : '');
-  el.dataset.idx = idx;
+  el.className = 'menu-item' + (selected ? ' sel' : '');
 
   const bar = document.createElement('div');
-  bar.className = 'accent-bar';
+  bar.className = 'bar';
   el.appendChild(bar);
 
-  const nameEl = document.createElement('span');
-  nameEl.className = 'item-name';
-  nameEl.textContent = name;
-  el.appendChild(nameEl);
+  const nm = document.createElement('span');
+  nm.className = 'item-name';
+  nm.textContent = name;
+  el.appendChild(nm);
 
-  if (toggleState !== null && toggleState !== undefined) {
-    const tog = document.createElement('div');
-    tog.className = 'toggle' + (toggleState ? ' on' : '');
-    el.appendChild(tog);
-  } else if (indicator) {
-    const ind = document.createElement('span');
-    ind.className = 'item-indicator';
-    ind.textContent = indicator;
-    el.appendChild(ind);
+  if (togState !== null && togState !== undefined) {
+    const t = document.createElement('div');
+    t.className = 'tog' + (togState ? ' on' : '');
+    el.appendChild(t);
+  } else if (ind) {
+    const s = document.createElement('span');
+    s.className = 'item-ind';
+    s.textContent = ind;
+    el.appendChild(s);
   }
 
-  // Click support
   el.addEventListener('click', () => {
-    if (currentTab === 'config') {
-      selectedIndex = idx;
-      activateSelected();
-    } else if (currentCat) {
-      catSelIndex = idx;
-      activateSelected();
-    } else {
-      selectedIndex = idx;
-      activateSelected();
-    }
+    if (tab === 'config')     { selIdx = idx; activate(); }
+    else if (curCat)          { catSel = idx; activate(); }
+    else                      { selIdx = idx; activate(); }
     render();
   });
 
-  itemsList.insertBefore(el, document.getElementById('scroll-indicator'));
+  itemsList.appendChild(el);
 }
 
-function updateScrollThumb(total, offset, maxVis) {
-  if (total <= maxVis) { scrollThumb.style.height = '0'; return; }
-  const ratio     = maxVis / total;
-  const posRatio  = offset / total;
-  const listH     = itemsList.clientHeight;
-  scrollThumb.style.height     = Math.max(20, ratio * listH) + 'px';
-  scrollThumb.style.marginTop  = posRatio * listH + 'px';
-}
-
-// ─── TABS ────────────────────────────────────────────
-function switchTab(tab) {
-  currentTab    = tab;
-  currentCat    = null;
-  selectedIndex = 0;
-  scrollOffset  = 0;
-  tabMain.className = 'tab' + (tab === 'main'   ? ' active' : '');
-  tabCfg.className  = 'tab' + (tab === 'config' ? ' active' : '');
+function nav(dir) {
+  if (tab === 'config') {
+    selIdx = clamp(selIdx + dir, 0, CONFIG_ITEMS.length - 1);
+    adjustScroll('config');
+  } else if (curCat) {
+    if (!curCat.items.length) return;
+    catSel = clamp(catSel + dir, 0, curCat.items.length - 1);
+    adjustScroll('cat');
+  } else {
+    selIdx = clamp(selIdx + dir, 0, CATEGORIES.length - 1);
+    adjustScroll('main');
+  }
   render();
 }
 
-// ─── NAVIGATION ──────────────────────────────────────
-function navigate(dir) {
-  if (currentTab === 'config') {
-    const total = CONFIG_ITEMS.length;
-    selectedIndex = Math.max(0, Math.min(total - 1, selectedIndex + dir));
-    if (selectedIndex < scrollOffset)               scrollOffset = selectedIndex;
-    if (selectedIndex >= scrollOffset + MAX_VISIBLE) scrollOffset = selectedIndex - MAX_VISIBLE + 1;
-    render();
-    return;
+function adjustScroll(mode) {
+  if (mode === 'main') {
+    if (selIdx < scrollOff) scrollOff = selIdx;
+    if (selIdx >= scrollOff + MAX_VIS) scrollOff = selIdx - MAX_VIS + 1;
+  } else if (mode === 'cat') {
+    if (catSel < catScroll) catScroll = catSel;
+    if (catSel >= catScroll + MAX_VIS) catScroll = catSel - MAX_VIS + 1;
+  } else {
+    if (selIdx < scrollOff) scrollOff = selIdx;
+    if (selIdx >= scrollOff + MAX_VIS) scrollOff = selIdx - MAX_VIS + 1;
   }
-  if (currentCat) {
-    const total = currentCat.items.length;
-    if (total === 0) return;
-    catSelIndex = Math.max(0, Math.min(total - 1, catSelIndex + dir));
-    if (catSelIndex < catScrollOff)                catScrollOff = catSelIndex;
-    if (catSelIndex >= catScrollOff + MAX_VISIBLE) catScrollOff = catSelIndex - MAX_VISIBLE + 1;
-    render();
-    return;
-  }
-  const total = MENU_STRUCTURE.length;
-  selectedIndex = Math.max(0, Math.min(total - 1, selectedIndex + dir));
-  if (selectedIndex < scrollOffset)               scrollOffset = selectedIndex;
-  if (selectedIndex >= scrollOffset + MAX_VISIBLE) scrollOffset = selectedIndex - MAX_VISIBLE + 1;
-  render();
 }
 
-function activateSelected() {
-  if (currentTab === 'config') {
-    sendToLua('configAction', { item: CONFIG_ITEMS[selectedIndex] });
+function activate() {
+  if (tab === 'config') {
+    sendLua('configAction', { item: CONFIG_ITEMS[selIdx] });
     return;
   }
-  if (currentCat) {
-    if (currentCat.items.length === 0) return;
-    const itemName = currentCat.items[catSelIndex];
-    const key      = currentCat.name + '_' + (catSelIndex + 1);
+  if (curCat) {
+    if (!curCat.items.length) return;
+    const itemName = curCat.items[catSel];
+    const key = curCat.name + '_' + (catSel + 1);
     if (toggleStates[key] !== undefined) {
       toggleStates[key] = !toggleStates[key];
-      sendToLua('toggle', { category: currentCat.name, index: catSelIndex + 1, state: toggleStates[key] });
+      sendLua('toggle', { category: curCat.name, index: catSel + 1, state: toggleStates[key] });
     } else {
-      sendToLua('action', { category: currentCat.name, index: catSelIndex + 1, item: itemName });
+      sendLua('action', { category: curCat.name, index: catSel + 1, item: itemName });
     }
     render();
     return;
   }
-  const cat = MENU_STRUCTURE[selectedIndex];
-  if (!cat) return;
-  if (cat.items.length > 0 || cat.name === 'Online') {
-    currentCat   = cat;
-    catSelIndex  = 0;
-    catScrollOff = 0;
-    sendToLua('enterCategory', { category: cat.name });
+  const c = CATEGORIES[selIdx];
+  if (!c) return;
+  if (c.items.length > 0 || c.name === 'Online') {
+    curCat = c; catSel = 0; catScroll = 0;
+    sendLua('enterCategory', { category: c.name });
     render();
   }
 }
 
 function goBack() {
-  if (currentCat) {
-    currentCat   = null;
-    catSelIndex  = 0;
-    catScrollOff = 0;
-    render();
-    sendToLua('backToMain', {});
-    return;
-  }
-  // Esc = fermer le menu
-  sendToLua('closeMenu', {});
-}
-
-// ─── BRIDGE : HTML → Lua ─────────────────────────────
-// Lapsus n'a pas de RegisterNUICallback.
-// On expose window.__yariAction que Lua peut poller avec ExecuteNuiScript,
-// OU on utilise une queue que Lua lit via JS injection.
-let actionQueue = [];
-
-function sendToLua(type, data) {
-  const payload = { type, ...data };
-  actionQueue.push(payload);
-  // Expose sur window pour que Lua puisse poller avec ExecuteNuiScript
-  window.__yariLastAction = payload;
-  // Signal via title (fallback simple)
-  document.title = 'YARI:' + JSON.stringify(payload);
-  // Appel direct si Lua a injecté un callback
-  if (typeof window.__yariCallback === 'function') {
-    try { window.__yariCallback(JSON.stringify(payload)); } catch(e) {}
+  if (curCat) {
+    curCat = null; catSel = 0; catScroll = 0;
+    render(); sendLua('backToMain', {});
+  } else {
+    sendLua('closeMenu', {});
   }
 }
 
-window.__yariFlushQueue = function() {
-  const q = actionQueue.slice();
-  actionQueue = [];
-  return JSON.stringify(q);
-};
-
-// ─── BRIDGE : Lua → HTML ─────────────────────────────
-// Lapsus.SendNuiMessage → window.addEventListener('message')
-window.addEventListener('message', function(e) {
-  let data = e.data;
-  if (typeof data === 'string') {
-    try { data = JSON.parse(data); } catch(_) { return; }
-  }
-  if (!data || !data.type) return;
-
-  switch (data.type) {
-    case 'showMenu':
-      visible = true;
-      app.classList.add('visible');
-      app.focus();
-      break;
-    case 'hideMenu':
-      visible = false;
-      app.classList.remove('visible');
-      break;
-    case 'setToggleStates':
-      if (data.states) Object.assign(toggleStates, data.states);
-      render();
-      break;
-    case 'setState':
-      // Full state sync depuis Lua
-      if (data.selectedIndex  !== undefined) selectedIndex  = data.selectedIndex;
-      if (data.scrollOffset   !== undefined) scrollOffset   = data.scrollOffset;
-      if (data.currentPage    !== undefined) {
-        // page 0 = settings, page 1+ = main catégories
-        switchTab(data.currentPage === 1 ? 'config' : 'main');
-      }
-      if (data.currentCategory !== undefined) {
-        if (data.currentCategory === null) {
-          currentCat = null;
-        } else {
-          currentCat = MENU_STRUCTURE.find(c => c.name === data.currentCategory) || null;
-        }
-      }
-      if (data.catSelIndex  !== undefined) catSelIndex  = data.catSelIndex;
-      if (data.catScrollOff !== undefined) catScrollOff = data.catScrollOff;
-      render();
-      break;
-    // Navigation depuis Lua (si tu veux garder les touches Lua actives)
-    case 'nav':
-      if (!visible) return;
-      switch(data.key) {
-        case 'up':     navigate(-1);        break;
-        case 'down':   navigate(1);         break;
-        case 'enter':  activateSelected();  break;
-        case 'back':   goBack();            break;
-        case 'prev':   switchTab(currentTab === 'config' ? 'main' : 'config'); break;
-        case 'next':   switchTab(currentTab === 'main' ? 'config' : 'main');   break;
-      }
-      break;
-    case 'nuiReady':
-      sendToLua('ready', {});
-      break;
-  }
-});
-
-// ─── KEYBOARD (fenêtre CEF = focus propre) ───────────
-// Le CEF Lapsus est une fenêtre séparée — elle capte ses propres touches.
-// Donc addEventListener fonctionne NATIVEMENT ici, sans SetNuiFocus.
-document.addEventListener('keydown', function(e) {
-  if (!visible) return;
-
-  switch(e.key) {
-    case 'ArrowUp':
-      e.preventDefault(); navigate(-1); break;
-    case 'ArrowDown':
-      e.preventDefault(); navigate(1);  break;
-    case 'Enter':
-      e.preventDefault(); activateSelected(); break;
-    case 'ArrowLeft':
-    case 'Backspace':
-      e.preventDefault(); goBack(); break;
-    case 'ArrowRight':
-      e.preventDefault();
-      if (!currentCat) activateSelected();
-      break;
-    case 'q': case 'Q':
-      e.preventDefault();
-      switchTab(currentTab === 'config' ? 'main' : 'config'); break;
-    case 'e': case 'E':
-      e.preventDefault();
-      switchTab(currentTab === 'main' ? 'config' : 'main'); break;
-    case 'Escape':
-      e.preventDefault(); sendToLua('closeMenu', {}); break;
-  }
-});
-
-// ─── INIT ─────────────────────────────────────────────
-// Signal Lua que le HTML est prêt
-window.addEventListener('load', function() {
-  sendToLua('ready', {});
+function switchTab(t) {
+  tab = t; curCat = null; selIdx = 0; scrollOff = 0;
+  tabMain.className = 'tab' + (t === 'main'   ? ' active' : '');
+  tabCfg.className  = 'tab' + (t === 'config' ? ' active' : '');
   render();
-  // DEBUG : afficher le menu directement si pas en contexte Lapsus
-  if (window.location.href.includes('localhost') || window.location.href.startsWith('file:')) {
-    visible = true;
-    app.classList.add('visible');
-    render();
+}
+
+tabMain.onclick = () => switchTab('main');
+tabCfg.onclick  = () => switchTab('config');
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// ── Bridge HTML → Lua ─────────────────────────────────
+let cbQueue = [];
+function sendLua(type, data) {
+  const p = Object.assign({ type }, data);
+  cbQueue.push(p);
+  window.__yariLastAction = p;
+  if (typeof window.__yariCallback === 'function') {
+    try { window.__yariCallback(JSON.stringify(p)); } catch(e) {}
+  }
+}
+window.__yariFlushQueue = () => { const q = cbQueue.splice(0); return JSON.stringify(q); };
+
+// ── Bridge Lua → HTML ─────────────────────────────────
+window.addEventListener('message', function(e) {
+  let d = e.data;
+  if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
+  if (!d || !d.type) return;
+
+  if (d.type === 'showMenu')  { appEl.style.display = 'flex';  }
+  if (d.type === 'hideMenu')  { appEl.style.display = 'none';  }
+  if (d.type === 'setToggleStates' && d.states) {
+    Object.assign(toggleStates, d.states); render();
+  }
+  if (d.type === 'nav') {
+    const k = d.key;
+    if (k === 'up')    nav(-1);
+    if (k === 'down')  nav(1);
+    if (k === 'enter') activate();
+    if (k === 'back')  goBack();
+    if (k === 'prev')  switchTab(tab === 'config' ? 'main' : 'config');
+    if (k === 'next')  switchTab(tab === 'main'   ? 'config' : 'main');
+  }
+  if (d.type === 'nuiReady') sendLua('ready', {});
+});
+
+// ── Keyboard (CEF window = focus natif) ──────────────
+document.addEventListener('keydown', function(e) {
+  switch(e.key) {
+    case 'ArrowUp':    e.preventDefault(); nav(-1);      break;
+    case 'ArrowDown':  e.preventDefault(); nav(1);       break;
+    case 'Enter':      e.preventDefault(); activate();   break;
+    case 'ArrowLeft':  case 'Backspace':
+                       e.preventDefault(); goBack();     break;
+    case 'ArrowRight': e.preventDefault(); if (!curCat) activate(); break;
+    case 'q': case 'Q': e.preventDefault(); switchTab(tab === 'config' ? 'main' : 'config'); break;
+    case 'e': case 'E': e.preventDefault(); switchTab(tab === 'main'   ? 'config' : 'main');  break;
+    case 'Escape':     e.preventDefault(); sendLua('closeMenu', {}); break;
   }
 });
+
+// ── Init : toujours visible ──────────────────────────
+// Lapsus contrôle show/hide via SendNuiMessage.
+// Par défaut le menu est affiché (la fenêtre CEF est cachée par Lua).
+render();
+sendLua('ready', {});
 </script>
 </body>
 </html>
