@@ -5,322 +5,94 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YARI MENU</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --p:        #8B2FEF;
-  --p-b:      #9B40FF;
-  --p-sel:    #7B28E0;
-  --p-glow:   rgba(139, 47, 239, 0.5);
-  --bg:       #18141F;
-  --bg-row:   #1C1825;
-  --bg-row2:  #1A1622;
-  --text:     #F0ECF8;
-  --text-dim: #6A6480;
-  --text-mid: #C4BADC;
-  --sep:      rgba(255,255,255,0.045);
-  --tog-on:   #2563EB;
-  --tog-off:  #2C2838;
-  --warn:     #EF4444;
+  --red:      #DC1E1E;
+  --red-glow: #FF3232;
+  --red-dark: #8C0A0A;
+  --bg:       #0A0A0A;
+  --dimmed:   #B0B0B0;
+  --sep:      rgba(50,15,15,0.9);
 }
+html, body { width:100%; height:100%; background:transparent; overflow:hidden; font-family:'Rajdhani',sans-serif; }
 
-html, body {
-  width: 100%; height: 100%;
-  background: transparent; overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ── CONTAINER ── */
 #app {
-  position: fixed; top: 100px; left: 160px;
-  width: 420px;
-  display: none; flex-direction: column;
-  background: var(--bg);
-  border-radius: 4px;
-  overflow: hidden;
-  border: 1px solid rgba(139,47,239,0.3);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,0.6),
-    0 0 40px rgba(90,10,160,0.4),
-    0 12px 60px rgba(0,0,0,0.85);
-  user-select: none;
+  position:fixed; top:150px; left:200px; width:350px;
+  display:none; flex-direction:column;
+  background:var(--bg);
+  border-top:3px solid var(--red);
+  border-bottom:3px solid var(--red);
+  box-shadow:0 0 20px rgba(220,30,30,0.4),0 0 6px rgba(220,30,30,0.3) inset;
+  user-select:none;
 }
 
-/* ── BANNER ── */
 #banner {
-  position: relative;
-  height: 95px; flex-shrink: 0;
-  overflow: hidden;
-  background: #0e0918;
+  position:relative; height:90px; flex-shrink:0;
+  background:linear-gradient(180deg,rgba(40,5,5,0.95) 0%,rgba(10,10,10,1) 100%);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:5px; overflow:hidden;
 }
-#banner img {
-  width: 100%; height: 100%;
-  object-fit: cover; object-position: center top;
-  display: block;
-}
-/* CSS fallback banner when image is missing */
-#banner-fallback {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, #1f0848 0%, #0e0618 50%, #180830 100%);
-}
-.bf-glow {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 80% 100% at 50% 110%, rgba(139,47,239,0.4) 0%, transparent 65%),
-    radial-gradient(ellipse 40% 60% at 20% 50%, rgba(100,20,200,0.2) 0%, transparent 60%);
-}
-.bf-title {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 46px; font-weight: 700;
-  letter-spacing: 10px;
-  color: #fff;
-  position: relative; z-index: 1;
-  text-shadow:
-    0 0 20px var(--p-b),
-    0 0 50px rgba(155,64,255,0.7),
-    0 3px 0 rgba(0,0,0,0.9);
-}
-/* bottom edge line on banner */
-#banner::after {
-  content: '';
-  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--p-b) 40%, var(--p) 60%, transparent 100%);
-  opacity: 0.6;
-}
+#banner::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg,var(--red),var(--red-dark)); }
+#banner::after  { content:''; position:absolute; right:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg,var(--red),var(--red-dark)); opacity:0.7; }
+.banner-main { font-size:30px; font-weight:700; letter-spacing:6px; color:#fff; text-shadow:0 0 14px var(--red-glow),0 0 30px rgba(220,30,30,0.45),2px 2px 0 rgba(140,10,10,0.5); }
+.banner-sub  { font-size:10px; letter-spacing:3px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; }
 
-/* ── BREADCRUMB ── */
-#breadcrumb {
-  height: 22px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  gap: 6px;
-  background: #141018;
-  border-bottom: 1px solid rgba(139,47,239,0.15);
-  font-size: 9px; letter-spacing: 3px;
-  color: var(--text-dim);
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-#breadcrumb .sep { color: var(--p-b); opacity: 0.8; }
-#breadcrumb .active { color: var(--text-mid); }
+#subbanner { height:18px; flex-shrink:0; background:rgba(5,5,5,0.98); display:flex; align-items:center; justify-content:center; font-size:9px; letter-spacing:3px; color:rgba(200,200,200,0.6); font-family:'Share Tech Mono',monospace; border-top:1px solid rgba(30,5,5,0.7); }
 
-/* ── TABS ── */
-#tabs {
-  height: 38px; flex-shrink: 0;
-  display: flex;
-  background: #141018;
-  border-bottom: 1px solid rgba(139,47,239,0.25);
-}
-.tab {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 12px; font-weight: 700; letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  background: transparent;
-  cursor: pointer;
-  position: relative;
-  transition: color 0.1s;
-}
-.tab + .tab {
-  border-left: 1px solid rgba(139,47,239,0.2);
-}
-.tab.active {
-  background: var(--p);
-  color: #fff;
-  box-shadow: 0 0 18px rgba(139,47,239,0.45) inset;
-}
+#tabs { height:28px; flex-shrink:0; display:flex; border-bottom:2px solid var(--red); }
+.tab { flex:1; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; letter-spacing:2px; color:var(--dimmed); background:rgba(12,12,12,0.98); border-right:1px solid rgba(60,60,60,0.35); cursor:pointer; }
+.tab:last-child { border-right:none; }
+.tab.active { background:rgba(220,30,30,0.88); color:#fff; }
 
-/* ── CAT HEADER ── */
-#cat-header {
-  padding: 3px 16px;
-  background: #111018;
-  border-bottom: 1px solid rgba(139,47,239,0.18);
-  font-size: 9px; letter-spacing: 3px;
-  color: rgba(155,64,255,0.65);
-  font-family: 'Rajdhani', sans-serif; font-weight: 700;
-  text-transform: uppercase;
-  flex-shrink: 0; display: none;
-}
-#cat-header.show { display: block; }
+#cat-header { padding:4px 14px; font-size:10px; letter-spacing:2px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; background:rgba(10,10,10,0.95); border-bottom:1px solid rgba(60,20,20,0.5); flex-shrink:0; display:none; }
+#cat-header.show { display:block; }
 
-/* ── ITEMS ── */
-#items-list { flex-shrink: 0; }
+#items-list { flex-shrink:0; }
+.menu-item { height:30px; display:flex; align-items:center; padding:0 16px 0 28px; position:relative; border-bottom:1px solid var(--sep); }
+.menu-item .bar { position:absolute; left:0; top:3px; bottom:3px; width:3px; background:var(--red); box-shadow:0 0 6px var(--red-glow); display:none; }
+.menu-item.sel { background:rgba(220,30,30,0.13); }
+.menu-item.sel .bar { display:block; }
+.item-name { flex:1; font-size:13px; font-weight:500; color:rgba(255,255,255,0.85); letter-spacing:0.4px; }
+.menu-item.sel .item-name { color:#fff; font-weight:600; }
+.item-ind { font-size:13px; font-weight:700; color:var(--red); margin-left:6px; }
+.menu-item.sel .item-ind { opacity:1; }
+.menu-item:not(.sel) .item-ind { opacity:0.65; }
 
-.menu-item {
-  height: 37px;
-  display: flex; align-items: center;
-  padding: 0 16px;
-  border-bottom: 1px solid var(--sep);
-  position: relative;
-  background: transparent;
-}
-.menu-item:nth-child(even) { background: rgba(0,0,0,0.06); }
-.menu-item.sel {
-  background: var(--p-sel) !important;
-}
+.tog { width:34px; height:14px; border-radius:7px; background:#333; position:relative; flex-shrink:0; }
+.tog.on { background:var(--red); box-shadow:0 0 7px rgba(220,30,30,0.55); }
+.tog::after { content:''; position:absolute; top:2px; left:2px; width:10px; height:10px; border-radius:50%; background:#fff; transition:left 0.12s; }
+.tog.on::after { left:calc(100% - 12px); }
 
-.item-name {
-  flex: 1;
-  font-size: 13px; font-weight: 400;
-  color: var(--text);
-  letter-spacing: 0.1px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.menu-item.sel .item-name {
-  font-weight: 600; color: #fff;
-}
-
-.item-arrow {
-  font-size: 16px; color: var(--text-dim);
-  margin-left: 8px; line-height: 1;
-}
-.menu-item.sel .item-arrow { color: rgba(255,255,255,0.6); }
-
-.item-plus {
-  font-size: 14px; color: var(--text-dim);
-  margin-left: 8px;
-}
-.menu-item.sel .item-plus { color: rgba(255,255,255,0.55); }
-
-.item-label {
-  font-size: 10px; letter-spacing: 1px;
-  color: var(--text-dim);
-  font-family: 'Rajdhani', sans-serif; font-weight: 600;
-  margin-left: 8px; white-space: nowrap;
-}
-.menu-item.sel .item-label { color: rgba(255,255,255,0.7); }
-
-/* warn badge */
-.warn-badge {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 15px; height: 15px;
-  background: var(--warn);
-  border-radius: 2px;
-  font-size: 8px; font-weight: 700; color: #fff;
-  margin-left: 7px; flex-shrink: 0;
-}
-
-/* ── TOGGLES ── */
-.tog {
-  width: 30px; height: 14px; border-radius: 7px;
-  background: var(--tog-off);
-  position: relative; flex-shrink: 0; margin-left: 8px;
-  border: 1px solid rgba(255,255,255,0.07);
-}
-.tog.on {
-  background: var(--tog-on);
-  box-shadow: 0 0 7px rgba(37,99,235,0.55);
-  border-color: rgba(37,99,235,0.4);
-}
-.tog::after {
-  content: ''; position: absolute;
-  top: 1px; left: 1px;
-  width: 10px; height: 10px; border-radius: 50%;
-  background: #fff; transition: left 0.1s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-}
-.tog.on::after { left: calc(100% - 11px); }
-
-/* ── STATUS BAR ── */
-.status-bar {
-  padding: 2px 16px;
-  font-size: 9px; letter-spacing: 1.5px;
-  font-family: 'Rajdhani', sans-serif; font-weight: 600;
-  border-bottom: 1px solid var(--sep);
-}
-.status-bar.green  { color: #32C832; }
-.status-bar.orange { color: #DC821E; }
-
-/* ── FOOTER ── */
-#footer {
-  height: 34px; flex-shrink: 0;
-  display: flex; align-items: center;
-  padding: 0 10px 0 12px;
-  background: #111018;
-  border-top: 1px solid rgba(139,47,239,0.2);
-  gap: 8px;
-}
-.f-icon {
-  width: 20px; height: 20px; border-radius: 3px;
-  background: var(--p);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 11px; font-weight: 700; color: #fff;
-  box-shadow: 0 0 8px var(--p-glow);
-  flex-shrink: 0;
-}
-.f-name {
-  font-size: 11px; font-weight: 500;
-  color: var(--text); flex: 1;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.f-keys {
-  display: flex; align-items: center; gap: 4px;
-}
-.k {
-  display: inline-flex; align-items: center; justify-content: center;
-  min-width: 16px; height: 14px; padding: 0 2px;
-  border: 1px solid rgba(139,47,239,0.45);
-  border-radius: 2px;
-  font-size: 8px; color: rgba(155,64,255,0.9);
-  font-weight: 700;
-  background: rgba(139,47,239,0.08);
-  font-family: 'Inter', sans-serif;
-}
-.f-counter {
-  font-size: 10px; color: var(--text-dim);
-  font-family: 'Rajdhani', sans-serif; font-weight: 600;
-  letter-spacing: 1px; margin-left: 4px; white-space: nowrap;
-}
+#footer { height:36px; flex-shrink:0; display:flex; align-items:center; justify-content:center; gap:16px; background:rgba(8,8,8,0.99); border-top:1px solid rgba(40,10,10,0.6); }
+.kh { display:flex; align-items:center; gap:4px; font-size:10px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; }
+.k { display:inline-flex; align-items:center; justify-content:center; width:18px; height:14px; border:1px solid rgba(220,30,30,0.5); border-radius:2px; font-size:9px; color:var(--red); font-weight:700; background:rgba(220,30,30,0.07); }
 </style>
 </head>
 <body>
 <div id="app">
-
   <div id="banner">
-    <img src="yari_menu_banniere_rouge.png" alt=""
-         onerror="this.style.display='none';document.getElementById('bfb').style.display='flex';" />
-    <div id="bfb" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:linear-gradient(135deg,#1f0848 0%,#0e0618 50%,#180830 100%);">
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 100% at 50% 110%,rgba(139,47,239,0.45) 0%,transparent 65%);"></div>
-      <span style="font-family:'Rajdhani',sans-serif;font-size:44px;font-weight:700;letter-spacing:10px;color:#fff;position:relative;text-shadow:0 0 20px #9B40FF,0 0 50px rgba(155,64,255,0.7);">YARI</span>
-    </div>
+  <img src="yari_menu_banniere_rouge.png" alt="banner"
+       style="width:100%; height:90px; object-fit:cover; object-position:center; display:block;" />
   </div>
-
-  <div id="breadcrumb">
-    <span id="bc0">MENU</span>
-    <span id="bc1" class="sep" style="display:none">›</span>
-    <span id="bc2" class="active" style="display:none"></span>
-    <span id="bc3" class="sep" style="display:none">›</span>
-    <span id="bc4" class="active" style="display:none"></span>
-  </div>
-
+  <div id="subbanner">YARI MENU</div>
   <div id="tabs">
     <div class="tab active" id="tab-main">MAIN</div>
     <div class="tab"        id="tab-cfg">CONFIG</div>
   </div>
-
   <div id="cat-header"></div>
   <div id="items-list"></div>
-
   <div id="footer">
-    <div class="f-icon" id="fi">Y</div>
-    <span class="f-name" id="fn">Player</span>
-    <div class="f-keys">
-      <span class="k">↑</span><span class="k">↓</span>
-      <span class="k">↵</span>
-      <span class="k">⌫</span>
-      <span class="k">Q</span><span class="k">E</span>
-    </div>
-    <span class="f-counter" id="fc"></span>
+    <div class="kh"><span class="k">↑</span><span class="k">↓</span> Nav</div>
+    <div class="kh"><span class="k">↵</span> OK</div>
+    <div class="kh"><span class="k">⌫</span> Back</div>
+    <div class="kh"><span class="k">Q</span><span class="k">E</span> Tab</div>
   </div>
-
 </div>
+
 <script>
+// ── State (miroir du Lua, mis à jour par messages) ──
 const CATEGORIES = [
   {name:"Player",        items:["Noclip","God Mode","No Ragdoll","No Collision","Fast Run","Revive","Teleporte To Waypoint","Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina"]},
   {name:"Online",        items:[]},
@@ -336,143 +108,257 @@ const CATEGORIES = [
   {name:"Destroyer",     items:["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos"]},
 ];
 const CONFIG_ITEMS = ["Save Config","Load Config"];
+
+// toggleStates[key] = bool  — key = "CategoryName_itemIndex1Based"
+// Mis à jour exclusivement par des messages Lua (setToggleStates)
 const toggleStates = {};
+
+// Items qui ont un toggle (doivent correspondre à configurableToggles côté Lua)
 const TOGGLE_KEYS = new Set([
   "Player_1","Player_2","Player_3","Player_4","Player_5",
   "Player_8","Player_9","Player_10","Player_11","Player_12",
   "Vehicle_2","Vehicle_6","Vehicle_7",
   "Misc_1","Misc_2","Misc_3","Misc_4",
-  "Combat_1","Combat_2","Protection_1","Settings_1","Destroyer_5",
+  "Combat_1","Combat_2",
+  "Protection_1",
+  "Settings_1",
+  "Destroyer_5",
 ]);
-const WARN_KEYS = new Set([
-  "Player_1","Player_2","Player_10",
-  "Misc_4","Misc_5",
-  "Destroyer_1","Destroyer_2","Destroyer_3","Destroyer_4",
-]);
-const LABEL_MAP = {};
 
-let tab='main', selIdx=0, scrollOff=0, curCatName=null, catSel=0, catScroll=0;
-const MAX_VIS=10;
-let onlineSubMenu=null, onlineSubSel=0, nearbyPlayers=[], selectedPlayers={};
-let trollActions=["Teleport","Ragdoll","Silent Kill","Stun Player","Spectate","Revive","Smash Attack","Launch Player","Cage Player","Cage Player M2","Stop Cage Player M2","Bug Player BMX","Bug Player Avenger","Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle"];
-let trollSel=0, playerSel=0;
+// ── UI state (miroir de la navigation Lua) ──
+// Le Lua est maître — le HTML ne fait que refléter ce qu'il lui dit.
+// Les nav keys du HTML sont désactivées : c'est le Lua qui envoie nav via sendNav().
+let tab        = 'main';
+let selIdx     = 0, scrollOff = 0;
+let curCatName = null;   // null = liste des catégories
+let catSel     = 0, catScroll = 0;
+const MAX_VIS  = 10;
 
-const appEl=document.getElementById('app');
-const catHeader=document.getElementById('cat-header');
-const itemsList=document.getElementById('items-list');
+const appEl     = document.getElementById('app');
+const tabMain   = document.getElementById('tab-main');
+const tabCfg    = document.getElementById('tab-cfg');
+const catHeader = document.getElementById('cat-header');
+const itemsList = document.getElementById('items-list');
 
-function getCurCat(){return curCatName?CATEGORIES.find(c=>c.name===curCatName)||null:null;}
+  let onlineSubMenu = null;   // null | 'Players' | 'Troll'
+let onlineSubSel  = 0;      // index root (0=Players, 1=Troll)
+let nearbyPlayers = [];     // [{serverId, name, distance}]
+let selectedPlayers = {};   // {serverId: true}
+let trollActions  = [
+    "Teleport","Ragdoll","Silent Kill","Stun Player","Spectate","Revive",
+    "Smash Attack","Launch Player","Cage Player","Cage Player M2",
+    "Stop Cage Player M2","Bug Player BMX","Bug Player Avenger",
+    "Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle"
+];
+let trollSel = 0;
+let playerSel = 0;
 
-function updateBC(){
-  const cat=getCurCat();
-  const [b0,b1,b2,b3,b4]=[0,1,2,3,4].map(i=>document.getElementById('bc'+i));
-  [b1,b2,b3,b4].forEach(e=>e.style.display='none');
-  b0.textContent='MENU';
-  if(tab==='config'){b1.style.display='inline';b2.style.display='inline';b2.textContent='CONFIG';}
-  else if(cat){b1.style.display='inline';b2.style.display='inline';b2.textContent=cat.name.toUpperCase();
-    if(cat.name==='Online'&&onlineSubMenu){b3.style.display='inline';b4.style.display='inline';b4.textContent=onlineSubMenu.toUpperCase();}}
+function getCurCat() {
+  if (!curCatName) return null;
+  return CATEGORIES.find(c => c.name === curCatName) || null;
 }
 
-function updateCounter(){
-  const cat=getCurCat();
-  let items,si;
-  if(tab==='config'){items=CONFIG_ITEMS;si=selIdx;}
-  else if(cat&&cat.name!=='Online'){items=cat.items;si=catSel;}
-  else{items=CATEGORIES;si=selIdx;}
-  document.getElementById('fc').textContent=items.length?`${si+1} / ${items.length}`:'';
+function render() {
+    itemsList.innerHTML = '';
+    const cat = getCurCat();
+
+    if (tab === 'config') {
+        catHeader.className = '';
+        renderList(CONFIG_ITEMS, selIdx, scrollOff, null);
+        return;
+    }
+    if (cat) {
+        catHeader.className = '';
+        if (cat.name === 'Online') {
+            renderOnline();
+            return;
+        }
+        catHeader.textContent = cat.name.toUpperCase();
+        catHeader.className = 'show';
+        renderList(cat.items, catSel, catScroll, cat.name);
+    } else {
+        catHeader.className = '';
+        renderCategories();
+    }
 }
 
-function render(){
-  itemsList.innerHTML='';
-  updateBC(); updateCounter();
-  const cat=getCurCat();
-  if(tab==='config'){catHeader.className='';renderList(CONFIG_ITEMS,selIdx,scrollOff,null);return;}
-  if(cat){
-    if(cat.name==='Online'){catHeader.className='';renderOnline();return;}
-    catHeader.textContent=cat.name.toUpperCase();catHeader.className='show';
-    renderList(cat.items,catSel,catScroll,cat.name);
-  }else{catHeader.className='';renderCats();}
+function renderOnline() {
+    if (onlineSubMenu === null) {
+        // Root : Players / Troll
+        ['Players', 'Troll'].forEach((name, i) => {
+            const el = document.createElement('div');
+            el.className = 'menu-item' + (i === onlineSubSel ? ' sel' : '');
+            el.innerHTML = `<div class="bar"></div>
+                <span class="item-name">${name}</span>
+                <span class="item-ind">›</span>`;
+            itemsList.appendChild(el);
+        });
+    } else if (onlineSubMenu === 'Players') {
+        // Header avec compteur
+        const selCount = Object.keys(selectedPlayers).length;
+        if (selCount > 0) {
+            const hd = document.createElement('div');
+            hd.style.cssText = 'padding:2px 14px;font-size:10px;color:#32c832;font-family:"Share Tech Mono",monospace;';
+            hd.textContent = `● ${selCount} sélectionné(s)`;
+            itemsList.appendChild(hd);
+        }
+        if (nearbyPlayers.length === 0) {
+            const el = document.createElement('div');
+            el.className = 'menu-item';
+            el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun joueur à proximité</span>';
+            itemsList.appendChild(el);
+        } else {
+            nearbyPlayers.slice(0, 10).forEach((p, i) => {
+                const isOn = selectedPlayers[p.serverId] === true;
+                const el = document.createElement('div');
+                el.className = 'menu-item' + (i === playerSel ? ' sel' : '');
+                el.innerHTML = `<div class="bar"></div>
+                    <span class="item-name" style="font-size:11px">[${p.serverId}] ${p.name} <span style="color:var(--dimmed)">${p.distance}m</span></span>
+                    <div class="tog${isOn ? ' on' : ''}"></div>`;
+                itemsList.appendChild(el);
+            });
+        }
+    } else if (onlineSubMenu === 'Troll') {
+        const selCount = Object.keys(selectedPlayers).length;
+        const hd = document.createElement('div');
+        hd.style.cssText = 'padding:2px 14px;font-size:10px;font-family:"Share Tech Mono",monospace;';
+        hd.style.color = selCount > 0 ? '#32c832' : '#dc821e';
+        hd.textContent = selCount > 0 ? `● ${selCount} joueur(s) ciblé(s)` : '⚠ Aucun joueur sélectionné';
+        itemsList.appendChild(hd);
+
+        trollActions.forEach((name, i) => {
+            const el = document.createElement('div');
+            el.className = 'menu-item' + (i === trollSel ? ' sel' : '');
+            el.innerHTML = `<div class="bar"></div>
+                <span class="item-name">${name}</span>
+                <span class="item-ind">▶</span>`;
+            itemsList.appendChild(el);
+        });
+    }
 }
 
-function renderOnline(){
-  if(onlineSubMenu===null){
-    ['Players','Troll'].forEach((n,i)=>row({name:n,sel:i===onlineSubSel,arrow:'›'}));
-  }else if(onlineSubMenu==='Players'){
-    const sc=Object.keys(selectedPlayers).length;
-    if(sc>0){const h=document.createElement('div');h.className='status-bar green';h.textContent=`● ${sc} sélectionné(s)`;itemsList.appendChild(h);}
-    if(!nearbyPlayers.length){const e=document.createElement('div');e.className='menu-item';e.innerHTML='<span class="item-name" style="color:var(--text-dim)">Aucun joueur</span>';itemsList.appendChild(e);}
-    else nearbyPlayers.slice(0,10).forEach((p,i)=>{
-      const e=document.createElement('div');e.className='menu-item'+(i===playerSel?' sel':'');
-      e.innerHTML=`<span class="item-name" style="font-size:11px">[${p.serverId}] ${p.name} <span style="color:var(--text-dim)">${p.distance}m</span></span><div class="tog${selectedPlayers[p.serverId]?' on':''}"></div>`;
-      itemsList.appendChild(e);
-    });
-  }else{
-    const sc=Object.keys(selectedPlayers).length;
-    const h=document.createElement('div');h.className='status-bar '+(sc>0?'green':'orange');
-    h.textContent=sc>0?`● ${sc} ciblé(s)`:'⚠ Aucun joueur';itemsList.appendChild(h);
-    trollActions.forEach((n,i)=>row({name:n,sel:i===trollSel,arrow:'›'}));
+function renderCategories() {
+  for (let i = 0; i < MAX_VIS; i++) {
+    const idx = i + scrollOff;
+    if (idx >= CATEGORIES.length) break;
+    const c   = CATEGORIES[idx];
+    const has = c.items.length > 0 || c.name === 'Online';
+    makeItem(c.name, idx === selIdx, has ? '›' : '', null);
   }
 }
 
-function renderCats(){
-  for(let i=0;i<MAX_VIS;i++){
-    const idx=i+scrollOff;if(idx>=CATEGORIES.length)break;
-    const c=CATEGORIES[idx];
-    row({name:c.name,sel:idx===selIdx,arrow:c.items.length||c.name==='Online'?'›':null});
+function renderList(items, si, so, catName) {
+  if (items.length === 0) {
+    const d = document.createElement('div');
+    d.className = 'menu-item';
+    d.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun élément</span>';
+    itemsList.appendChild(d);
+    return;
+  }
+  for (let i = 0; i < MAX_VIS; i++) {
+    const idx = i + so;
+    if (idx >= items.length) break;
+    const name = items[idx];
+    const key  = catName ? catName + '_' + (idx + 1) : null;
+    const isTog = key !== null && TOGGLE_KEYS.has(key);
+    const togVal = isTog ? (toggleStates[key] === true) : null;
+    makeItem(name, idx === si, isTog ? null : '+', togVal);
   }
 }
 
-function renderList(items,si,so,catName){
-  if(!items.length){const d=document.createElement('div');d.className='menu-item';d.innerHTML='<span class="item-name" style="color:var(--text-dim)">Aucun élément</span>';itemsList.appendChild(d);return;}
-  for(let i=0;i<MAX_VIS;i++){
-    const idx=i+so;if(idx>=items.length)break;
-    const name=items[idx];
-    const key=catName?catName+'_'+(idx+1):null;
-    const isTog=key&&TOGGLE_KEYS.has(key);
-    const isWarn=key&&WARN_KEYS.has(key);
-    const label=key&&LABEL_MAP[key]||null;
-    row({name,sel:idx===si,tog:isTog?(toggleStates[key]===true):null,warn:isWarn,label});
+function makeItem(name, selected, ind, togState) {
+  const el = document.createElement('div');
+  el.className = 'menu-item' + (selected ? ' sel' : '');
+
+  const bar = document.createElement('div');
+  bar.className = 'bar';
+  el.appendChild(bar);
+
+  const nm = document.createElement('span');
+  nm.className = 'item-name';
+  nm.textContent = name;
+  el.appendChild(nm);
+
+  if (togState !== null && togState !== undefined) {
+    const t = document.createElement('div');
+    t.className = 'tog' + (togState ? ' on' : '');
+    el.appendChild(t);
+  } else if (ind) {
+    const s = document.createElement('span');
+    s.className = 'item-ind';
+    s.textContent = ind;
+    el.appendChild(s);
   }
+  itemsList.appendChild(el);
 }
 
-function row({name,sel,arrow,tog,warn,label}){
-  const e=document.createElement('div');
-  e.className='menu-item'+(sel?' sel':'');
-  const nm=document.createElement('span');nm.className='item-name';nm.textContent=name;e.appendChild(nm);
-  if(warn){const w=document.createElement('span');w.className='warn-badge';w.textContent='▲';e.appendChild(w);}
-  if(tog!==null&&tog!==undefined){const t=document.createElement('div');t.className='tog'+(tog?' on':'');e.appendChild(t);}
-  else if(label){const l=document.createElement('span');l.className='item-label';l.textContent=label;e.appendChild(l);}
-  else if(arrow==='›'){const a=document.createElement('span');a.className='item-arrow';a.textContent='›';e.appendChild(a);}
-  else if(arrow===null&&tog===null&&!label){const p=document.createElement('span');p.className='item-plus';p.textContent='+';e.appendChild(p);}
-  itemsList.appendChild(e);
+function setTab(t) {
+  tab = t; curCatName = null; selIdx = 0; scrollOff = 0;
+  tabMain.className = 'tab' + (t === 'main'   ? ' active' : '');
+  tabCfg.className  = 'tab' + (t === 'config' ? ' active' : '');
+  render();
 }
 
-window.addEventListener('message',function(e){
-  let d=e.data;
-  if(typeof d==='string'){try{d=JSON.parse(d);}catch(_){return;}}
-  if(!d||!d.type)return;
-  if(d.type==='showMenu'){appEl.style.display='flex';return;}
-  if(d.type==='hideMenu'){appEl.style.display='none';return;}
-  if(d.type==='setPlayerName'){
-    document.getElementById('fn').textContent=d.name||'Player';
-    document.getElementById('fi').textContent=(d.name||'Y')[0].toUpperCase();return;
-  }
-  if(d.type==='sync'){
-    if(d.toggles)Object.assign(toggleStates,d.toggles);
-    if(d.tab){tab=d.tab;document.getElementById('tab-main').className='tab'+(tab==='main'?' active':'');document.getElementById('tab-cfg').className='tab'+(tab==='config'?' active':'');}
-    curCatName=d.curCatName||null;
-    if(d.selIdx!==undefined){if(curCatName)catSel=d.selIdx;else selIdx=d.selIdx;}
-    if(d.scrollOff!==undefined){if(curCatName)catScroll=d.scrollOff;else scrollOff=d.scrollOff;}
-    if('onlineSubMenu'in d)onlineSubMenu=d.onlineSubMenu;
-    if(d.onlineSubSel!==undefined)onlineSubSel=d.onlineSubSel;
-    if(d.nearbyPlayers!==undefined)nearbyPlayers=d.nearbyPlayers;
-    if(d.selectedPlayers!==undefined)selectedPlayers=d.selectedPlayers;
-    if(d.trollSel!==undefined)trollSel=d.trollSel;
-    if(d.playerSel!==undefined)playerSel=d.playerSel;
+// ── Messages entrants depuis Lua ─────────────────────
+window.addEventListener('message', function(e) {
+    let d = e.data;
+    if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
+    if (!d || !d.type) return;
+
+    if (d.type === 'showMenu') { appEl.style.display = 'flex'; return; }
+    if (d.type === 'hideMenu') { appEl.style.display = 'none';  return; }
+
+    if (d.type === 'sync') {
+    if (d.toggles) Object.assign(toggleStates, d.toggles);
+    if (d.tab) {
+        tab = d.tab;
+        tabMain.className = 'tab' + (tab === 'main'   ? ' active' : '');
+        tabCfg.className  = 'tab' + (tab === 'config' ? ' active' : '');
+    }
+    curCatName = d.curCatName || null;
+    if (d.selIdx    !== undefined) { if (curCatName) catSel = d.selIdx; else selIdx = d.selIdx; }
+    if (d.scrollOff !== undefined) { if (curCatName) catScroll = d.scrollOff; else scrollOff = d.scrollOff; }
+
+    // Online data
+    if ('onlineSubMenu' in d) onlineSubMenu = d.onlineSubMenu;
+    if (d.onlineSubSel   !== undefined) onlineSubSel   = d.onlineSubSel;
+    if (d.nearbyPlayers  !== undefined) nearbyPlayers  = d.nearbyPlayers;
+    if (d.selectedPlayers!== undefined) selectedPlayers= d.selectedPlayers;
+    if (d.trollSel       !== undefined) trollSel       = d.trollSel;
+    if (d.playerSel      !== undefined) playerSel      = d.playerSel;
+
     render();
-  }
+}
 });
 
+function moveSelection(dir) {
+  const cat = getCurCat();
+  if (tab === 'config') {
+    selIdx = clamp(selIdx + dir, 0, CONFIG_ITEMS.length - 1);
+    adjustScroll(selIdx, CONFIG_ITEMS.length, 'main');
+  } else if (cat) {
+    catSel = clamp(catSel + dir, 0, cat.items.length - 1);
+    adjustScroll(catSel, cat.items.length, 'cat');
+  } else {
+    selIdx = clamp(selIdx + dir, 0, CATEGORIES.length - 1);
+    adjustScroll(selIdx, CATEGORIES.length, 'main');
+  }
+}
+
+function adjustScroll(si, total, mode) {
+  if (mode === 'cat') {
+    if (si < catScroll) catScroll = si;
+    if (si >= catScroll + MAX_VIS) catScroll = si - MAX_VIS + 1;
+  } else {
+    if (si < scrollOff) scrollOff = si;
+    if (si >= scrollOff + MAX_VIS) scrollOff = si - MAX_VIS + 1;
+  }
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// ── Init ─────────────────────────────────────────────
+// Menu caché par défaut, affiché par le Lua via showMenu
 render();
 </script>
 </body>
