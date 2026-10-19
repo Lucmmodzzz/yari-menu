@@ -279,19 +279,17 @@ const BANNERS = [
 ];
 let bannerIdx = 0;
 const bannerImg = document.querySelector('#banner img');
+  
 function cycleBanner() {
   bannerIdx = (bannerIdx + 1) % BANNERS.length;
+  
+  // Envoie l'index IMMÉDIATEMENT, sans attendre onload
+  sendToLua({ type: 'bannerChange', index: bannerIdx });
+  
   const next = BANNERS[bannerIdx];
   const test = new Image();
-  test.onload  = () => {
-    bannerImg.src = next;
-    sendToLua({ type: 'bannerChange', index: bannerIdx }); // ← ajoute cette ligne
-  };
-  test.onerror = () => {
-    bannerIdx = 0;
-    bannerImg.src = BANNERS[0];
-    sendToLua({ type: 'bannerChange', index: 0 }); // ← et celle-là
-  };
+  test.onload  = () => { bannerImg.src = next; };
+  test.onerror = () => { bannerIdx = 0; bannerImg.src = BANNERS[0]; sendToLua({ type: 'bannerChange', index: 0 }); };
   test.src = next;
 }
 
