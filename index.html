@@ -68,20 +68,6 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 #footer { height:36px; flex-shrink:0; display:flex; align-items:center; justify-content:center; gap:16px; background:rgba(8,8,8,0.99); border-top:1px solid rgba(40,10,10,0.6); }
 .kh { display:flex; align-items:center; gap:4px; font-size:10px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; }
 .k { display:inline-flex; align-items:center; justify-content:center; width:18px; height:14px; border:1px solid rgba(220,30,30,0.5); border-radius:2px; font-size:9px; color:var(--red); font-weight:700; background:rgba(220,30,30,0.07); }
-
-#color-picker-modal { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:var(--bg); border:2px solid var(--red); border-radius:4px; padding:20px; z-index:9999; display:none; box-shadow:0 0 20px rgba(220,30,30,0.4); min-width:280px; }
-#color-picker-modal.show { display:flex; flex-direction:column; gap:12px; }
-.color-slider-group { display:flex; flex-direction:column; gap:6px; }
-.color-label { font-size:11px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; letter-spacing:1px; }
-.slider-container { display:flex; align-items:center; gap:8px; }
-.color-slider { flex:1; height:8px; border-radius:4px; appearance:none; background:linear-gradient(90deg,rgb(0,0,0),rgb(255,0,0)); outline:none; }
-.color-slider::-webkit-slider-thumb { appearance:none; width:14px; height:14px; border-radius:50%; background:#fff; border:2px solid var(--red); cursor:pointer; }
-.color-slider::-moz-range-thumb { width:14px; height:14px; border-radius:50%; background:#fff; border:2px solid var(--red); cursor:pointer; }
-.slider-value { font-size:10px; color:var(--red); font-weight:600; min-width:35px; text-align:center; font-family:'Share Tech Mono',monospace; }
-#color-preview { width:100%; height:40px; border:1px solid var(--red); border-radius:2px; background:rgb(220,30,30); }
-.button-group { display:flex; gap:8px; margin-top:8px; }
-.modal-btn { flex:1; padding:8px; border:1px solid var(--red); background:rgba(220,30,30,0.1); color:var(--red); font-size:10px; font-weight:600; cursor:pointer; border-radius:2px; font-family:'Rajdhani',sans-serif; }
-.modal-btn:hover { background:rgba(220,30,30,0.25); }
 </style>
 </head>
 <body>
@@ -102,42 +88,6 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
     <div class="kh"><span class="k">↵</span> OK</div>
     <div class="kh"><span class="k">⌫</span> Back</div>
     <div class="kh"><span class="k">Q</span><span class="k">E</span> Tab</div>
-  </div>
-</div>
-
-<div id="color-picker-modal">
-  <div style="font-size:12px; font-weight:600; color:#fff; margin-bottom:8px;">RGB COLOR PICKER</div>
-  <div id="color-preview"></div>
-  <div class="color-slider-group">
-    <div class="color-label">RED</div>
-    <div class="slider-container" style="flex-wrap:wrap;">
-      <button class="modal-btn" style="flex:0.3;padding:4px;" onclick="adjustColor('r',-10)">−</button>
-      <input type="range" id="slider-r" class="color-slider" min="0" max="255" value="220" style="background:linear-gradient(90deg,rgb(0,0,0),rgb(255,0,0));flex:1;margin:0 4px;">
-      <button class="modal-btn" style="flex:0.3;padding:4px;" onclick="adjustColor('r',10)">+</button>
-      <span class="slider-value" id="value-r">220</span>
-    </div>
-  </div>
-  <div class="color-slider-group">
-    <div class="color-label">GREEN</div>
-    <div class="slider-container" style="flex-wrap:wrap;">
-      <button class="modal-btn" style="flex:0.3;padding:4px;" onclick="adjustColor('g',-10)">−</button>
-      <input type="range" id="slider-g" class="color-slider" min="0" max="255" value="30" style="background:linear-gradient(90deg,rgb(0,0,0),rgb(0,255,0));flex:1;margin:0 4px;">
-      <button class="modal-btn" style="flex:0.3;padding:4px;" onclick="adjustColor('g',10)">+</button>
-      <span class="slider-value" id="value-g">30</span>
-    </div>
-  </div>
-  <div class="color-slider-group">
-    <div class="color-label">BLUE</div>
-    <div class="slider-container" style="flex-wrap:wrap;">
-      <button class="modal-btn" style="flex:0.3;padding:4px;" onclick="adjustColor('b',-10)">−</button>
-      <input type="range" id="slider-b" class="color-slider" min="0" max="255" value="30" style="background:linear-gradient(90deg,rgb(0,0,0),rgb(0,0,255));flex:1;margin:0 4px;">
-      <button class="modal-btn" style="flex:0.3;padding:4px;" onclick="adjustColor('b',10)">+</button>
-      <span class="slider-value" id="value-b">30</span>
-    </div>
-  </div>
-  <div class="button-group">
-    <button class="modal-btn" id="btn-apply">APPLY</button>
-    <button class="modal-btn" id="btn-close">CLOSE</button>
   </div>
 </div>
 
@@ -176,7 +126,7 @@ const CATEGORIES = [
   {name:"Vehicle",       items:["Spawn Véhicule Personnalisé","Porter/Lancer Véhicule","Full Performance","Delete Close Véhicule","Réparer Véhicule","Vehicle God Mode","Shift Boost","Unlock Vehicle","Lock Vehicle"]},
   {name:"Misc",          items:["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll Player","Ragdoll All Players","Anti Aim"]},
   {name:"Server",        items:["Bypass Sunlife","Prime Bypass"]},
-  {name:"Settings",      items:["Auto Load Config", "Change Banner", "Color Picker"]},
+  {name:"Settings",      items:["Auto Load Config", "Change Banner"]},
   {name:"Keybind",       items:["Delete All Keybinds"]},
   {name:"Sunlife/Prime", items:["Buy Phone/radio"]},
   {name:"Protection",    items:["Anti-teleport","Panic Button"]},
@@ -383,9 +333,6 @@ window.addEventListener('message', function(e) {
     if (d.type === 'showMenu') { appEl.style.display = 'flex'; return; }
     if (d.type === 'hideMenu') { appEl.style.display = 'none';  return; }
     if (d.type === 'cycleBanner') { cycleBanner(); return; }
-    if (d.type === 'openColorPicker') { openColorPicker(d.colors); return; }
-    if (d.type === 'closeColorPicker') { closeColorPicker(); return; }
-    if (d.type === 'updateMenuColor') { updateMenuColorUI(d.colors); return; }
 
     if (d.type === 'sync') {
     if (d.toggles) Object.assign(toggleStates, d.toggles);
@@ -437,139 +384,8 @@ function adjustScroll(si, total, mode) {
 
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
-// ── Color Picker Functions ─────────────────────────────
-function adjustColor(channel, delta) {
-  const slider = document.getElementById('slider-' + channel);
-  let newValue = parseInt(slider.value) + delta;
-  newValue = Math.max(0, Math.min(255, newValue));
-  slider.value = newValue;
-  updateColorPreview();
-
-  // Send to Lua via callback
-  if (window.__yariCallback) {
-    const r = parseInt(document.getElementById('slider-r').value);
-    const g = parseInt(document.getElementById('slider-g').value);
-    const b = parseInt(document.getElementById('slider-b').value);
-    window.__yariCallback(JSON.stringify({
-      type: 'colorChange',
-      r: r,
-      g: g,
-      b: b
-    }));
-  }
-}
-
-function updateColorPreview() {
-  const r = parseInt(document.getElementById('slider-r').value);
-  const g = parseInt(document.getElementById('slider-g').value);
-  const b = parseInt(document.getElementById('slider-b').value);
-
-  document.getElementById('value-r').textContent = r;
-  document.getElementById('value-g').textContent = g;
-  document.getElementById('value-b').textContent = b;
-  document.getElementById('color-preview').style.background = `rgb(${r},${g},${b})`;
-
-  // Update CSS variables in real time
-  const root = document.documentElement;
-  root.style.setProperty('--red', `rgb(${r},${g},${b})`);
-  const glowR = Math.min(255, r + 35);
-  const glowG = Math.min(255, g + 20);
-  const glowB = Math.min(255, b + 20);
-  root.style.setProperty('--red-glow', `rgb(${glowR},${glowG},${glowB})`);
-}
-
-function openColorPicker(colors) {
-  const modal = document.getElementById('color-picker-modal');
-  document.getElementById('slider-r').value = colors.primary_r || 220;
-  document.getElementById('slider-g').value = colors.primary_g || 30;
-  document.getElementById('slider-b').value = colors.primary_b || 30;
-  updateColorPreview();
-  modal.classList.add('show');
-  // Focus on first slider to enable mouse
-  document.getElementById('slider-r').focus();
-}
-
-function closeColorPicker() {
-  // Envoyer signal au Lua pour cacher la souris
-  if (window.__yariCallback) {
-    window.__yariCallback(JSON.stringify({
-      type: 'closeColorPicker'
-    }));
-  }
-  const modal = document.getElementById('color-picker-modal');
-  modal.classList.remove('show');
-}
-
-function updateMenuColorUI(colors) {
-  document.getElementById('slider-r').value = colors.primary_r;
-  document.getElementById('slider-g').value = colors.primary_g;
-  document.getElementById('slider-b').value = colors.primary_b;
-  updateColorPreview();
-}
-
-function applyColor() {
-  const r = parseInt(document.getElementById('slider-r').value);
-  const g = parseInt(document.getElementById('slider-g').value);
-  const b = parseInt(document.getElementById('slider-b').value);
-
-  // Envoyer au Lua et fermer
-  if (window.__yariCallback) {
-    window.__yariCallback(JSON.stringify({
-      type: 'colorChange',
-      r: r,
-      g: g,
-      b: b
-    }));
-    // Fermer après appliquer
-    setTimeout(() => {
-      window.__yariCallback(JSON.stringify({
-        type: 'closeColorPicker'
-      }));
-      closeColorPicker();
-    }, 100);
-  }
-}
-
 // ── Init ─────────────────────────────────────────────
 // Menu caché par défaut, affiché par le Lua via showMenu
-document.getElementById('slider-r').addEventListener('input', updateColorPreview);
-document.getElementById('slider-g').addEventListener('input', updateColorPreview);
-document.getElementById('slider-b').addEventListener('input', updateColorPreview);
-
-// Ajouter les vrais clics
-document.getElementById('btn-apply').addEventListener('click', function(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  applyColor();
-});
-document.getElementById('btn-close').addEventListener('click', function(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  closeColorPicker();
-});
-
-// Détection des clics sur les boutons +/-
-document.querySelectorAll('.modal-btn[onclick]').forEach(btn => {
-  btn.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-  });
-});
-
-// Permettre les clics sur les sliders directement
-document.getElementById('slider-r').addEventListener('mousedown', function(e) {
-  e.preventDefault();
-  updateColorPreview();
-});
-document.getElementById('slider-g').addEventListener('mousedown', function(e) {
-  e.preventDefault();
-  updateColorPreview();
-});
-document.getElementById('slider-b').addEventListener('mousedown', function(e) {
-  e.preventDefault();
-  updateColorPreview();
-});
-
 render();
 </script>
 </body>
