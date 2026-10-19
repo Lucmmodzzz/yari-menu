@@ -320,7 +320,7 @@ window.addEventListener('message', function(e) {
     if (d.scrollOff !== undefined) { if (curCatName) catScroll = d.scrollOff; else scrollOff = d.scrollOff; }
 
     // Online data
-    if (d.onlineSubMenu  !== undefined) onlineSubMenu  = d.onlineSubMenu;
+    if ('onlineSubMenu' in d) onlineSubMenu = d.onlineSubMenu;
     if (d.onlineSubSel   !== undefined) onlineSubSel   = d.onlineSubSel;
     if (d.nearbyPlayers  !== undefined) nearbyPlayers  = d.nearbyPlayers;
     if (d.selectedPlayers!== undefined) selectedPlayers= d.selectedPlayers;
