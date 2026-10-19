@@ -155,15 +155,16 @@ function render() {
         return;
     }
     if (cat) {
-        // Online est géré 100% par le Lua (drawPlayerList) — le HTML reste vide
-        if (cat.name === 'Online') {
-            catHeader.className = '';
-            itemsList.innerHTML = '';
-            return;
+        catHeader.className = '';
+        itemsList.innerHTML = '';
+
+        // Online : le Lua gère tout l'affichage via draw calls
+        // Weapon : pareil, le panneau flottant est géré côté Lua
+        if (cat.name !== 'Online' && cat.name !== 'Weapon') {
+            catHeader.textContent = cat.name.toUpperCase();
+            catHeader.className = 'show';
+            renderList(cat.items, catSel, catScroll, cat.name);
         }
-        catHeader.textContent = cat.name.toUpperCase();
-        catHeader.className = 'show';
-        renderList(cat.items, catSel, catScroll, cat.name);
     } else {
         catHeader.className = '';
         renderCategories();
