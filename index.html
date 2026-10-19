@@ -7,7 +7,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
-  #spec-hud {
+#spec-hud {
   display: none;
   position: fixed;
   top: 40px;
@@ -664,6 +664,46 @@ window.addEventListener('message', function(e) {
   if (d.type === 'hideMenu') { appEl.style.display = 'none'; return; }
   if (d.type === 'cycleBanner') { cycleBanner(); return; }
 
+  if (d.type === 'spectatorToggle') {
+  document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
+  if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
+  return;
+}
+
+if (d.type === 'spectatorUpdate') {
+  const hud = document.getElementById('spec-hud');
+  if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
+  hud.className = 'visible';
+
+  const list = d.list || [];
+  let html = `
+    <div class="spec-header">
+      <div class="spec-dot"></div>
+      <span class="spec-count">${list.length}</span>
+      <span class="spec-label">SPECTATEURS</span>
+    </div>`;
+
+  if (list.length === 0) {
+    html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
+  } else {
+    list.forEach(p => {
+      const isNoclip = p.type.includes('Noclip');
+      const isAdmin  = p.type.includes('Admin');
+      const rowCls   = (isNoclip && isAdmin) ? 'both' : isNoclip ? 'noclip' : 'admin';
+      const typeLabel = p.type.replace(/[\[\]]/g, '');
+      html += `
+        <div class="spec-row ${isNoclip ? 'noclip' : 'admin'}">
+          <span class="spec-sid">${p.serverId}</span>
+          <span class="spec-name">${p.name}</span>
+          <span class="spec-dist">${p.distance}m</span>
+          <span class="spec-type ${rowCls}">${typeLabel}</span>
+        </div>`;
+    });
+  }
+  hud.innerHTML = html;
+  return;
+}
+
   if (d.type === 'setBanner') {
     bannerIdx = d.index || 0;
     const src = BANNERS[bannerIdx] || BANNERS[0];
@@ -671,46 +711,6 @@ window.addEventListener('message', function(e) {
     test.onload  = () => { bannerImg.src = src; };
     test.onerror = () => { bannerImg.src = BANNERS[0]; bannerIdx = 0; };
     test.src = src;
-    return;
-  }
-
-  if (d.type === 'spectatorToggle') {
-    document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
-    if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
-    return;
-  }
-  
-  if (d.type === 'spectatorUpdate') {
-    const hud = document.getElementById('spec-hud');
-    if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
-    hud.className = 'visible';
-  
-    const list = d.list || [];
-    let html = `
-      <div class="spec-header">
-        <div class="spec-dot"></div>
-        <span class="spec-count">${list.length}</span>
-        <span class="spec-label">SPECTATEURS</span>
-      </div>`;
-  
-    if (list.length === 0) {
-      html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
-    } else {
-      list.forEach(p => {
-        const isNoclip = p.type.includes('Noclip');
-        const isAdmin  = p.type.includes('Admin');
-        const rowCls   = (isNoclip && isAdmin) ? 'both' : isNoclip ? 'noclip' : 'admin';
-        const typeLabel = p.type.replace(/[\[\]]/g, '');
-        html += `
-          <div class="spec-row ${isNoclip ? 'noclip' : 'admin'}">
-            <span class="spec-sid">${p.serverId}</span>
-            <span class="spec-name">${p.name}</span>
-            <span class="spec-dist">${p.distance}m</span>
-            <span class="spec-type ${rowCls}">${typeLabel}</span>
-          </div>`;
-      });
-    }
-    hud.innerHTML = html;
     return;
   }
 
