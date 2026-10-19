@@ -8,7 +8,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
   --red:      #DC1E1E;
   --red-glow: #FF3232;
@@ -17,156 +16,58 @@
   --dimmed:   #B0B0B0;
   --sep:      rgba(50,15,15,0.9);
 }
-
-html, body {
-  width: 100%; height: 100%;
-  background: transparent;
-  overflow: hidden;
-  font-family: 'Rajdhani', sans-serif;
-}
+html, body { width:100%; height:100%; background:transparent; overflow:hidden; font-family:'Rajdhani',sans-serif; }
 
 #app {
-  position: fixed;
-  top: 150px; left: 200px;
-  width: 350px;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  border-top: 3px solid var(--red);
-  border-bottom: 3px solid var(--red);
-  box-shadow: 0 0 20px rgba(220,30,30,0.4), 0 0 6px rgba(220,30,30,0.3) inset;
-  user-select: none;
+  position:fixed; top:150px; left:200px; width:350px;
+  display:none; flex-direction:column;
+  background:var(--bg);
+  border-top:3px solid var(--red);
+  border-bottom:3px solid var(--red);
+  box-shadow:0 0 20px rgba(220,30,30,0.4),0 0 6px rgba(220,30,30,0.3) inset;
+  user-select:none;
 }
 
-/* ── BANNER ── */
 #banner {
-  position: relative;
-  height: 90px;
-  flex-shrink: 0;
-  background: linear-gradient(180deg, rgba(40,5,5,0.95) 0%, rgba(10,10,10,1) 100%);
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 5px;
-  overflow: hidden;
+  position:relative; height:90px; flex-shrink:0;
+  background:linear-gradient(180deg,rgba(40,5,5,0.95) 0%,rgba(10,10,10,1) 100%);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:5px; overflow:hidden;
 }
-#banner::before {
-  content: '';
-  position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
-  background: linear-gradient(180deg, var(--red), var(--red-dark));
-}
-#banner::after {
-  content: '';
-  position: absolute; right: 0; top: 0; bottom: 0; width: 5px;
-  background: linear-gradient(180deg, var(--red), var(--red-dark));
-  opacity: 0.7;
-}
-.banner-main {
-  font-size: 30px; font-weight: 700; letter-spacing: 6px;
-  color: #fff;
-  text-shadow: 0 0 14px var(--red-glow), 0 0 30px rgba(220,30,30,0.45), 2px 2px 0 rgba(140,10,10,0.5);
-}
-.banner-sub {
-  font-size: 10px; letter-spacing: 3px; color: var(--dimmed);
-  font-family: 'Share Tech Mono', monospace;
-}
+#banner::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg,var(--red),var(--red-dark)); }
+#banner::after  { content:''; position:absolute; right:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg,var(--red),var(--red-dark)); opacity:0.7; }
+.banner-main { font-size:30px; font-weight:700; letter-spacing:6px; color:#fff; text-shadow:0 0 14px var(--red-glow),0 0 30px rgba(220,30,30,0.45),2px 2px 0 rgba(140,10,10,0.5); }
+.banner-sub  { font-size:10px; letter-spacing:3px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; }
 
-/* ── SUBBANNER ── */
-#subbanner {
-  height: 18px; flex-shrink: 0;
-  background: rgba(5,5,5,0.98);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 9px; letter-spacing: 3px; color: rgba(200,200,200,0.6);
-  font-family: 'Share Tech Mono', monospace;
-  border-top: 1px solid rgba(30,5,5,0.7);
-}
+#subbanner { height:18px; flex-shrink:0; background:rgba(5,5,5,0.98); display:flex; align-items:center; justify-content:center; font-size:9px; letter-spacing:3px; color:rgba(200,200,200,0.6); font-family:'Share Tech Mono',monospace; border-top:1px solid rgba(30,5,5,0.7); }
 
-/* ── TABS ── */
-#tabs {
-  height: 28px; flex-shrink: 0;
-  display: flex;
-  border-bottom: 2px solid var(--red);
-}
-.tab {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 600; letter-spacing: 2px;
-  color: var(--dimmed);
-  background: rgba(12,12,12,0.98);
-  border-right: 1px solid rgba(60,60,60,0.35);
-  cursor: pointer;
-}
-.tab:last-child { border-right: none; }
-.tab.active { background: rgba(220,30,30,0.88); color: #fff; }
+#tabs { height:28px; flex-shrink:0; display:flex; border-bottom:2px solid var(--red); }
+.tab { flex:1; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; letter-spacing:2px; color:var(--dimmed); background:rgba(12,12,12,0.98); border-right:1px solid rgba(60,60,60,0.35); cursor:pointer; }
+.tab:last-child { border-right:none; }
+.tab.active { background:rgba(220,30,30,0.88); color:#fff; }
 
-/* ── CAT HEADER ── */
-#cat-header {
-  padding: 4px 14px;
-  font-size: 10px; letter-spacing: 2px; color: var(--dimmed);
-  font-family: 'Share Tech Mono', monospace;
-  background: rgba(10,10,10,0.95);
-  border-bottom: 1px solid rgba(60,20,20,0.5);
-  flex-shrink: 0;
-  display: none;
-}
-#cat-header.show { display: block; }
+#cat-header { padding:4px 14px; font-size:10px; letter-spacing:2px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; background:rgba(10,10,10,0.95); border-bottom:1px solid rgba(60,20,20,0.5); flex-shrink:0; display:none; }
+#cat-header.show { display:block; }
 
-/* ── ITEMS ── */
-#items-list {
-  flex-shrink: 0;
-}
-.menu-item {
-  height: 30px;
-  display: flex; align-items: center;
-  padding: 0 16px 0 28px;
-  position: relative;
-  border-bottom: 1px solid var(--sep);
-}
-.menu-item .bar {
-  position: absolute; left: 0; top: 3px; bottom: 3px;
-  width: 3px; background: var(--red);
-  box-shadow: 0 0 6px var(--red-glow);
-  display: none;
-}
-.menu-item.sel { background: rgba(220,30,30,0.13); }
-.menu-item.sel .bar { display: block; }
-.item-name {
-  flex: 1; font-size: 13px; font-weight: 500;
-  color: rgba(255,255,255,0.85); letter-spacing: 0.4px;
-}
-.menu-item.sel .item-name { color: #fff; font-weight: 600; }
-.item-ind {
-  font-size: 13px; font-weight: 700;
-  color: var(--red); margin-left: 6px;
-}
-.menu-item.sel .item-ind { opacity: 1; }
-.menu-item:not(.sel) .item-ind { opacity: 0.65; }
+#items-list { flex-shrink:0; }
+.menu-item { height:30px; display:flex; align-items:center; padding:0 16px 0 28px; position:relative; border-bottom:1px solid var(--sep); }
+.menu-item .bar { position:absolute; left:0; top:3px; bottom:3px; width:3px; background:var(--red); box-shadow:0 0 6px var(--red-glow); display:none; }
+.menu-item.sel { background:rgba(220,30,30,0.13); }
+.menu-item.sel .bar { display:block; }
+.item-name { flex:1; font-size:13px; font-weight:500; color:rgba(255,255,255,0.85); letter-spacing:0.4px; }
+.menu-item.sel .item-name { color:#fff; font-weight:600; }
+.item-ind { font-size:13px; font-weight:700; color:var(--red); margin-left:6px; }
+.menu-item.sel .item-ind { opacity:1; }
+.menu-item:not(.sel) .item-ind { opacity:0.65; }
 
-/* Toggle */
-.tog {
-  width: 34px; height: 14px; border-radius: 7px;
-  background: #333; position: relative; flex-shrink: 0;
-}
-.tog.on { background: var(--red); box-shadow: 0 0 7px rgba(220,30,30,0.55); }
-.tog::after {
-  content: ''; position: absolute;
-  top: 2px; left: 2px; width: 10px; height: 10px;
-  border-radius: 50%; background: #fff;
-  transition: left 0.12s;
-}
-.tog.on::after { left: calc(100% - 12px); }
+.tog { width:34px; height:14px; border-radius:7px; background:#333; position:relative; flex-shrink:0; }
+.tog.on { background:var(--red); box-shadow:0 0 7px rgba(220,30,30,0.55); }
+.tog::after { content:''; position:absolute; top:2px; left:2px; width:10px; height:10px; border-radius:50%; background:#fff; transition:left 0.12s; }
+.tog.on::after { left:calc(100% - 12px); }
 
-/* ── FOOTER ── */
-#footer {
-  height: 36px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; gap: 16px;
-  background: rgba(8,8,8,0.99);
-  border-top: 1px solid rgba(40,10,10,0.6);
-}
-.kh { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--dimmed); font-family: 'Share Tech Mono', monospace; }
-.k {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 18px; height: 14px; border: 1px solid rgba(220,30,30,0.5);
-  border-radius: 2px; font-size: 9px; color: var(--red); font-weight: 700;
-  background: rgba(220,30,30,0.07);
-}
+#footer { height:36px; flex-shrink:0; display:flex; align-items:center; justify-content:center; gap:16px; background:rgba(8,8,8,0.99); border-top:1px solid rgba(40,10,10,0.6); }
+.kh { display:flex; align-items:center; gap:4px; font-size:10px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; }
+.k { display:inline-flex; align-items:center; justify-content:center; width:18px; height:14px; border:1px solid rgba(220,30,30,0.5); border-radius:2px; font-size:9px; color:var(--red); font-weight:700; background:rgba(220,30,30,0.07); }
 </style>
 </head>
 <body>
@@ -185,82 +86,95 @@ html, body {
   <div id="footer">
     <div class="kh"><span class="k">↑</span><span class="k">↓</span> Nav</div>
     <div class="kh"><span class="k">↵</span> OK</div>
-    <div class="kh"><span class="k">←</span> Back</div>
+    <div class="kh"><span class="k">⌫</span> Back</div>
     <div class="kh"><span class="k">Q</span><span class="k">E</span> Tab</div>
   </div>
 </div>
 
 <script>
+// ── State (miroir du Lua, mis à jour par messages) ──
 const CATEGORIES = [
-  {name:"Player",       items:["Noclip","God Mode","No Ragdoll","No Collision","Fast Run","Revive","Teleporte To Waypoint","Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina"]},
-  {name:"Online",       items:[]},
-  {name:"Weapon",       items:["Give Weapons","Give Weapon by Name","Remove All Weapons"]},
-  {name:"Combat",       items:["Laser Eye","Fast Punch"]},
-  {name:"Vehicle",      items:["Spawn Véhicule Personnalisé","Porter/Lancer Véhicule","Full Performance","Delete Close Véhicule","Réparer Véhicule","Vehicle God Mode","Shift Boost","Unlock Vehicle","Lock Vehicle"]},
-  {name:"Misc",         items:["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll Player","Ragdoll All Players","Anti Aim"]},
-  {name:"Server",       items:["Bypass Sunlife","Prime Bypass"]},
-  {name:"Settings",     items:["Auto Load Config"]},
-  {name:"Keybind",      items:["Delete All Keybinds"]},
-  {name:"Sunlife/Prime",items:["Buy Phone/radio"]},
-  {name:"Protection",   items:["Anti-teleport","Panic Button"]},
-  {name:"Destroyer",    items:["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos"]},
+  {name:"Player",        items:["Noclip","God Mode","No Ragdoll","No Collision","Fast Run","Revive","Teleporte To Waypoint","Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina"]},
+  {name:"Online",        items:[]},
+  {name:"Weapon",        items:["Give Weapons","Give Weapon by Name","Remove All Weapons"]},
+  {name:"Combat",        items:["Laser Eye","Fast Punch"]},
+  {name:"Vehicle",       items:["Spawn Véhicule Personnalisé","Porter/Lancer Véhicule","Full Performance","Delete Close Véhicule","Réparer Véhicule","Vehicle God Mode","Shift Boost","Unlock Vehicle","Lock Vehicle"]},
+  {name:"Misc",          items:["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll Player","Ragdoll All Players","Anti Aim"]},
+  {name:"Server",        items:["Bypass Sunlife","Prime Bypass"]},
+  {name:"Settings",      items:["Auto Load Config"]},
+  {name:"Keybind",       items:["Delete All Keybinds"]},
+  {name:"Sunlife/Prime", items:["Buy Phone/radio"]},
+  {name:"Protection",    items:["Anti-teleport","Panic Button"]},
+  {name:"Destroyer",     items:["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos"]},
 ];
-const CONFIG_ITEMS = ["Theme","Keybinds","Cloud Sync","Reset Config"];
-const TOGGLES = {
-  "Player_1":true,  // Noclip
-  "Player_2":false, // God Mode
-  "Player_12":false,// Infinite Stamina
-  "Player_6":false, // No Ragdoll
-  "Player_7":false, // No Collision
-  "Player_10":false,// Invisible
-  "Player_11":false,// Super Jump
-  "Combat_1":false, // Laser Eye
-  "Combat_2":false, // Fast Punch
-  "Misc_6":false,   // Anti Aim
-  "Protection_1":false,
-};
-const toggleStates = Object.assign({}, TOGGLES);
+const CONFIG_ITEMS = ["Save Config","Load Config"];
 
-let tab = 'main';
-let selIdx = 0, scrollOff = 0;
-let curCat = null, catSel = 0, catScroll = 0;
-const MAX_VIS = 10;
+// toggleStates[key] = bool  — key = "CategoryName_itemIndex1Based"
+// Mis à jour exclusivement par des messages Lua (setToggleStates)
+const toggleStates = {};
 
-const appEl      = document.getElementById('app');
-const tabMain    = document.getElementById('tab-main');
-const tabCfg     = document.getElementById('tab-cfg');
-const catHeader  = document.getElementById('cat-header');
-const itemsList  = document.getElementById('items-list');
+// Items qui ont un toggle (doivent correspondre à configurableToggles côté Lua)
+const TOGGLE_KEYS = new Set([
+  "Player_1","Player_2","Player_3","Player_4","Player_5",
+  "Player_8","Player_9","Player_10","Player_11","Player_12",
+  "Vehicle_2","Vehicle_6","Vehicle_7",
+  "Misc_1","Misc_2","Misc_3","Misc_4",
+  "Combat_1","Combat_2",
+  "Protection_1",
+  "Settings_1",
+  "Destroyer_5",
+]);
+
+// ── UI state (miroir de la navigation Lua) ──
+// Le Lua est maître — le HTML ne fait que refléter ce qu'il lui dit.
+// Les nav keys du HTML sont désactivées : c'est le Lua qui envoie nav via sendNav().
+let tab        = 'main';
+let selIdx     = 0, scrollOff = 0;
+let curCatName = null;   // null = liste des catégories
+let catSel     = 0, catScroll = 0;
+const MAX_VIS  = 10;
+
+const appEl     = document.getElementById('app');
+const tabMain   = document.getElementById('tab-main');
+const tabCfg    = document.getElementById('tab-cfg');
+const catHeader = document.getElementById('cat-header');
+const itemsList = document.getElementById('items-list');
+
+function getCurCat() {
+  if (!curCatName) return null;
+  return CATEGORIES.find(c => c.name === curCatName) || null;
+}
 
 function render() {
   itemsList.innerHTML = '';
+  const cat = getCurCat();
 
   if (tab === 'config') {
     catHeader.className = '';
-    drawList(CONFIG_ITEMS, selIdx, scrollOff, false);
+    renderList(CONFIG_ITEMS, selIdx, scrollOff, null);
     return;
   }
-  if (curCat) {
-    catHeader.textContent = curCat.name.toUpperCase();
+  if (cat) {
+    catHeader.textContent = cat.name.toUpperCase();
     catHeader.className = 'show';
-    drawList(curCat.items, catSel, catScroll, true);
+    renderList(cat.items, catSel, catScroll, cat.name);
   } else {
     catHeader.className = '';
-    drawCategories();
+    renderCategories();
   }
 }
 
-function drawCategories() {
+function renderCategories() {
   for (let i = 0; i < MAX_VIS; i++) {
     const idx = i + scrollOff;
     if (idx >= CATEGORIES.length) break;
     const c   = CATEGORIES[idx];
     const has = c.items.length > 0 || c.name === 'Online';
-    makeItem(c.name, idx === selIdx, has ? '›' : '', null, idx, false);
+    makeItem(c.name, idx === selIdx, has ? '›' : '', null);
   }
 }
 
-function drawList(items, si, so, isCat) {
+function renderList(items, si, so, catName) {
   if (items.length === 0) {
     const d = document.createElement('div');
     d.className = 'menu-item';
@@ -272,13 +186,14 @@ function drawList(items, si, so, isCat) {
     const idx = i + so;
     if (idx >= items.length) break;
     const name = items[idx];
-    const key  = isCat && curCat ? curCat.name + '_' + (idx + 1) : null;
-    const tog  = key !== null ? toggleStates[key] : undefined;
-    makeItem(name, idx === si, tog === undefined ? '+' : '', tog !== undefined ? tog : null, idx, isCat);
+    const key  = catName ? catName + '_' + (idx + 1) : null;
+    const isTog = key !== null && TOGGLE_KEYS.has(key);
+    const togVal = isTog ? (toggleStates[key] === true) : null;
+    makeItem(name, idx === si, isTog ? null : '+', togVal);
   }
 }
 
-function makeItem(name, selected, ind, togState, idx, isCat) {
+function makeItem(name, selected, ind, togState) {
   const el = document.createElement('div');
   el.className = 'menu-item' + (selected ? ' sel' : '');
 
@@ -301,152 +216,107 @@ function makeItem(name, selected, ind, togState, idx, isCat) {
     s.textContent = ind;
     el.appendChild(s);
   }
-
-  el.addEventListener('click', () => {
-    if (tab === 'config')     { selIdx = idx; activate(); }
-    else if (curCat)          { catSel = idx; activate(); }
-    else                      { selIdx = idx; activate(); }
-    render();
-  });
-
   itemsList.appendChild(el);
 }
 
-function nav(dir) {
-  if (tab === 'config') {
-    selIdx = clamp(selIdx + dir, 0, CONFIG_ITEMS.length - 1);
-    adjustScroll('config');
-  } else if (curCat) {
-    if (!curCat.items.length) return;
-    catSel = clamp(catSel + dir, 0, curCat.items.length - 1);
-    adjustScroll('cat');
-  } else {
-    selIdx = clamp(selIdx + dir, 0, CATEGORIES.length - 1);
-    adjustScroll('main');
-  }
-  render();
-}
-
-function adjustScroll(mode) {
-  if (mode === 'main') {
-    if (selIdx < scrollOff) scrollOff = selIdx;
-    if (selIdx >= scrollOff + MAX_VIS) scrollOff = selIdx - MAX_VIS + 1;
-  } else if (mode === 'cat') {
-    if (catSel < catScroll) catScroll = catSel;
-    if (catSel >= catScroll + MAX_VIS) catScroll = catSel - MAX_VIS + 1;
-  } else {
-    if (selIdx < scrollOff) scrollOff = selIdx;
-    if (selIdx >= scrollOff + MAX_VIS) scrollOff = selIdx - MAX_VIS + 1;
-  }
-}
-
-function activate() {
-  if (tab === 'config') {
-    sendLua('configAction', { item: CONFIG_ITEMS[selIdx] });
-    return;
-  }
-  if (curCat) {
-    if (!curCat.items.length) return;
-    const itemName = curCat.items[catSel];
-    const key = curCat.name + '_' + (catSel + 1);
-    if (toggleStates[key] !== undefined) {
-      toggleStates[key] = !toggleStates[key];
-      sendLua('toggle', { category: curCat.name, index: catSel + 1, state: toggleStates[key] });
-    } else {
-      sendLua('action', { category: curCat.name, index: catSel + 1, item: itemName });
-    }
-    render();
-    return;
-  }
-  const c = CATEGORIES[selIdx];
-  if (!c) return;
-  if (c.items.length > 0 || c.name === 'Online') {
-    curCat = c; catSel = 0; catScroll = 0;
-    sendLua('enterCategory', { category: c.name });
-    render();
-  }
-}
-
-function goBack() {
-  if (curCat) {
-    curCat = null; catSel = 0; catScroll = 0;
-    render(); sendLua('backToMain', {});
-  } else {
-    sendLua('closeMenu', {});
-  }
-}
-
-function switchTab(t) {
-  tab = t; curCat = null; selIdx = 0; scrollOff = 0;
+function setTab(t) {
+  tab = t; curCatName = null; selIdx = 0; scrollOff = 0;
   tabMain.className = 'tab' + (t === 'main'   ? ' active' : '');
   tabCfg.className  = 'tab' + (t === 'config' ? ' active' : '');
   render();
 }
 
-tabMain.onclick = () => switchTab('main');
-tabCfg.onclick  = () => switchTab('config');
-
-function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-
-// ── Bridge HTML → Lua ─────────────────────────────────
-let cbQueue = [];
-function sendLua(type, data) {
-  const p = Object.assign({ type }, data);
-  cbQueue.push(p);
-  window.__yariLastAction = p;
-  if (typeof window.__yariCallback === 'function') {
-    try { window.__yariCallback(JSON.stringify(p)); } catch(e) {}
-  }
-}
-window.__yariFlushQueue = () => { const q = cbQueue.splice(0); return JSON.stringify(q); };
-
-// ── Bridge Lua → HTML ─────────────────────────────────
+// ── Messages entrants depuis Lua ─────────────────────
 window.addEventListener('message', function(e) {
   let d = e.data;
   if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
   if (!d || !d.type) return;
 
-  if (d.type === 'showMenu')  { appEl.style.display = 'flex';  }
-  if (d.type === 'hideMenu')  { appEl.style.display = 'none';  }
-  if (d.type === 'setToggleStates' && d.states) {
-    Object.assign(toggleStates, d.states); render();
+  switch (d.type) {
+
+    case 'showMenu':
+      appEl.style.display = 'flex';
+      break;
+
+    case 'hideMenu':
+      appEl.style.display = 'none';
+      break;
+
+    case 'setToggleStates':
+      // d.states = { "Player_1": true, "Player_2": false, ... }
+      if (d.states) {
+        Object.assign(toggleStates, d.states);
+        render();
+      }
+      break;
+
+    // Le Lua envoie nav pour mettre à jour l'affichage
+    case 'nav': {
+      const k = d.key;
+      if (k === 'up')   { moveSelection(-1); render(); }
+      if (k === 'down') { moveSelection(1);  render(); }
+      if (k === 'prev') { setTab(tab === 'config' ? 'main' : 'config'); }
+      if (k === 'next') { setTab(tab === 'main'   ? 'config' : 'main'); }
+      if (k === 'enter') {
+        // Le Lua a déjà exécuté l'action — on met juste à jour la vue
+        // Si c'est une catégorie root et qu'il y a des items, on "ouvre" le cat
+        if (!curCatName && tab === 'main') {
+          const c = CATEGORIES[selIdx];
+          if (c && (c.items.length > 0 || c.name === 'Online')) {
+            curCatName = c.name; catSel = 0; catScroll = 0;
+          }
+        }
+        render();
+      }
+      if (k === 'back') {
+        if (curCatName) { curCatName = null; catSel = 0; catScroll = 0; }
+        render();
+      }
+      break;
+    }
+
+    // Sync explicite depuis Lua si nécessaire
+    case 'syncState':
+      if (d.selIdx     !== undefined) selIdx     = d.selIdx;
+      if (d.scrollOff  !== undefined) scrollOff  = d.scrollOff;
+      if (d.catSel     !== undefined) catSel     = d.catSel;
+      if (d.catScroll  !== undefined) catScroll  = d.catScroll;
+      if (d.curCatName !== undefined) curCatName = d.curCatName;
+      if (d.tab        !== undefined) setTab(d.tab);
+      render();
+      break;
   }
-  if (d.type === 'nav') {
-    const k = d.key;
-    if (k === 'up')    nav(-1);
-    if (k === 'down')  nav(1);
-    if (k === 'enter') activate();
-    if (k === 'back')  goBack();
-    if (k === 'prev')  switchTab(tab === 'config' ? 'main' : 'config');
-    if (k === 'next')  switchTab(tab === 'main'   ? 'config' : 'main');
-  }
-  if (d.type === 'nuiReady') sendLua('ready', {});
 });
 
-// ── Keyboard ─────────────────────────────────────────
-// La fenêtre CEF Lapsus est une fenêtre séparée.
-// Elle capte les touches SEULEMENT quand elle est au premier plan.
-// Lapsus la met au premier plan quand nuiOpen = true.
-// On vérifie appEl.style.display pour ne pas intercepter inutilement.
-document.addEventListener('keydown', function(e) {
-  if (appEl.style.display === 'none') return;
-  switch(e.key) {
-    case 'ArrowUp':    e.preventDefault(); nav(-1);      break;
-    case 'ArrowDown':  e.preventDefault(); nav(1);       break;
-    case 'Enter':      e.preventDefault(); activate();   break;
-    case 'ArrowLeft':  case 'Backspace':
-                       e.preventDefault(); goBack();     break;
-    case 'ArrowRight': e.preventDefault(); if (!curCat) activate(); break;
-    case 'q': case 'Q': e.preventDefault(); switchTab(tab === 'config' ? 'main' : 'config'); break;
-    case 'e': case 'E': e.preventDefault(); switchTab(tab === 'main'   ? 'config' : 'main');  break;
-    case 'Escape':     e.preventDefault(); sendLua('closeMenu', {}); break;
+function moveSelection(dir) {
+  const cat = getCurCat();
+  if (tab === 'config') {
+    selIdx = clamp(selIdx + dir, 0, CONFIG_ITEMS.length - 1);
+    adjustScroll(selIdx, CONFIG_ITEMS.length, 'main');
+  } else if (cat) {
+    catSel = clamp(catSel + dir, 0, cat.items.length - 1);
+    adjustScroll(catSel, cat.items.length, 'cat');
+  } else {
+    selIdx = clamp(selIdx + dir, 0, CATEGORIES.length - 1);
+    adjustScroll(selIdx, CATEGORIES.length, 'main');
   }
-});
+}
+
+function adjustScroll(si, total, mode) {
+  if (mode === 'cat') {
+    if (si < catScroll) catScroll = si;
+    if (si >= catScroll + MAX_VIS) catScroll = si - MAX_VIS + 1;
+  } else {
+    if (si < scrollOff) scrollOff = si;
+    if (si >= scrollOff + MAX_VIS) scrollOff = si - MAX_VIS + 1;
+  }
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
 // ── Init ─────────────────────────────────────────────
-// Menu caché par défaut. Lua appelle showMenu via SendNuiMessage au F9.
+// Menu caché par défaut, affiché par le Lua via showMenu
 render();
-sendLua('ready', {});
 </script>
 </body>
 </html>
