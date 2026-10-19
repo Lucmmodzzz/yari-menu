@@ -26,6 +26,72 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   border-bottom:3px solid var(--red);
   box-shadow:0 0 20px rgba(220,30,30,0.4),0 0 6px rgba(220,30,30,0.3) inset;
   user-select:none;
+  cursor: default;
+}
+#app.design-mode {
+  cursor: grab;
+}
+#app.design-mode:active {
+  cursor: grabbing;
+}
+
+.design-overlay {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 9998;
+  cursor: grab;
+}
+.design-overlay.grab:active {
+  cursor: grabbing;
+}
+
+.color-picker-panel {
+  display: none;
+  position: fixed; top: 50px; left: 50px;
+  background: #0a0a0a;
+  border: 2px solid #dc1e1e;
+  border-radius: 4px;
+  padding: 15px;
+  z-index: 10000;
+  box-shadow: 0 0 20px rgba(220,30,30,0.4);
+  min-width: 220px;
+  font-family: 'Share Tech Mono', monospace;
+}
+.color-picker-panel.show {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.color-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.8);
+}
+.color-input-row input[type="range"] {
+  flex: 1;
+  height: 4px;
+  accent-color: #dc1e1e;
+  cursor: pointer;
+}
+.color-input-row span {
+  width: 30px;
+  text-align: right;
+  color: #dc1e1e;
+}
+.color-preview {
+  width: 100%;
+  height: 40px;
+  border: 1px solid rgba(220,30,30,0.5);
+  border-radius: 2px;
+  margin-top: 5px;
+}
+.color-picker-close {
+  position: absolute; top: 5px; right: 8px;
+  font-size: 14px; color: #dc1e1e;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 #banner {
@@ -91,6 +157,28 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   </div>
 </div>
 
+<div class="design-overlay" id="designOverlay"></div>
+<div class="color-picker-panel" id="colorPickerPanel">
+  <span class="color-picker-close" id="colorPickerClose">✕</span>
+  <div style="font-weight: 600; margin-bottom: 5px; color: #dc1e1e; font-size: 12px;">Color Picker RGB</div>
+  <div class="color-input-row">
+    <label style="width: 20px;">R:</label>
+    <input type="range" id="colorR" min="0" max="255" value="220">
+    <span id="colorRValue">220</span>
+  </div>
+  <div class="color-input-row">
+    <label style="width: 20px;">G:</label>
+    <input type="range" id="colorG" min="0" max="255" value="30">
+    <span id="colorGValue">30</span>
+  </div>
+  <div class="color-input-row">
+    <label style="width: 20px;">B:</label>
+    <input type="range" id="colorB" min="0" max="255" value="30">
+    <span id="colorBValue">30</span>
+  </div>
+  <div class="color-preview" id="colorPreview" style="background: rgb(220, 30, 30);"></div>
+</div>
+
 <script>
 
 const BANNERS = [
@@ -126,7 +214,7 @@ const CATEGORIES = [
   {name:"Vehicle",       items:["Spawn Véhicule Personnalisé","Porter/Lancer Véhicule","Full Performance","Delete Close Véhicule","Réparer Véhicule","Vehicle God Mode","Shift Boost","Unlock Vehicle","Lock Vehicle"]},
   {name:"Misc",          items:["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll Player","Ragdoll All Players","Anti Aim"]},
   {name:"Server",        items:["Bypass Sunlife","Prime Bypass"]},
-  {name:"Settings",      items:["Auto Load Config", "Change Banner"]},
+  {name:"Settings",      items:["Auto Load Config", "Change Banner", "Design Mode", "Color Picker"]},
   {name:"Keybind",       items:["Delete All Keybinds"]},
   {name:"Sunlife/Prime", items:["Buy Phone/radio"]},
   {name:"Protection",    items:["Anti-teleport","Panic Button"]},
@@ -164,6 +252,22 @@ const tabMain   = document.getElementById('tab-main');
 const tabCfg    = document.getElementById('tab-cfg');
 const catHeader = document.getElementById('cat-header');
 const itemsList = document.getElementById('items-list');
+const colorPickerPanel = document.getElementById('colorPickerPanel');
+const colorPickerClose = document.getElementById('colorPickerClose');
+const designOverlay = document.getElementById('designOverlay');
+const colorR = document.getElementById('colorR');
+const colorG = document.getElementById('colorG');
+const colorB = document.getElementById('colorB');
+const colorRValue = document.getElementById('colorRValue');
+const colorGValue = document.getElementById('colorGValue');
+const colorBValue = document.getElementById('colorBValue');
+const colorPreview = document.getElementById('colorPreview');
+
+let designModeActive = false;
+let isDragging = false;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+let menuR = 220, menuG = 30, menuB = 30;
 
   let onlineSubMenu = null;   // null | 'Players' | 'Troll'
 let onlineSubSel  = 0;      // index root (0=Players, 1=Troll)
@@ -383,6 +487,95 @@ function adjustScroll(si, total, mode) {
 }
 
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// ── Design Mode / Color Picker ──────────────────────────
+function updateColorPreview() {
+  const hexR = menuR.toString(16).padStart(2, '0').toUpperCase();
+  const hexG = menuG.toString(16).padStart(2, '0').toUpperCase();
+  const hexB = menuB.toString(16).padStart(2, '0').toUpperCase();
+  const hexColor = '#' + hexR + hexG + hexB;
+
+  colorPreview.style.background = `rgb(${menuR}, ${menuG}, ${menuB})`;
+  document.documentElement.style.setProperty('--red', hexColor);
+
+  const glowR = Math.min(255, menuR + 50);
+  const glowG = Math.min(255, menuG + 50);
+  const glowB = Math.min(255, menuB + 50);
+  const glowHex = '#' + glowR.toString(16).padStart(2, '0').toUpperCase() + glowG.toString(16).padStart(2, '0').toUpperCase() + glowB.toString(16).padStart(2, '0').toUpperCase();
+  document.documentElement.style.setProperty('--red-glow', glowHex);
+
+  const darkR = Math.max(0, menuR - 100);
+  const darkG = Math.max(0, menuG - 100);
+  const darkB = Math.max(0, menuB - 100);
+  const darkHex = '#' + darkR.toString(16).padStart(2, '0').toUpperCase() + darkG.toString(16).padStart(2, '0').toUpperCase() + darkB.toString(16).padStart(2, '0').toUpperCase();
+  document.documentElement.style.setProperty('--red-dark', darkHex);
+}
+
+function applyDesignMode() {
+  if (designModeActive) {
+    appEl.classList.add('design-mode');
+    designOverlay.style.display = 'block';
+    colorPickerPanel.classList.add('show');
+  } else {
+    appEl.classList.remove('design-mode');
+    designOverlay.style.display = 'none';
+    colorPickerPanel.classList.remove('show');
+  }
+}
+
+// Drag menu
+appEl.addEventListener('mousedown', (e) => {
+  if (!designModeActive) return;
+  if (e.target.closest('#items-list') || e.target.closest('#tabs') || e.target.closest('#footer')) return;
+  isDragging = true;
+  const rect = appEl.getBoundingClientRect();
+  dragOffsetX = e.clientX - rect.left;
+  dragOffsetY = e.clientY - rect.top;
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  appEl.style.left = (e.clientX - dragOffsetX) + 'px';
+  appEl.style.top = (e.clientY - dragOffsetY) + 'px';
+});
+
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+});
+
+// Color Picker events
+colorR.addEventListener('input', (e) => {
+  menuR = parseInt(e.target.value);
+  colorRValue.textContent = menuR;
+  updateColorPreview();
+});
+
+colorG.addEventListener('input', (e) => {
+  menuG = parseInt(e.target.value);
+  colorGValue.textContent = menuG;
+  updateColorPreview();
+});
+
+colorB.addEventListener('input', (e) => {
+  menuB = parseInt(e.target.value);
+  colorBValue.textContent = menuB;
+  updateColorPreview();
+});
+
+colorPickerClose.addEventListener('click', () => {
+  designModeActive = false;
+  applyDesignMode();
+});
+
+// Message from Lua to trigger Design Mode
+window.addEventListener('message', function(e) {
+  let d = e.data;
+  if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) {} }
+  if (d && d.type === 'toggleDesignMode') {
+    designModeActive = !designModeActive;
+    applyDesignMode();
+  }
+});
 
 // ── Init ─────────────────────────────────────────────
 // Menu caché par défaut, affiché par le Lua via showMenu
