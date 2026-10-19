@@ -228,64 +228,39 @@ function setTab(t) {
 
 // ── Messages entrants depuis Lua ─────────────────────
 window.addEventListener('message', function(e) {
-  let d = e.data;
-  if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
-  if (!d || !d.type) return;
+    let d = e.data;
+    if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
+    if (!d || !d.type) return;
 
-  switch (d.type) {
+    if (d.type === 'showMenu') { appEl.style.display = 'flex'; return; }
+    if (d.type === 'hideMenu') { appEl.style.display = 'none';  return; }
 
-    case 'showMenu':
-      appEl.style.display = 'flex';
-      break;
+    if (d.type === 'sync') {
+        // Toggles
+        if (d.toggles) Object.assign(toggleStates, d.toggles);
 
-    case 'hideMenu':
-      appEl.style.display = 'none';
-      break;
-
-    case 'setToggleStates':
-      // d.states = { "Player_1": true, "Player_2": false, ... }
-      if (d.states) {
-        Object.assign(toggleStates, d.states);
-        render();
-      }
-      break;
-
-    // Le Lua envoie nav pour mettre à jour l'affichage
-    case 'nav': {
-      const k = d.key;
-      if (k === 'up')   { moveSelection(-1); render(); }
-      if (k === 'down') { moveSelection(1);  render(); }
-      if (k === 'prev') { setTab(tab === 'config' ? 'main' : 'config'); }
-      if (k === 'next') { setTab(tab === 'main'   ? 'config' : 'main'); }
-      if (k === 'enter') {
-        // Le Lua a déjà exécuté l'action — on met juste à jour la vue
-        // Si c'est une catégorie root et qu'il y a des items, on "ouvre" le cat
-        if (!curCatName && tab === 'main') {
-          const c = CATEGORIES[selIdx];
-          if (c && (c.items.length > 0 || c.name === 'Online')) {
-            curCatName = c.name; catSel = 0; catScroll = 0;
-          }
+        // Tab
+        if (d.tab) {
+            tab = d.tab;
+            tabMain.className = 'tab' + (tab === 'main'   ? ' active' : '');
+            tabCfg.className  = 'tab' + (tab === 'config' ? ' active' : '');
         }
-        render();
-      }
-      if (k === 'back') {
-        if (curCatName) { curCatName = null; catSel = 0; catScroll = 0; }
-        render();
-      }
-      break;
-    }
 
-    // Sync explicite depuis Lua si nécessaire
-    case 'syncState':
-      if (d.selIdx     !== undefined) selIdx     = d.selIdx;
-      if (d.scrollOff  !== undefined) scrollOff  = d.scrollOff;
-      if (d.catSel     !== undefined) catSel     = d.catSel;
-      if (d.catScroll  !== undefined) catScroll  = d.catScroll;
-      if (d.curCatName !== undefined) curCatName = d.curCatName;
-      if (d.tab        !== undefined) setTab(d.tab);
-      render();
-      break;
-  }
+        // Catégorie courante
+        curCatName = d.curCatName || null;
+
+        // Index de sélection
+        if (d.selIdx    !== undefined) {
+            if (curCatName) catSel    = d.selIdx;
+            else            selIdx    = d.selIdx;
+        }
+        if (d.scrollOff !== undefined) {
+            if (curCatName) catScroll = d.scrollOff;
+            else            scrollOff = d.scrollOff;
+        }
+
+        render();
+    }
 });
 
 function moveSelection(dir) {
