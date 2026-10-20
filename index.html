@@ -632,6 +632,100 @@ const CATEGORIES = [
 ];
 const CONFIG_ITEMS = ["Save Config","Load Config"];
 
+const WEAPON_CAT_ORDER = [
+  "Pistol","SMG","Rifle","Shotgun","Sniper",
+  "Machine Gun","Melee","Heavy","Throwables","Tools","Stun"
+];
+
+const WEAPON_DATA = {
+  "Pistol": [
+    {name:"Pistol",hash:"weapon_pistol"},{name:"Pistol Mk II",hash:"weapon_pistol_mk2"},
+    {name:"Combat Pistol",hash:"weapon_combatpistol"},{name:"AP Pistol",hash:"weapon_appistol"},
+    {name:"Pistol .50",hash:"weapon_pistol50"},{name:"SNS Pistol",hash:"weapon_snspistol"},
+    {name:"SNS Pistol Mk II",hash:"weapon_snspistol_mk2"},{name:"Heavy Pistol",hash:"weapon_heavypistol"},
+    {name:"Vintage Pistol",hash:"weapon_vintagepistol"},{name:"Marksman Pistol",hash:"weapon_marksmanpistol"},
+    {name:"Heavy Revolver",hash:"weapon_revolver"},{name:"Heavy Revolver Mk II",hash:"weapon_revolver_mk2"},
+    {name:"Double Action Revolver",hash:"weapon_doubleaction"},{name:"Ceramic Pistol",hash:"weapon_ceramicpistol"},
+    {name:"Navy Revolver",hash:"weapon_navyrevolver"},{name:"Perico Pistol",hash:"weapon_gadgetpistol"},
+    {name:"WM 29 Pistol",hash:"weapon_pistolxm3"},{name:"Flare Gun",hash:"weapon_flaregun"},
+    {name:"Up-n-Atomizer",hash:"weapon_raypistol"},
+  ],
+  "SMG": [
+    {name:"Micro SMG",hash:"weapon_microsmg"},{name:"SMG",hash:"weapon_smg"},
+    {name:"SMG Mk II",hash:"weapon_smg_mk2"},{name:"Assault SMG",hash:"weapon_assaultsmg"},
+    {name:"Combat PDW",hash:"weapon_combatpdw"},{name:"Machine Pistol",hash:"weapon_machinepistol"},
+    {name:"Mini SMG",hash:"weapon_minismg"},{name:"Tactical SMG",hash:"weapon_tecpistol"},
+  ],
+  "Rifle": [
+    {name:"Assault Rifle",hash:"weapon_assaultrifle"},{name:"Assault Rifle Mk II",hash:"weapon_assaultrifle_mk2"},
+    {name:"Carbine Rifle",hash:"weapon_carbinerifle"},{name:"Carbine Rifle Mk II",hash:"weapon_carbinerifle_mk2"},
+    {name:"Advanced Rifle",hash:"weapon_advancedrifle"},{name:"Special Carbine",hash:"weapon_specialcarbine"},
+    {name:"Special Carbine Mk II",hash:"weapon_specialcarbine_mk2"},{name:"Bullpup Rifle",hash:"weapon_bullpuprifle"},
+    {name:"Bullpup Rifle Mk II",hash:"weapon_bullpuprifle_mk2"},{name:"Compact Rifle",hash:"weapon_compactrifle"},
+    {name:"Military Rifle",hash:"weapon_militaryrifle"},{name:"Heavy Rifle",hash:"weapon_heavyrifle"},
+    {name:"Service Carbine",hash:"weapon_tacticalrifle"},{name:"Battle Rifle",hash:"weapon_battlerifle"},
+  ],
+  "Shotgun": [
+    {name:"Pump Shotgun",hash:"weapon_pumpshotgun"},{name:"Pump Shotgun Mk II",hash:"weapon_pumpshotgun_mk2"},
+    {name:"Sawed-Off Shotgun",hash:"weapon_sawnoffshotgun"},{name:"Assault Shotgun",hash:"weapon_assaultshotgun"},
+    {name:"Bullpup Shotgun",hash:"weapon_bullpupshotgun"},{name:"Heavy Shotgun",hash:"weapon_heavyshotgun"},
+    {name:"Musket",hash:"weapon_musket"},{name:"Double Barrel Shotgun",hash:"weapon_dbshotgun"},
+    {name:"Sweeper Shotgun",hash:"weapon_autoshotgun"},{name:"Combat Shotgun",hash:"weapon_combatshotgun"},
+  ],
+  "Sniper": [
+    {name:"Sniper Rifle",hash:"weapon_sniperrifle"},{name:"Heavy Sniper",hash:"weapon_heavysniper"},
+    {name:"Heavy Sniper Mk II",hash:"weapon_heavysniper_mk2"},{name:"Marksman Rifle",hash:"weapon_marksmanrifle"},
+    {name:"Marksman Rifle Mk II",hash:"weapon_marksmanrifle_mk2"},{name:"Precision Rifle",hash:"weapon_precisionrifle"},
+  ],
+  "Machine Gun": [
+    {name:"MG",hash:"weapon_mg"},{name:"Combat MG",hash:"weapon_combatmg"},
+    {name:"Combat MG Mk II",hash:"weapon_combatmg_mk2"},{name:"Gusenberg Sweeper",hash:"weapon_gusenberg"},
+    {name:"Unholy Hellbringer",hash:"weapon_raycarbine"},
+  ],
+  "Melee": [
+    {name:"Unarmed",hash:"weapon_unarmed"},{name:"Knife",hash:"weapon_knife"},
+    {name:"Nightstick",hash:"weapon_nightstick"},{name:"Hammer",hash:"weapon_hammer"},
+    {name:"Baseball Bat",hash:"weapon_bat"},{name:"Golf Club",hash:"weapon_golfclub"},
+    {name:"Crowbar",hash:"weapon_crowbar"},{name:"Bottle",hash:"weapon_bottle"},
+    {name:"Dagger",hash:"weapon_dagger"},{name:"Hatchet",hash:"weapon_hatchet"},
+    {name:"Knuckle Duster",hash:"weapon_knuckle"},{name:"Machete",hash:"weapon_machete"},
+    {name:"Flashlight",hash:"weapon_flashlight"},{name:"Switchblade",hash:"weapon_switchblade"},
+    {name:"Battle Axe",hash:"weapon_battleaxe"},{name:"Pool Cue",hash:"weapon_poolcue"},
+    {name:"Wrench",hash:"weapon_wrench"},{name:"Stone Hatchet",hash:"weapon_stone_hatchet"},
+    {name:"Candy Cane",hash:"weapon_candycane"},{name:"Stun Rod",hash:"weapon_stunrod"},
+  ],
+  "Heavy": [
+    {name:"RPG",hash:"weapon_rpg"},{name:"Grenade Launcher",hash:"weapon_grenadelauncher"},
+    {name:"Smoke Grenade Launcher",hash:"weapon_grenadelauncher_smoke"},{name:"Minigun",hash:"weapon_minigun"},
+    {name:"Firework Launcher",hash:"weapon_firework"},{name:"Homing Launcher",hash:"weapon_hominglauncher"},
+    {name:"Railgun",hash:"weapon_railgun"},{name:"Compact Grenade Launcher",hash:"weapon_compactlauncher"},
+    {name:"Widowmaker",hash:"weapon_rayminigun"},{name:"Compact EMP Launcher",hash:"weapon_emplauncher"},
+    {name:"Snowball Launcher",hash:"weapon_snowlauncher"},{name:"Railgun XM3",hash:"weapon_railgunxm3"},
+  ],
+  "Throwables": [
+    {name:"Grenade",hash:"weapon_grenade"},{name:"BZ Gas",hash:"weapon_bzgas"},
+    {name:"Tear Gas",hash:"weapon_smokegrenade"},{name:"Molotov",hash:"weapon_molotov"},
+    {name:"Sticky Bomb",hash:"weapon_stickybomb"},{name:"Proximity Mine",hash:"weapon_proxmine"},
+    {name:"Snowball",hash:"weapon_snowball"},{name:"Pipe Bomb",hash:"weapon_pipebomb"},
+    {name:"Ball",hash:"weapon_ball"},{name:"Flare",hash:"weapon_flare"},
+    {name:"Acid Package",hash:"weapon_acidpackage"},
+  ],
+  "Tools": [
+    {name:"Jerry Can",hash:"weapon_petrolcan"},{name:"Hazardous Jerry Can",hash:"weapon_hazardcan"},
+    {name:"Fertilizer Can",hash:"weapon_fertilizercan"},{name:"Fire Extinguisher",hash:"weapon_fireextinguisher"},
+    {name:"Metal Detector",hash:"weapon_metaldetector"},{name:"Hacking Device",hash:"weapon_hackingdevice"},
+  ],
+  "Stun": [
+    {name:"Stun Gun",hash:"weapon_stungun"},{name:"Stun Gun MP",hash:"weapon_stungun_mp"},
+  ],
+};
+
+// weapon UI state (mirrored from lua)
+let weaponMenuOpen = false;
+let weaponCatIdx   = 0;
+let weaponSelIdx   = 0;
+let weaponCatName  = "Pistol";
+
 const toggleStates = {};
 const TOGGLE_KEYS = new Set([
   "Player_1","Player_2","Player_3","Player_4","Player_5",
@@ -725,16 +819,14 @@ function render() {
     return;
   }
   if (cat) {
-    catHeader.className = '';
-    if (cat.name === 'Online') { renderOnline(); return; }
-    catHeader.textContent = cat.name.toUpperCase();
-    catHeader.className = 'show';
-    renderList(cat.items, catSel, catScroll, cat.name);
-  } else {
-    catHeader.className = '';
-    renderCategories();
+      catHeader.className = '';
+      if (cat.name === 'Online') { renderOnline(); return; }
+      // WEAPON SUB-MENU
+      if (cat.name === 'Weapon' && weaponMenuOpen) { renderWeaponList(); return; }
+      catHeader.textContent = cat.name.toUpperCase();
+      catHeader.className = 'show';
+      renderList(cat.items, catSel, catScroll, cat.name);
   }
-}
 
 function renderOnline() {
   if (onlineSubMenu === null) {
@@ -781,6 +873,59 @@ function renderOnline() {
       el.innerHTML = `<div class="bar"></div><span class="item-name">${name}</span><span class="item-ind">▶</span>`;
       itemsList.appendChild(el);
     });
+  }
+}
+
+function renderWeaponList() {
+  const catName  = WEAPON_CAT_ORDER[weaponCatIdx] || "Pistol";
+  const weapons  = WEAPON_DATA[catName] || [];
+  const catCount = WEAPON_CAT_ORDER.length;
+
+  // Category nav header
+  catHeader.textContent = `← ${catName.toUpperCase()} → (${weaponCatIdx + 1}/${catCount})`;
+  catHeader.className   = 'show';
+
+  // hint bar
+  const hint = document.createElement('div');
+  hint.style.cssText = 'padding:2px 14px;font-size:9px;letter-spacing:1px;color:rgba(180,180,180,0.45);font-family:"Share Tech Mono",monospace;background:rgba(5,5,5,0.9);border-bottom:1px solid rgba(40,10,10,0.5);';
+  hint.textContent = '← → CATÉGORIE   ↑ ↓ ARME   ↵ DONNER';
+  itemsList.appendChild(hint);
+
+  if (weapons.length === 0) {
+    const el = document.createElement('div');
+    el.className = 'menu-item';
+    el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucune arme</span>';
+    itemsList.appendChild(el);
+    return;
+  }
+
+  // scroll window: keep selected visible in 9 rows
+  const MAX_W = 9;
+  let scrollStart = 0;
+  if (weaponSelIdx >= MAX_W) scrollStart = weaponSelIdx - MAX_W + 1;
+
+  for (let i = 0; i < MAX_W; i++) {
+    const idx = i + scrollStart;
+    if (idx >= weapons.length) break;
+    const w   = weapons[idx];
+    const sel = idx === weaponSelIdx;
+    const el  = document.createElement('div');
+    el.className = 'menu-item' + (sel ? ' sel' : '');
+
+    const hashShort = w.hash.replace('weapon_', '').replace(/_/g, ' ');
+    el.innerHTML = `
+      <div class="bar"></div>
+      <span class="item-name" style="font-size:12px">${w.name}</span>
+      <span class="item-ind" style="font-size:9px;opacity:0.45;font-family:'Share Tech Mono',monospace;">${hashShort}</span>`;
+    itemsList.appendChild(el);
+  }
+
+  // scroll indicator
+  if (weapons.length > MAX_W) {
+    const ind = document.createElement('div');
+    ind.style.cssText = 'padding:2px 14px;font-size:9px;color:rgba(180,180,180,0.4);font-family:"Share Tech Mono",monospace;text-align:right;';
+    ind.textContent = `${weaponSelIdx + 1} / ${weapons.length}`;
+    itemsList.appendChild(ind);
   }
 }
 
@@ -984,6 +1129,10 @@ if (d.type === 'spectatorUpdate') {
     if (d.selectedPlayers!== undefined) selectedPlayers = d.selectedPlayers;
     if (d.trollSel       !== undefined) trollSel        = d.trollSel;
     if (d.playerSel      !== undefined) playerSel       = d.playerSel;
+    if ('weaponMenuOpen' in d) weaponMenuOpen = d.weaponMenuOpen === true;
+    if (d.weaponCatIdx  !== undefined) weaponCatIdx  = d.weaponCatIdx;
+    if (d.weaponSelIdx  !== undefined) weaponSelIdx  = d.weaponSelIdx;
+    if (d.weaponCatName !== undefined) weaponCatName = d.weaponCatName;
     render(); return;
   }
 });
