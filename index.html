@@ -487,7 +487,7 @@ const CAT_STRUCTURE = [
     name: "Misc",
     subTabs: [
       { name: "MISC", items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim","Free Cam"] },
-      { name: "PROTECTION", items: ["Anti Teleport","Anti Drag","Anti Attach","Anti Freeze","Anti Handcuff","New Player Bypass","Panic Button"] },
+      { name: "PROTECTION", items: ["New Player Bypass", "Panic Mode"] },
       { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos"] },
       { name: "SERVER",    items: ["Buy Phone/radio","Bypass Sunlife","Prime Bypass"] },
     ]
@@ -542,10 +542,6 @@ const GLOBAL_ACTION_MAP = {
   // Protection
   "Protection_1": true,
   "Protection_2": true,
-  "Protection_3": true,
-  "Protection_4": true,
-  "Protection_5": true,
-  "Protection_6": true,
   // Settings
   "Settings_1": true,
   "Settings_4": true,
@@ -614,13 +610,8 @@ const LUA_ACTION = {
   // Sunlife/Prime
   "Buy Phone/radio":          ["Sunlife/Prime", 1],
   // Protection
-  "Anti Teleport":            ["Protection", 1],
-  "Anti Drag":                ["Protection", 2],
-  "Anti Attach":              ["Protection", 3],
-  "Anti Freeze":              ["Protection", 4],
-  "Anti Handcuff":            ["Protection", 5],
-  "New Player Bypass":        ["Protection", 6],
-  "Panic Button":             ["Protection", 7],
+  "New Player Bypass": ["Protection", 1],
+  "Panic Button":             ["Protection", 2],
   // Destroyer
   "Delete All Vehicles":      ["Destroyer", 1],
   "Explode All Vehicles":     ["Destroyer", 2],
@@ -635,7 +626,7 @@ const TOGGLE_NAMES = new Set([
   "Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall",
   "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost",
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs",
-  "Laser Eye","Fast Punch","Anti Teleport","Anti Drag","Anti Attach","Anti Freeze","Anti Handcuff","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
+  "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
   "Vehicle Chaos","Show Keybinds",
 ]);
 
