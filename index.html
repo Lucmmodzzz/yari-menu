@@ -7,6 +7,85 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
+#freecam-hud {
+  display: none;
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 460px;
+  background: rgba(8,8,8,0.92);
+  border-top: 3px solid var(--accent);
+  border-bottom: 3px solid var(--accent);
+  box-shadow: 0 0 24px rgba(0,0,0,0.6);
+  font-family: 'Share Tech Mono', monospace;
+  z-index: 9999;
+  pointer-events: none;
+}
+#freecam-hud.visible { display: block; }
+
+.fc-title {
+  display: flex; align-items: center; gap: 10px;
+  padding: 5px 16px;
+  background: rgba(15,5,5,0.98);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 3px; color: #fff;
+}
+.fc-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 7px var(--accent-glow);
+  animation: blink 1s ease-in-out infinite;
+}
+.fc-aimed {
+  margin-left: auto; font-size: 11px; color: #32ff6e;
+  letter-spacing: 2px;
+}
+.fc-aimed.none { color: rgba(180,180,180,0.4); }
+
+.fc-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 6px 10px;
+  gap: 6px;
+  overflow: hidden;
+}
+.fc-action {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border-radius: 3px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: rgba(200,200,200,0.55);
+  background: rgba(20,20,20,0.85);
+  border: 1px solid rgba(60,60,60,0.4);
+  white-space: nowrap;
+  transition: all 0.12s;
+}
+.fc-action.active {
+  color: #fff;
+  background: rgba(220,30,30,0.18);
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(220,30,30,0.3);
+  font-weight: 700;
+}
+.fc-action.needs-player {
+  border-style: dashed;
+}
+.fc-action.active.needs-player {
+  border-style: solid;
+}
+
+.fc-hint {
+  padding: 3px 16px 5px;
+  font-size: 9px; letter-spacing: 1.5px;
+  color: rgba(160,160,160,0.45);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex; gap: 16px;
+}
+.fc-hint span { color: var(--accent); }
+
 #player-panel {
   display: none;
   position: fixed;
@@ -93,6 +172,20 @@
   z-index: 9999; pointer-events: none;
 }
 #kb-hud.visible { display: block; }
+<div id="freecam-hud">
+  <div class="fc-title">
+    <div class="fc-dot"></div>
+    <span>FREE CAM</span>
+    <span class="fc-aimed none" id="fc-aimed">— aucun joueur visé —</span>
+  </div>
+  <div class="fc-actions" id="fc-actions"></div>
+  <div class="fc-hint">
+    <div><span>MOLETTE</span> Changer action</div>
+    <div><span>F</span> Exécuter</div>
+    <div><span>ZQSD</span> Déplacer cam</div>
+    <div><span>F10</span> Désactiver</div>
+  </div>
+</div>
 .kb-title {
   display: flex; align-items: center; gap: 8px; padding: 6px 12px;
   background: rgba(20,5,5,0.95);
@@ -393,7 +486,7 @@ const CAT_STRUCTURE = [
   {
     name: "Misc",
     subTabs: [
-      { name: "MISC",       items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim"] },
+      { name: "MISC", items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim","Free Cam"] },
       { name: "PROTECTION", items: ["Anti Teleport","Anti Drag","Anti Attach","Anti Freeze","Anti Handcuff","New Player Bypass","Panic Button"] },
       { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos"] },
       { name: "SERVER",    items: ["Buy Phone/radio","Bypass Sunlife","Prime Bypass"] },
@@ -506,6 +599,7 @@ const LUA_ACTION = {
   "Afficher liste spectateurs":["Misc", 3],
   "Ragdoll All Players":      ["Misc", 4],
   "Anti Aim":                 ["Misc", 5],
+  "Free Cam": ["Misc", 6],
   // Server (now under Sunlife sub-tab in Misc)
   "Bypass Sunlife":           ["Server", 1],
   "Prime Bypass":             ["Server", 2],
@@ -988,6 +1082,45 @@ window.addEventListener('message', function(e) {
   if (d.type === 'spectatorToggle') {
     document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
     if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
+    return;
+  }
+
+  if (d.type === 'freecam') {
+    const hud = document.getElementById('freecam-hud');
+    if (!d.enabled) {
+      hud.className = '';
+      return;
+    }
+    hud.className = 'visible';
+
+    // Aimed player
+    const aimedEl = document.getElementById('fc-aimed');
+    if (d.aimedPlayer) {
+      aimedEl.textContent = '● ' + d.aimedPlayer;
+      aimedEl.className = 'fc-aimed';
+    } else {
+      aimedEl.textContent = '— aucun joueur visé —';
+      aimedEl.className = 'fc-aimed none';
+    }
+
+    // Actions strip — show window of 7 centered on selected
+    const actionsEl = document.getElementById('fc-actions');
+    actionsEl.innerHTML = '';
+    const actions = d.actions || [];
+    const sel     = d.selIdx || 0;
+    const half    = 3;
+    const start   = Math.max(0, sel - half);
+    const end     = Math.min(actions.length, start + 7);
+
+    for (let i = start; i < end; i++) {
+      const a   = actions[i];
+      const el  = document.createElement('div');
+      el.className = 'fc-action'
+        + (i === sel ? ' active' : '')
+        + (a.needsPlayer ? ' needs-player' : '');
+      el.textContent = a.name;
+      actionsEl.appendChild(el);
+    }
     return;
   }
 
