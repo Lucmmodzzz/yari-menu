@@ -819,14 +819,17 @@ function render() {
     return;
   }
   if (cat) {
-      catHeader.className = '';
-      if (cat.name === 'Online') { renderOnline(); return; }
-      // WEAPON SUB-MENU
-      if (cat.name === 'Weapon' && weaponMenuOpen) { renderWeaponList(); return; }
-      catHeader.textContent = cat.name.toUpperCase();
-      catHeader.className = 'show';
-      renderList(cat.items, catSel, catScroll, cat.name);
+        catHeader.className = '';
+        if (cat.name === 'Online') { renderOnline(); return; }
+        if (cat.name === 'Weapon' && weaponMenuOpen) { renderWeaponList(); return; }
+        catHeader.textContent = cat.name.toUpperCase();
+        catHeader.className = 'show';
+        renderList(cat.items, catSel, catScroll, cat.name);
+    } else {
+        renderCategories();
+    }
   }
+
 
 function renderOnline() {
   if (onlineSubMenu === null) {
