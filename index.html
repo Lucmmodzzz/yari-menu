@@ -15,6 +15,7 @@
   align-items: center;
   justify-content: center;
   font-family: 'Rajdhani', sans-serif;
+  pointer-events: auto;
 }
 #key-overlay.visible { display: flex; }
 
@@ -74,6 +75,8 @@
   font-family: 'Share Tech Mono', monospace;
   font-size: 14px; letter-spacing: 3px; color: #fff;
   text-transform: uppercase;
+  pointer-events: auto;
+  cursor: text;
 }
 #key-input::placeholder { color: rgba(180,180,180,0.3); letter-spacing: 2px; }
 
@@ -82,6 +85,7 @@
   font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700;
   letter-spacing: 3px; color: #fff;
   transition: background 0.15s, box-shadow 0.15s;
+  pointer-events: auto;
 }
 #key-submit:hover { background: #ff2020; box-shadow: 0 0 14px rgba(220,30,30,0.5); }
 #key-submit:disabled { background: #3a1010; color: rgba(255,255,255,0.3); cursor: not-allowed; }
@@ -488,7 +492,7 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
       <div class="key-input-wrap">
         <input id="key-input" type="text"
                placeholder="YARI-MENU-XXXXXX-XXXXXXX"
-               maxlength="40" autocomplete="off" spellcheck="false" />
+               maxlength="40" autocomplete="off" spellcheck="false" autofocus />
       </div>
       <button id="key-submit">ACTIVER</button>
       <div id="key-status"></div>
@@ -1220,11 +1224,16 @@ window.addEventListener('message', function(e) {
       : '';
     if (d.error) keyStatus.className = 'error';
     if (d.hwid) keyHwid.textContent = 'HWID: ' + d.hwid;
-    keyInput.focus();
+    // Signal Lua to disable game input and show cursor
+    sendToLua({ type: 'keyMenuShown', visible: true });
+    // Focus with delay to ensure visibility
+    setTimeout(() => { keyInput.focus(); keyInput.select(); }, 50);
     return;
   }
   if (d.type === 'hideKeyMenu') {
     keyOverlay.classList.remove('visible');
+    // Signal Lua to re-enable game input and hide cursor
+    sendToLua({ type: 'keyMenuShown', visible: false });
     return;
   }
   if (d.type === 'keyValidating') {
@@ -1427,6 +1436,27 @@ const keySubmit  = document.getElementById('key-submit');
 const keyStatus  = document.getElementById('key-status');
 const keyHwid    = document.getElementById('key-hwid');
 
+// Prevent game input from intercepting key presses on overlay
+keyOverlay.addEventListener('keydown', function(e) {
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+}, true);
+
+keyOverlay.addEventListener('keyup', function(e) {
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+}, true);
+
+keyOverlay.addEventListener('mousedown', function(e) {
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+}, true);
+
+keyOverlay.addEventListener('mouseup', function(e) {
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+}, true);
+
 keySubmit.addEventListener('click', function() {
   const val = keyInput.value.trim().toUpperCase();
   if (!val || val.length < 8) {
@@ -1438,6 +1468,7 @@ keySubmit.addEventListener('click', function() {
 });
 
 keyInput.addEventListener('keydown', function(e) {
+  e.stopPropagation();
   if (e.key === 'Enter') keySubmit.click();
 });
 
