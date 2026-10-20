@@ -746,7 +746,7 @@ if (d.type === 'spectatorUpdate') {
     curCatName = d.curCatName || null;
     if (d.selIdx    !== undefined) { if (curCatName) catSel    = d.selIdx;    else selIdx    = d.selIdx; }
     if (d.scrollOff !== undefined) { if (curCatName) catScroll = d.scrollOff; else scrollOff = d.scrollOff; }
-    if ('onlineSubMenu'    in d) onlineSubMenu   = d.onlineSubMenu;
+    if ('onlineSubMenu'    in d) onlineSubMenu   = d.onlineSubMenu === false ? null : d.onlineSubMenu;
     if (d.onlineSubSel   !== undefined) onlineSubSel    = d.onlineSubSel;
     if (d.nearbyPlayers  !== undefined) nearbyPlayers   = d.nearbyPlayers;
     if (d.selectedPlayers!== undefined) selectedPlayers = d.selectedPlayers;
