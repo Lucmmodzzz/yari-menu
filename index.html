@@ -15,6 +15,7 @@
   align-items: center;
   justify-content: center;
   font-family: 'Rajdhani', sans-serif;
+  pointer-events: auto;  /* ← AJOUTE CETTE LIGNE */
 }
 #key-overlay.visible { display: flex; }
 
@@ -291,6 +292,8 @@
 .kb-ind.off { background: #ff3232; box-shadow: 0 0 5px #ff3232; }
 .kb-empty { padding: 8px 12px; font-size: 10px; letter-spacing: 1px; color: rgba(180,180,180,0.4); }
 
+#key-overlay { pointer-events: auto; }
+  
 <div id="freecam-hud">
   <div class="fc-title">
     <div class="fc-dot"></div>
@@ -1451,8 +1454,24 @@ keyInput.addEventListener('input', function() {
   if (v.length > 8)  parts.push(v.slice(8,14));
   if (v.length > 14) parts.push(v.slice(14,21));
   this.value = parts.join('-');
-});
 
+  document.addEventListener('keydown', function(e) {
+  if (keyOverlay.classList.contains('visible')) {
+    e.stopPropagation();
+  }
+}, true);
+
+document.addEventListener('keyup', function(e) {
+  if (keyOverlay.classList.contains('visible')) {
+    e.stopPropagation();
+  }
+}, true);
+
+// Force le focus sur l'input
+keyOverlay.addEventListener('click', function() {
+  keyInput.focus();
+});
+  
 render();
 </script>
 </body>
