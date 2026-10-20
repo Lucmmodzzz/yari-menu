@@ -7,6 +7,8 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
+let nuiBase = '';
+
 #spec-hud {
   display: none;
   position: fixed;
@@ -576,7 +578,7 @@ function renderCategories() {
     iconEl.className = 'cat-icon';
     const img = document.createElement('img');
     const safeName = c.name.replace(/\//g, '_'); // "Sunlife/Prime" → "Sunlife_Prime"
-    img.src = safeName + '.png';
+    img.src = nuiBase + safeName + '.png';
     img.alt = '';
     // FIX: onerror remplace l'img par un spacer de même taille — ne masque PAS l'iconEl
     // Ainsi le layout reste stable même si le .png manque
@@ -702,6 +704,16 @@ window.addEventListener('message', function(e) {
     document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
     if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
     return;
+  }
+
+  if (d.type === 'showMenu') {
+      // FIX: construit le base path NUI une seule fois
+      if (d.resourceName && !nuiBase) {
+          nuiBase = `https://cfx-nui-${d.resourceName}/`;
+      }
+      appEl.style.display = 'flex';
+      render();
+      return;
   }
 
   if (d.type === 'spectatorUpdate') {
