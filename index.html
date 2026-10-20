@@ -748,7 +748,7 @@ function renderCategoryRoot() {
 
 function renderConfigList() {
   CONFIG_ITEMS.forEach((name, i) => {
-    makeItem(name, i === itemSelIdx, '+', null);
+    makeItem(name, i === selIdx, '+', null);   // selIdx au lieu de itemSelIdx
   });
 }
 
