@@ -11,7 +11,7 @@
   display: none;
   position: fixed;
   top: 150px;
-  left: 560px; /* #app: left 200px + width 350px + 10px gap = 560px */
+  left: 560px;
   width: 240px;
   background: var(--bg);
   border-top: 3px solid var(--accent);
@@ -38,370 +38,218 @@
   font-size: 14px; color: var(--accent);
   flex-shrink: 0;
 }
-.pp-name {
-  flex: 1; font-size: 12px; font-weight: 700;
-  color: #fff; letter-spacing: 1px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.pp-sid {
-  font-size: 10px; color: var(--accent);
-  letter-spacing: 1px;
-}
-
-.pp-section {
-  padding: 4px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
+.pp-name { flex: 1; font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pp-sid  { font-size: 10px; color: var(--accent); letter-spacing: 1px; }
+.pp-section { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .pp-section:last-child { border-bottom: none; }
-
-.pp-row {
-  display: flex; align-items: center;
-  padding: 3px 10px; gap: 6px;
-  min-height: 22px;
-}
-.pp-icon {
-  width: 14px; font-size: 11px; text-align: center;
-  color: var(--accent); flex-shrink: 0;
-  opacity: 0.85;
-}
-.pp-label {
-  font-size: 10px; color: rgba(180,180,180,0.6);
-  letter-spacing: 1px; min-width: 62px; flex-shrink: 0;
-}
-.pp-value {
-  font-size: 10px; color: #e8e8e8;
-  text-align: right; flex: 1;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.pp-value.danger  { color: #ff4444; }
-.pp-value.warn    { color: #ff9900; }
-.pp-value.ok      { color: #32ff6e; }
-
-/* Health / Armor bars */
-.pp-bar-wrap {
-  padding: 2px 10px 5px;
-}
-.pp-bar-row {
-  display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
-}
-.pp-bar-label {
-  font-size: 9px; color: rgba(180,180,180,0.6); letter-spacing: 1px;
-  min-width: 38px;
-}
-.pp-bar-pct {
-  font-size: 9px; color: #e8e8e8;
-  min-width: 32px; text-align: right;
-}
-.pp-bar-track {
-  flex: 1; height: 5px; background: rgba(255,255,255,0.08);
-  border-radius: 2px; overflow: hidden;
-}
-.pp-bar-fill {
-  height: 100%; border-radius: 2px;
-  transition: width 0.3s ease;
-}
+.pp-row { display: flex; align-items: center; padding: 3px 10px; gap: 6px; min-height: 22px; }
+.pp-icon { width: 14px; font-size: 11px; text-align: center; color: var(--accent); flex-shrink: 0; opacity: 0.85; }
+.pp-label { font-size: 10px; color: rgba(180,180,180,0.6); letter-spacing: 1px; min-width: 62px; flex-shrink: 0; }
+.pp-value { font-size: 10px; color: #e8e8e8; text-align: right; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pp-value.danger { color: #ff4444; }
+.pp-value.warn   { color: #ff9900; }
+.pp-value.ok     { color: #32ff6e; }
+.pp-bar-wrap { padding: 2px 10px 5px; }
+.pp-bar-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.pp-bar-label { font-size: 9px; color: rgba(180,180,180,0.6); letter-spacing: 1px; min-width: 38px; }
+.pp-bar-pct { font-size: 9px; color: #e8e8e8; min-width: 32px; text-align: right; }
+.pp-bar-track { flex: 1; height: 5px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+.pp-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
 .pp-bar-fill.health { background: linear-gradient(90deg, #1edc4a, #32ff6e); }
 .pp-bar-fill.armor  { background: linear-gradient(90deg, #1e5adc, #3278ff); }
-.pp-bar-fill.health.low  { background: linear-gradient(90deg, #dc1e1e, #ff3232); }
-.pp-bar-fill.health.mid  { background: linear-gradient(90deg, #dc8c1e, #ffaa32); }
-
-.pp-coords {
-  font-size: 9px; color: rgba(160,160,160,0.7);
-  padding: 3px 10px 5px;
-  letter-spacing: 0.5px; font-family: 'Share Tech Mono', monospace;
-}
+.pp-bar-fill.health.low { background: linear-gradient(90deg, #dc1e1e, #ff3232); }
+.pp-bar-fill.health.mid { background: linear-gradient(90deg, #dc8c1e, #ffaa32); }
+.pp-coords { font-size: 9px; color: rgba(160,160,160,0.7); padding: 3px 10px 5px; letter-spacing: 0.5px; font-family: 'Share Tech Mono', monospace; }
 
 #spec-hud {
-  display: none;
-  position: fixed;
-  top: 40px;
-  left: 18px;
-  width: 260px;
-  font-family: 'Share Tech Mono', monospace;
-  z-index: 9999;
-  pointer-events: none;
+  display: none; position: fixed; top: 40px; left: 18px; width: 260px;
+  font-family: 'Share Tech Mono', monospace; z-index: 9999; pointer-events: none;
 }
 #spec-hud.visible { display: block; }
-
-.spec-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 3px 10px;
-  background: rgba(0,0,0,0.82);
-  border-left: 3px solid var(--accent);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.spec-header .spec-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 6px var(--accent-glow);
-  animation: blink 1.2s ease-in-out infinite;
-}
-.spec-header .spec-count {
-  font-size: 11px;
-  color: var(--accent);
-  letter-spacing: 1px;
-  font-weight: 700;
-}
-.spec-header .spec-label {
-  font-size: 10px;
-  color: rgba(200,200,200,0.55);
-  letter-spacing: 2px;
-  margin-left: auto;
-}
-
-@keyframes blink {
-  0%,100% { opacity:1; }
-  50%      { opacity:0.3; }
-}
-
-.spec-row {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  padding: 3px 10px 3px 13px;
-  background: rgba(0,0,0,0.72);
-  border-left: 3px solid transparent;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  transition: border-color 0.15s;
-}
+.spec-header { display: flex; align-items: center; gap: 8px; padding: 3px 10px; background: rgba(0,0,0,0.82); border-left: 3px solid var(--accent); border-bottom: 1px solid rgba(255,255,255,0.06); }
+.spec-header .spec-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); animation: blink 1.2s ease-in-out infinite; }
+.spec-header .spec-count { font-size: 11px; color: var(--accent); letter-spacing: 1px; font-weight: 700; }
+.spec-header .spec-label { font-size: 10px; color: rgba(200,200,200,0.55); letter-spacing: 2px; margin-left: auto; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+.spec-row { display: flex; align-items: baseline; gap: 6px; padding: 3px 10px 3px 13px; background: rgba(0,0,0,0.72); border-left: 3px solid transparent; border-bottom: 1px solid rgba(255,255,255,0.04); }
 .spec-row.noclip { border-left-color: var(--accent); }
 .spec-row.admin  { border-left-color: #dcaa1e; }
-
-.spec-sid {
-  font-size: 10px;
-  color: var(--accent);
-  min-width: 26px;
-}
-.spec-name {
-  font-size: 11px;
-  color: #e8e8e8;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.spec-dist {
-  font-size: 10px;
-  color: rgba(180,180,180,0.6);
-  white-space: nowrap;
-}
-.spec-type {
-  font-size: 9px;
-  letter-spacing: 1px;
-  padding: 1px 4px;
-  border-radius: 2px;
-  white-space: nowrap;
-}
+.spec-sid  { font-size: 10px; color: var(--accent); min-width: 26px; }
+.spec-name { font-size: 11px; color: #e8e8e8; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spec-dist { font-size: 10px; color: rgba(180,180,180,0.6); white-space: nowrap; }
+.spec-type { font-size: 9px; letter-spacing: 1px; padding: 1px 4px; border-radius: 2px; white-space: nowrap; }
 .spec-type.noclip { color: var(--accent); background: rgba(220,30,30,0.15); }
-.spec-type.admin  { color: #dcaa1e;       background: rgba(220,170,30,0.12); }
-.spec-type.both   { color: #ff9900;       background: rgba(255,153,0,0.13); }
-
-.spec-empty {
-  padding: 5px 13px;
-  font-size: 10px;
-  color: rgba(180,180,180,0.4);
-  background: rgba(0,0,0,0.72);
-  border-left: 3px solid transparent;
-  letter-spacing: 1px;
-}
+.spec-type.admin  { color: #dcaa1e; background: rgba(220,170,30,0.12); }
+.spec-type.both   { color: #ff9900; background: rgba(255,153,0,0.13); }
+.spec-empty { padding: 5px 13px; font-size: 10px; color: rgba(180,180,180,0.4); background: rgba(0,0,0,0.72); border-left: 3px solid transparent; letter-spacing: 1px; }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── THEME VARIABLES ── */
 :root {
   --accent:      #DC1E1E;
   --accent-glow: #FF3232;
   --accent-dark: #8C0A0A;
-  --accent-l:    #DC1E1E;   /* two-tone left  */
-  --accent-r:    #8B1FDC;   /* two-tone right */
+  --accent-l:    #DC1E1E;
+  --accent-r:    #8B1FDC;
   --bg:          #0A0A0A;
   --dimmed:      #B0B0B0;
   --sep:         rgba(50,15,15,0.9);
 }
 
-/* ── SINGLE-COLOUR THEMES ── */
 .theme-red    { --accent:#DC1E1E; --accent-glow:#FF3232; --accent-dark:#8C0A0A; --sep:rgba(50,15,15,0.9); }
 .theme-purple { --accent:#8B1FDC; --accent-glow:#AA44FF; --accent-dark:#4A0A8C; --sep:rgba(35,10,50,0.9); }
 .theme-blue   { --accent:#1E5ADC; --accent-glow:#3278FF; --accent-dark:#0A2A8C; --sep:rgba(10,20,50,0.9); }
 .theme-green  { --accent:#1EDC4A; --accent-glow:#32FF6E; --accent-dark:#0A8C26; --sep:rgba(10,40,20,0.9); }
 
-html, body { width:100%; height:100%; background:transparent; overflow:hidden; font-family:'Rajdhani',sans-serif; }
+html, body { width: 100%; height: 100%; background: transparent; overflow: hidden; font-family: 'Rajdhani', sans-serif; }
 
 #app {
-  position:fixed; top:150px; left:200px; width:350px;
-  display:none; flex-direction:column;
-  background:var(--bg);
-  border-top:3px solid var(--accent);
-  border-bottom:3px solid var(--accent);
-  box-shadow:0 0 20px rgba(0,0,0,0.45), 0 0 6px rgba(0,0,0,0.3) inset;
-  user-select:none;
+  position: fixed; top: 150px; left: 200px; width: 350px;
+  display: none; flex-direction: column;
+  background: var(--bg);
+  border-top: 3px solid var(--accent);
+  border-bottom: 3px solid var(--accent);
+  box-shadow: 0 0 20px rgba(0,0,0,0.45), 0 0 6px rgba(0,0,0,0.3) inset;
+  user-select: none;
   transition: border-color 0.25s;
 }
 
-/* ── TWO-TONE: gradient border via outline trick ── */
-#app.twotone {
-  border-top-color:   transparent;
-  border-bottom-color:transparent;
-  /* layered box-shadows fake the gradient border */
-  position:fixed;
-}
-#app.twotone::before,
-#app.twotone::after { display:none !important; } /* reset banner pseudo if needed */
-
-/* Real gradient top/bottom borders via a pseudo on #app wrapper */
-#app.twotone {
-  outline: none;
-  border-top: 3px solid transparent;
-  border-bottom: 3px solid transparent;
-  background-clip: padding-box;
-  position: relative;
-}
-/* We draw the gradient border as an inset element */
+#app.twotone { border-top: none; border-bottom: none; }
 #top-border, #bot-border {
-  display:none; height:3px; flex-shrink:0; width:100%;
+  display: none; height: 3px; flex-shrink: 0; width: 100%;
   background: linear-gradient(90deg, var(--accent-l) 0%, var(--accent-l) 38%, var(--accent-r) 62%, var(--accent-r) 100%);
 }
 #app.twotone #top-border,
-#app.twotone #bot-border { display:block; }
-#app.twotone { border-top:none; border-bottom:none; }
+#app.twotone #bot-border { display: block; }
 
-/* ── BANNER ── */
 #banner {
-  position:relative; height:90px; flex-shrink:0;
-  background:linear-gradient(180deg,rgba(40,5,5,0.95) 0%,rgba(10,10,10,1) 100%);
-  display:flex; align-items:center; justify-content:center;
-  flex-direction:column; gap:5px; overflow:hidden;
+  position: relative; height: 90px; flex-shrink: 0;
+  background: linear-gradient(180deg,rgba(40,5,5,0.95) 0%,rgba(10,10,10,1) 100%);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 5px; overflow: hidden;
 }
-#banner::before {
-  content:''; position:absolute; left:0; top:0; bottom:0; width:5px;
-  background:linear-gradient(180deg,var(--accent-l),var(--accent-dark));
-  transition: background 0.25s;
-}
-#banner::after {
-  content:''; position:absolute; right:0; top:0; bottom:0; width:5px;
-  background:linear-gradient(180deg,var(--accent-r),var(--accent-dark));
-  opacity:0.7; transition: background 0.25s;
-}
-/* single-colour mode: right stripe matches accent */
+#banner::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg,var(--accent-l),var(--accent-dark)); transition:background 0.25s; }
+#banner::after  { content:''; position:absolute; right:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg,var(--accent-r),var(--accent-dark)); opacity:0.7; transition:background 0.25s; }
 #app:not(.twotone) #banner::before { background:linear-gradient(180deg,var(--accent),var(--accent-dark)); }
 #app:not(.twotone) #banner::after  { background:linear-gradient(180deg,var(--accent),var(--accent-dark)); opacity:0.7; }
 
-.banner-main { font-size:30px; font-weight:700; letter-spacing:6px; color:#fff; text-shadow:0 0 14px var(--accent-glow),0 0 30px rgba(220,30,30,0.45),2px 2px 0 rgba(140,10,10,0.5); }
-.banner-sub  { font-size:10px; letter-spacing:3px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; }
+.banner-main { font-size: 30px; font-weight: 700; letter-spacing: 6px; color: #fff; text-shadow: 0 0 14px var(--accent-glow),0 0 30px rgba(220,30,30,0.45),2px 2px 0 rgba(140,10,10,0.5); }
+.banner-sub  { font-size: 10px; letter-spacing: 3px; color: var(--dimmed); font-family: 'Share Tech Mono', monospace; }
 
 #subbanner {
-  height:18px; flex-shrink:0; background:rgba(5,5,5,0.98);
-  display:flex; align-items:center; justify-content:center;
-  font-size:9px; letter-spacing:3px; color:rgba(200,200,200,0.6);
-  font-family:'Share Tech Mono',monospace;
-  border-top:1px solid rgba(30,5,5,0.7);
+  height: 18px; flex-shrink: 0; background: rgba(5,5,5,0.98);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; letter-spacing: 3px; color: rgba(200,200,200,0.6);
+  font-family: 'Share Tech Mono', monospace;
+  border-top: 1px solid rgba(30,5,5,0.7);
 }
 
-/* ── TABS ── */
-#tabs { height:28px; flex-shrink:0; display:flex; border-bottom:2px solid var(--accent); transition: border-color 0.25s; }
-#app.twotone #tabs {
-  border-bottom: none;
-  position: relative;
+/* ── MAIN TABS (top-level: MAIN / CONFIG) ── */
+#tabs {
+  height: 28px; flex-shrink: 0; display: flex;
+  border-bottom: 2px solid var(--accent); transition: border-color 0.25s;
 }
+#app.twotone #tabs { border-bottom: none; position: relative; }
 #app.twotone #tabs::after {
   content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
   background: linear-gradient(90deg, var(--accent-l) 0%, var(--accent-l) 38%, var(--accent-r) 62%, var(--accent-r) 100%);
 }
 
+/* ── SUB-TABS (inside a category: e.g. SELF / MOVEMENT) ── */
+#sub-tabs {
+  display: none;
+  height: 24px; flex-shrink: 0;
+  background: rgba(8,8,8,0.98);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-direction: row;
+}
+#sub-tabs.show { display: flex; }
+
+.sub-tab {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600; letter-spacing: 2px; color: rgba(180,180,180,0.5);
+  background: rgba(12,12,12,0.98); border-right: 1px solid rgba(60,60,60,0.3);
+  font-family: 'Share Tech Mono', monospace;
+}
+.sub-tab:last-child { border-right: none; }
+.sub-tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+#app.twotone .sub-tab.active { color: var(--accent-l); border-bottom-color: var(--accent-l); }
+
 .tab {
-  flex:1; display:flex; align-items:center; justify-content:center;
-  font-size:11px; font-weight:600; letter-spacing:2px; color:var(--dimmed);
-  background:rgba(12,12,12,0.98); border-right:1px solid rgba(60,60,60,0.35); cursor:pointer;
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--dimmed);
+  background: rgba(12,12,12,0.98); border-right: 1px solid rgba(60,60,60,0.35); cursor: pointer;
   transition: background 0.2s;
 }
-.tab:last-child { border-right:none; }
-.tab.active { background:var(--accent); color:#fff; }
-
-/* two-tone: active tab uses left accent */
-#app.twotone .tab.active { background:var(--accent-l); }
+.tab:last-child { border-right: none; }
+.tab.active { background: var(--accent); color: #fff; }
+#app.twotone .tab.active { background: var(--accent-l); }
 
 #cat-header {
-  padding:4px 14px; font-size:10px; letter-spacing:2px; color:var(--dimmed);
-  font-family:'Share Tech Mono',monospace; background:rgba(10,10,10,0.95);
-  border-bottom:1px solid rgba(60,20,20,0.5); flex-shrink:0; display:none;
+  padding: 4px 14px; font-size: 10px; letter-spacing: 2px; color: var(--dimmed);
+  font-family: 'Share Tech Mono', monospace; background: rgba(10,10,10,0.95);
+  border-bottom: 1px solid rgba(60,20,20,0.5); flex-shrink: 0; display: none;
 }
-#cat-header.show { display:block; }
+#cat-header.show { display: block; }
 
-/* ── LIST ITEMS ── */
-#items-list { flex-shrink:0; }
+#items-list { flex-shrink: 0; }
+
 .menu-item {
-  height:30px; display:flex; align-items:center;
-  padding:0 16px 0 28px; position:relative;
-  border-bottom:1px solid var(--sep);
+  height: 30px; display: flex; align-items: center;
+  padding: 0 16px 0 28px; position: relative;
+  border-bottom: 1px solid var(--sep);
 }
 .menu-item .bar {
-  position:absolute; left:0; top:3px; bottom:3px; width:3px;
-  background:var(--accent); box-shadow:0 0 6px var(--accent-glow); display:none;
+  position: absolute; left: 0; top: 3px; bottom: 3px; width: 3px;
+  background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); display: none;
   transition: background 0.2s;
 }
-.menu-item.sel { background:rgba(220,30,30,0.07); }
-.menu-item.sel .bar { display:block; }
-.item-name { flex:1; font-size:13px; font-weight:500; color:rgba(255,255,255,0.85); letter-spacing:0.4px; }
-.menu-item.sel .item-name { color:#fff; font-weight:600; }
-.item-ind { font-size:13px; font-weight:700; color:var(--accent); margin-left:6px; }
-.menu-item.sel .item-ind { opacity:1; }
-.menu-item:not(.sel) .item-ind { opacity:0.65; }
+.menu-item.sel { background: rgba(220,30,30,0.07); }
+.menu-item.sel .bar { display: block; }
+.item-name { flex: 1; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.85); letter-spacing: 0.4px; }
+.menu-item.sel .item-name { color: #fff; font-weight: 600; }
+.item-ind { font-size: 13px; font-weight: 700; color: var(--accent); margin-left: 6px; }
+.menu-item.sel .item-ind { opacity: 1; }
+.menu-item:not(.sel) .item-ind { opacity: 0.65; }
 
-/* selected bar in twotone uses gradient */
-#app.twotone .menu-item.sel .bar {
-  background: linear-gradient(180deg, var(--accent-l), var(--accent-r));
-  box-shadow: 0 0 6px var(--accent-l);
-}
-#app.twotone .menu-item.sel .item-name { color:#fff; }
+#app.twotone .menu-item.sel .bar { background: linear-gradient(180deg, var(--accent-l), var(--accent-r)); box-shadow: 0 0 6px var(--accent-l); }
+#app.twotone .menu-item.sel .item-name { color: #fff; }
 #app.twotone .item-ind { color: var(--accent-r); }
 
-/* ── TOGGLE ── */
 .tog {
-  width:34px; height:14px; border-radius:7px;
-  background:#333; position:relative; flex-shrink:0;
+  width: 34px; height: 14px; border-radius: 7px;
+  background: #333; position: relative; flex-shrink: 0;
   transition: background 0.15s;
 }
-.tog.on { background:var(--accent); box-shadow:0 0 7px var(--accent-glow); }
-#app.twotone .tog.on { background: linear-gradient(90deg, var(--accent-l), var(--accent-r)); box-shadow:0 0 7px var(--accent-l); }
-.tog::after {
-  content:''; position:absolute; top:2px; left:2px;
-  width:10px; height:10px; border-radius:50%; background:#fff; transition:left 0.12s;
-}
-.tog.on::after { left:calc(100% - 12px); }
+.tog.on { background: var(--accent); box-shadow: 0 0 7px var(--accent-glow); }
+#app.twotone .tog.on { background: linear-gradient(90deg, var(--accent-l), var(--accent-r)); box-shadow: 0 0 7px var(--accent-l); }
+.tog::after { content:''; position:absolute; top:2px; left:2px; width:10px; height:10px; border-radius:50%; background:#fff; transition:left 0.12s; }
+.tog.on::after { left: calc(100% - 12px); }
 
-/* ── FOOTER ── */
 #footer {
-  height:36px; flex-shrink:0; display:flex;
-  align-items:center; justify-content:center; gap:16px;
-  background:rgba(8,8,8,0.99);
-  border-top:1px solid rgba(40,10,10,0.6);
+  height: 36px; flex-shrink: 0; display: flex;
+  align-items: center; justify-content: center; gap: 16px;
+  background: rgba(8,8,8,0.99);
+  border-top: 1px solid rgba(40,10,10,0.6);
 }
-.kh { display:flex; align-items:center; gap:4px; font-size:10px; color:var(--dimmed); font-family:'Share Tech Mono',monospace; }
+.kh { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--dimmed); font-family: 'Share Tech Mono', monospace; }
 .k {
-  display:inline-flex; align-items:center; justify-content:center;
-  width:18px; height:14px;
-  border:1px solid rgba(220,30,30,0.5); border-radius:2px;
-  font-size:9px; color:var(--accent); font-weight:700;
-  background:rgba(220,30,30,0.07);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 14px;
+  border: 1px solid rgba(220,30,30,0.5); border-radius: 2px;
+  font-size: 9px; color: var(--accent); font-weight: 700;
+  background: rgba(220,30,30,0.07);
 }
 
-/* ── COLOUR PICKER STRIP ── */
-.color-strip {
-  display:flex; gap:6px; align-items:center; padding:4px 14px 0;
-  flex-shrink:0;
-}
 .color-dot {
-  width:14px; height:14px; border-radius:50%; cursor:pointer;
-  border:2px solid transparent; transition:border-color 0.15s, transform 0.1s;
-  flex-shrink:0;
+  width: 14px; height: 14px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: border-color 0.15s, transform 0.1s; flex-shrink: 0;
 }
-.color-dot.active { border-color:#fff; transform:scale(1.25); }
-.color-dot.red    { background:#DC1E1E; }
-.color-dot.purple { background:#8B1FDC; }
-.color-dot.blue   { background:#1E5ADC; }
-.color-dot.green  { background:#1EDC4A; }
+.color-dot.active { border-color: #fff; transform: scale(1.25); }
+.color-dot.red    { background: #DC1E1E; }
+.color-dot.purple { background: #8B1FDC; }
+.color-dot.blue   { background: #1E5ADC; }
+.color-dot.green  { background: #1EDC4A; }
 </style>
 </head>
 <body>
@@ -409,13 +257,15 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   <div id="top-border"></div>
   <div id="banner">
     <img src="yari_menu_banniere_rouge.png" alt="banner"
-         style="width:100%; height:90px; object-fit:cover; object-position:center; display:block;" />
+         style="width:100%;height:90px;object-fit:cover;object-position:center;display:block;" />
   </div>
   <div id="subbanner">YARI MENU</div>
   <div id="tabs">
     <div class="tab active" id="tab-main">MAIN</div>
     <div class="tab"        id="tab-cfg">CONFIG</div>
   </div>
+  <!-- Sub-tabs rendered dynamically -->
+  <div id="sub-tabs"></div>
   <div id="cat-header"></div>
   <div id="items-list"></div>
   <div id="bot-border"></div>
@@ -431,7 +281,7 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   <div class="pp-header">
     <div class="pp-avatar" id="pp-avatar">👤</div>
     <span class="pp-name" id="pp-name">—</span>
-    <span class="pp-sid" id="pp-sid">#—</span>
+    <span class="pp-sid"  id="pp-sid">#—</span>
   </div>
   <div class="pp-bar-wrap">
     <div class="pp-bar-row">
@@ -446,137 +296,243 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
     </div>
   </div>
   <div class="pp-section">
-    <div class="pp-row">
-      <span class="pp-icon">◎</span>
-      <span class="pp-label">DISTANCE</span>
-      <span class="pp-value" id="pp-dist">—</span>
-    </div>
-    <div class="pp-row">
-      <span class="pp-icon">🚗</span>
-      <span class="pp-label">VEHICLE</span>
-      <span class="pp-value" id="pp-veh">—</span>
-    </div>
-    <div class="pp-row">
-      <span class="pp-icon">⚡</span>
-      <span class="pp-label">SPEED</span>
-      <span class="pp-value" id="pp-spd">—</span>
-    </div>
-    <div class="pp-row">
-      <span class="pp-icon">🔫</span>
-      <span class="pp-label">WEAPON</span>
-      <span class="pp-value" id="pp-wpn">—</span>
-    </div>
+    <div class="pp-row"><span class="pp-icon">◎</span><span class="pp-label">DISTANCE</span><span class="pp-value" id="pp-dist">—</span></div>
+    <div class="pp-row"><span class="pp-icon">🚗</span><span class="pp-label">VEHICLE</span><span class="pp-value" id="pp-veh">—</span></div>
+    <div class="pp-row"><span class="pp-icon">⚡</span><span class="pp-label">SPEED</span><span class="pp-value" id="pp-spd">—</span></div>
+    <div class="pp-row"><span class="pp-icon">🔫</span><span class="pp-label">WEAPON</span><span class="pp-value" id="pp-wpn">—</span></div>
   </div>
   <div class="pp-section">
-    <div class="pp-row">
-      <span class="pp-icon">👁</span>
-      <span class="pp-label">INVISIBLE</span>
-      <span class="pp-value" id="pp-inv">—</span>
-    </div>
-    <div class="pp-row">
-      <span class="pp-icon">💼</span>
-      <span class="pp-label">JOB</span>
-      <span class="pp-value" id="pp-job">—</span>
-    </div>
-    <div class="pp-row">
-      <span class="pp-icon">📻</span>
-      <span class="pp-label">RADIO</span>
-      <span class="pp-value" id="pp-radio">—</span>
-    </div>
+    <div class="pp-row"><span class="pp-icon">👁</span><span class="pp-label">INVISIBLE</span><span class="pp-value" id="pp-inv">—</span></div>
+    <div class="pp-row"><span class="pp-icon">💼</span><span class="pp-label">JOB</span><span class="pp-value" id="pp-job">—</span></div>
+    <div class="pp-row"><span class="pp-icon">📻</span><span class="pp-label">RADIO</span><span class="pp-value" id="pp-radio">—</span></div>
   </div>
-  <div class="pp-coords" id="pp-coords">X — &nbsp; Y — &nbsp; Z —</div>
+  <div class="pp-coords" id="pp-coords">X —  Y —  Z —</div>
 </div>
 
 <div id="spec-hud"></div>
 
 <script>
+// ═══════════════════════════════════════════════════════════════════
+//  CATEGORY STRUCTURE — sub-tabbed
+//  Each category can have subTabs: [{name, items}]
+//  Online is special: subTabs = [{name:"Players"}, {name:"Troll"}]
+//    but Players is default (tab 0), rendered with player list
+// ═══════════════════════════════════════════════════════════════════
+const CAT_STRUCTURE = [
+  {
+    name: "Player",
+    subTabs: [
+      { name: "SELF",     items: ["God Mode","No Ragdoll","No Collision","Max Heal","Max Armor","Invisible","Super Jump","Walk On Wall"] },
+      { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina"] },
+    ]
+  },
+  {
+    name: "Online",
+    special: "online",
+    subTabs: [
+      { name: "PLAYERS", items: [] },
+      { name: "TROLL",   items: [] },
+    ]
+  },
+  {
+    name: "Weapon",
+    subTabs: [
+      { name: "WEAPONS", items: ["Give Weapons","Give Weapon by Name","Remove All Weapons"] },
+    ]
+  },
+  {
+    name: "Combat",
+    subTabs: [
+      { name: "COMBAT", items: ["Laser Eye","Fast Punch"] },
+    ]
+  },
+  {
+    name: "Vehicle",
+    subTabs: [
+      { name: "SPAWN",   items: ["Spawn Véhicule Personnalisé"] },
+      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost","Full Performance","Réparer Véhicule"] },
+      { name: "CONTROL", items: ["Porter/Lancer Véhicule","Delete Close Véhicule","Unlock Vehicle","Lock Vehicle"] },
+    ]
+  },
+  {
+    name: "Construction",
+    subTabs: [
+      { name: "BUILD", items: ["Wing Vehicle","Tower Vehicle","Ramp Vehicle","Transformer Vehicle","Detach Vehicle"] },
+    ]
+  },
+  {
+    name: "Misc",
+    subTabs: [
+      { name: "MISC",       items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim"] },
+      { name: "PROTECTION", items: ["Anti-teleport","Panic Button"] },
+      { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos"] },
+      { name: "SUNLIFE",    items: ["Buy Phone/radio","Bypass Sunlife","Prime Bypass"] },
+    ]
+  },
+  {
+    name: "Settings",
+    subTabs: [
+      { name: "SETTINGS", items: ["Auto Load Config","Change Banner","Couleur du Menu","Activer Deux Couleurs"] },
+    ]
+  },
+  {
+    name: "Keybind",
+    subTabs: [
+      { name: "KEYBIND", items: ["Delete All Keybinds"] },
+    ]
+  },
+];
 
-const playerPanel = document.getElementById('player-panel');
-let lastFocusedPlayer = null; // Cache le dernier joueur pour éviter la disparition du panel
+const CONFIG_ITEMS = ["Save Config","Load Config"];
 
-function updatePlayerPanel(player) {
-  if (!player) { playerPanel.classList.remove('visible'); return; }
+// ── TOGGLE KEYS: "CatName|SubTabIndex|itemLocalIndex" (1-based)
+// We'll resolve dynamically based on known toggle actions
+// Map: global action key → category/subTab/index
+// Since Lua uses category name + global action index, we keep a mapping
+const GLOBAL_ACTION_MAP = {
+  // Player SELF (global indices per Lua)
+  "Player_2":  true,  // God Mode
+  "Player_3":  true,  // No Ragdoll
+  "Player_4":  true,  // No Collision
+  "Player_8":  true,  // Max Heal
+  "Player_9":  true,  // Max Armor
+  "Player_10": true,  // Invisible
+  "Player_11": true,  // Super Jump
+  "Player_13": true,  // Walk On Wall
+  // Player MOVEMENT
+  "Player_1":  true,  // Noclip
+  "Player_5":  true,  // Fast Run
+  "Player_12": true,  // Infinite Stamina
+  // Vehicle
+  "Vehicle_2": true,  // Porter/Lancer
+  "Vehicle_6": true,  // Vehicle God Mode
+  "Vehicle_7": true,  // Shift Boost
+  // Misc
+  "Misc_1": true,
+  "Misc_2": true,
+  "Misc_3": true,
+  "Misc_4": true,
+  // Combat
+  "Combat_1": true,
+  "Combat_2": true,
+  // Protection
+  "Protection_1": true,
+  // Settings
+  "Settings_1": true,
+  "Settings_4": true,
+  // Destroyer
+  "Destroyer_5": true,
+};
 
-  lastFocusedPlayer = player; // Sauvegarde le joueur sélectionné
-  playerPanel.classList.add('visible');
+// Mapping from display item name → Lua (category, index)
+// We build this from CAT_STRUCTURE plus the original Lua action indices
+const LUA_ACTION = {
+  // Player — original Lua indices
+  "Noclip":                   ["Player",  1],
+  "God Mode":                 ["Player",  2],
+  "No Ragdoll":               ["Player",  3],
+  "No Collision":             ["Player",  4],
+  "Fast Run":                 ["Player",  5],
+  "Revive":                   ["Player",  6],
+  "Teleporte To Waypoint":    ["Player",  7],
+  "Max Heal":                 ["Player",  8],
+  "Max Armor":                ["Player",  9],
+  "Invisible":                ["Player", 10],
+  "Super Jump":               ["Player", 11],
+  "Infinite Stamina":         ["Player", 12],
+  "Walk On Wall":             ["Player", 13],
+  // Weapon
+  "Give Weapons":             ["Weapon",  1],
+  "Give Weapon by Name":      ["Weapon",  2],
+  "Remove All Weapons":       ["Weapon",  3],
+  // Combat
+  "Laser Eye":                ["Combat",  1],
+  "Fast Punch":               ["Combat",  2],
+  // Vehicle
+  "Spawn Véhicule Personnalisé": ["Vehicle", 1],
+  "Porter/Lancer Véhicule":   ["Vehicle", 2],
+  "Full Performance":         ["Vehicle", 3],
+  "Delete Close Véhicule":    ["Vehicle", 4],
+  "Réparer Véhicule":         ["Vehicle", 5],
+  "Vehicle God Mode":         ["Vehicle", 6],
+  "Shift Boost":              ["Vehicle", 7],
+  "Unlock Vehicle":           ["Vehicle", 8],
+  "Lock Vehicle":             ["Vehicle", 9],
+  // Construction
+  "Wing Vehicle":             ["Construction", 1],
+  "Tower Vehicle":            ["Construction", 2],
+  "Ramp Vehicle":             ["Construction", 3],
+  "Transformer Vehicle":      ["Construction", 4],
+  "Detach Vehicle":           ["Construction", 5],
+  // Misc
+  "Warp to Explode":          ["Misc", 1],
+  "Warp to Vehicle":          ["Misc", 2],
+  "Afficher liste spectateurs":["Misc", 3],
+  "Ragdoll All Players":      ["Misc", 4],
+  "Anti Aim":                 ["Misc", 5],
+  // Server (now under Sunlife sub-tab in Misc)
+  "Bypass Sunlife":           ["Server", 1],
+  "Prime Bypass":             ["Server", 2],
+  // Settings
+  "Auto Load Config":         ["Settings", 1],
+  "Change Banner":            ["Settings", 2],
+  "Couleur du Menu":          ["Settings", 3],
+  "Activer Deux Couleurs":    ["Settings", 4],
+  // Keybind
+  "Delete All Keybinds":      ["Keybind", 1],
+  // Sunlife/Prime
+  "Buy Phone/radio":          ["Sunlife/Prime", 1],
+  // Protection
+  "Anti-teleport":            ["Protection", 1],
+  "Panic Button":             ["Protection", 2],
+  // Destroyer
+  "Delete All Vehicles":      ["Destroyer", 1],
+  "Explode All Vehicles":     ["Destroyer", 2],
+  "Cage All Players":         ["Destroyer", 3],
+  "Bug All Players BMX":      ["Destroyer", 4],
+  "Vehicle Chaos":            ["Destroyer", 5],
+};
 
-  // Header
-  document.getElementById('pp-name').textContent = player.name || '—';
-  document.getElementById('pp-sid').textContent = '#' + (player.serverId || '—');
+// Toggle item names
+const TOGGLE_NAMES = new Set([
+  "Noclip","God Mode","No Ragdoll","No Collision","Fast Run",
+  "Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall",
+  "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost",
+  "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs",
+  "Laser Eye","Fast Punch","Anti-teleport","Auto Load Config","Activer Deux Couleurs",
+  "Vehicle Chaos",
+]);
 
-  // Avatar initiale
-  const initials = (player.name || '?').charAt(0).toUpperCase();
-  document.getElementById('pp-avatar').textContent = initials;
-
-  // Health bar
-  const hp = Math.max(0, Math.min(100, player.health ?? 100));
-  const hpBar = document.getElementById('pp-hp-bar');
-  hpBar.style.width = hp + '%';
-  hpBar.className = 'pp-bar-fill health' + (hp < 30 ? ' low' : hp < 60 ? ' mid' : '');
-  document.getElementById('pp-hp-pct').textContent = hp + '%';
-
-  // Armor bar
-  const arm = Math.max(0, Math.min(100, player.armor ?? 0));
-  document.getElementById('pp-arm-bar').style.width = arm + '%';
-  document.getElementById('pp-arm-pct').textContent = arm + '%';
-
-  // Stats
-  document.getElementById('pp-dist').textContent = (player.distance ?? '—') + 'm';
-
-  const veh = document.getElementById('pp-veh');
-  veh.textContent = player.vehicle || 'on foot';
-  veh.className = 'pp-value' + (player.vehicle && player.vehicle !== 'on foot' ? ' warn' : '');
-
-  document.getElementById('pp-spd').textContent = (player.speed ?? '—') + ' km/h';
-
-  const wpn = document.getElementById('pp-wpn');
-  const wpnName = (player.weapon || 'unarmed').replace('weapon_', '').replace(/_/g, ' ');
-  wpn.textContent = wpnName;
-  wpn.className = 'pp-value' + (player.weapon && player.weapon !== 'weapon_unarmed' ? ' danger' : '');
-
-  const inv = document.getElementById('pp-inv');
-  inv.textContent = player.invisible ? 'yes' : 'no';
-  inv.className = 'pp-value' + (player.invisible ? ' danger' : ' ok');
-
-  document.getElementById('pp-job').textContent = player.job || '—';
-  document.getElementById('pp-radio').textContent = player.radio || 'None';
-
-  // Coords
-  if (player.coords) {
-    document.getElementById('pp-coords').textContent =
-      'X ' + Math.floor(player.coords.x) + '  Y ' + Math.floor(player.coords.y) + '  Z ' + Math.floor(player.coords.z);
-  } else {
-    document.getElementById('pp-coords').textContent = 'X —  Y —  Z —';
-  }
+// LUA toggle key lookup (for toggleStates)
+function luaToggleKey(itemName) {
+  const la = LUA_ACTION[itemName];
+  if (!la) return null;
+  return la[0] + '_' + la[1];
 }
-// ── THEME STATE ─────────────────────────────────────────────────────
+
+// ── THEME ───────────────────────────────────────────────────────────
 const THEMES = {
   red:    { accent:'#DC1E1E', glow:'#FF3232', dark:'#8C0A0A', sep:'rgba(50,15,15,0.9)' },
   purple: { accent:'#8B1FDC', glow:'#AA44FF', dark:'#4A0A8C', sep:'rgba(35,10,50,0.9)' },
   blue:   { accent:'#1E5ADC', glow:'#3278FF', dark:'#0A2A8C', sep:'rgba(10,20,50,0.9)' },
   green:  { accent:'#1EDC4A', glow:'#32FF6E', dark:'#0A8C26', sep:'rgba(10,40,20,0.9)' },
 };
-const TWOTONE_LEFT  = '#DC1E1E';  // rouge — côté gauche
-const TWOTONE_RIGHT = '#8B1FDC'; // violet — côté droit
+const TWOTONE_LEFT  = '#DC1E1E';
+const TWOTONE_RIGHT = '#8B1FDC';
 
 let currentTheme   = 'red';
 let twoToneEnabled = false;
-
 const appEl = document.getElementById('app');
 const root  = document.documentElement;
 
 function applyTheme(name, twotone) {
   currentTheme   = name;
   twoToneEnabled = twotone;
-
-  // Remove all theme classes
   appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green','twotone');
-
   if (twotone) {
     appEl.classList.add('twotone');
     root.style.setProperty('--accent-l',   TWOTONE_LEFT);
     root.style.setProperty('--accent-r',   TWOTONE_RIGHT);
-    // derive accent from left for toggles/bars
     root.style.setProperty('--accent',      TWOTONE_LEFT);
     root.style.setProperty('--accent-glow', '#FF3232');
     root.style.setProperty('--accent-dark', '#8C0A0A');
@@ -593,357 +549,180 @@ function applyTheme(name, twotone) {
   }
 }
 
-// ── BANNER CYCLING ───────────────────────────────────────────────────
+// ── BANNER ──────────────────────────────────────────────────────────
 const BANNERS = [
   "yari_menu_banniere_rouge.png",
-  "banniere.gif","banniere1.png","banniere2.png", "banniere2giff.gif",
+  "banniere.gif","banniere1.png","banniere2.png","banniere2giff.gif",
 ];
 let bannerIdx = 0;
 const bannerImg = document.querySelector('#banner img');
-  
-function cycleBanner() {
-  bannerIdx = (bannerIdx + 1) % BANNERS.length;
-  
-  // Envoie l'index IMMÉDIATEMENT, sans attendre onload
-  sendToLua({ type: 'bannerChange', index: bannerIdx });
-  
-  const next = BANNERS[bannerIdx];
-  const test = new Image();
-  test.onload  = () => { bannerImg.src = next; };
-  test.onerror = () => { bannerIdx = 0; bannerImg.src = BANNERS[0]; sendToLua({ type: 'bannerChange', index: 0 }); };
-  test.src = next;
+
+function setBanner(idx) {
+  bannerIdx = ((idx % BANNERS.length) + BANNERS.length) % BANNERS.length;
+  bannerImg.src = BANNERS[bannerIdx];
+  bannerImg.onerror = () => { bannerImg.src = BANNERS[0]; };
 }
 
-// ── MENU DATA ────────────────────────────────────────────────────────
-const CATEGORIES = [
-  {name:"Player", items:["Noclip","God Mode","No Ragdoll","No Collision","Fast Run","Revive","Teleporte To Waypoint","Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall"]},
-  {name:"Online",        items:[]},
-  {name:"Weapon",        items:["Give Weapons","Give Weapon by Name","Remove All Weapons"]},
-  {name:"Combat",        items:["Laser Eye","Fast Punch"]},
-  {name:"Vehicle",       items:["Spawn Véhicule Personnalisé","Porter/Lancer Véhicule","Full Performance","Delete Close Véhicule","Réparer Véhicule","Vehicle God Mode","Shift Boost","Unlock Vehicle","Lock Vehicle"]},
-  {name:"Construction",  items:["Wing Vehicle","Tower Vehicle","Ramp Vehicle", "Transformer Vehicle", "Detach Vehicle"]},
-  {name:"Misc",          items:["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll Player","Ragdoll All Players","Anti Aim"]},
-  {name:"Server",        items:["Bypass Sunlife","Prime Bypass"]},
-  {name:"Settings",      items:["Auto Load Config","Change Banner","Couleur du Menu","Activer Deux Couleurs"]},
-  {name:"Keybind",       items:["Delete All Keybinds"]},
-  {name:"Sunlife/Prime", items:["Buy Phone/radio"]},
-  {name:"Protection",    items:["Anti-teleport","Panic Button"]},
-  {name:"Destroyer",     items:["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos"]},
-];
-const CONFIG_ITEMS = ["Save Config","Load Config"];
-
-const WEAPON_CAT_ORDER = [
-  "Pistol","SMG","Rifle","Shotgun","Sniper",
-  "Machine Gun","Melee","Heavy","Throwables","Tools","Stun"
-];
-
+// ── WEAPON DATA ──────────────────────────────────────────────────────
+const WEAPON_CAT_ORDER = ["Pistol","SMG","Rifle","Shotgun","Sniper","Machine Gun","Melee","Heavy","Throwables","Tools","Stun"];
 const WEAPON_DATA = {
-  "Pistol": [
-    {name:"Pistol",hash:"weapon_pistol"},{name:"Pistol Mk II",hash:"weapon_pistol_mk2"},
-    {name:"Combat Pistol",hash:"weapon_combatpistol"},{name:"AP Pistol",hash:"weapon_appistol"},
-    {name:"Pistol .50",hash:"weapon_pistol50"},{name:"SNS Pistol",hash:"weapon_snspistol"},
-    {name:"SNS Pistol Mk II",hash:"weapon_snspistol_mk2"},{name:"Heavy Pistol",hash:"weapon_heavypistol"},
-    {name:"Vintage Pistol",hash:"weapon_vintagepistol"},{name:"Marksman Pistol",hash:"weapon_marksmanpistol"},
-    {name:"Heavy Revolver",hash:"weapon_revolver"},{name:"Heavy Revolver Mk II",hash:"weapon_revolver_mk2"},
-    {name:"Double Action Revolver",hash:"weapon_doubleaction"},{name:"Ceramic Pistol",hash:"weapon_ceramicpistol"},
-    {name:"Navy Revolver",hash:"weapon_navyrevolver"},{name:"Perico Pistol",hash:"weapon_gadgetpistol"},
-    {name:"WM 29 Pistol",hash:"weapon_pistolxm3"},{name:"Flare Gun",hash:"weapon_flaregun"},
-    {name:"Up-n-Atomizer",hash:"weapon_raypistol"},
-  ],
-  "SMG": [
-    {name:"Micro SMG",hash:"weapon_microsmg"},{name:"SMG",hash:"weapon_smg"},
-    {name:"SMG Mk II",hash:"weapon_smg_mk2"},{name:"Assault SMG",hash:"weapon_assaultsmg"},
-    {name:"Combat PDW",hash:"weapon_combatpdw"},{name:"Machine Pistol",hash:"weapon_machinepistol"},
-    {name:"Mini SMG",hash:"weapon_minismg"},{name:"Tactical SMG",hash:"weapon_tecpistol"},
-  ],
-  "Rifle": [
-    {name:"Assault Rifle",hash:"weapon_assaultrifle"},{name:"Assault Rifle Mk II",hash:"weapon_assaultrifle_mk2"},
-    {name:"Carbine Rifle",hash:"weapon_carbinerifle"},{name:"Carbine Rifle Mk II",hash:"weapon_carbinerifle_mk2"},
-    {name:"Advanced Rifle",hash:"weapon_advancedrifle"},{name:"Special Carbine",hash:"weapon_specialcarbine"},
-    {name:"Special Carbine Mk II",hash:"weapon_specialcarbine_mk2"},{name:"Bullpup Rifle",hash:"weapon_bullpuprifle"},
-    {name:"Bullpup Rifle Mk II",hash:"weapon_bullpuprifle_mk2"},{name:"Compact Rifle",hash:"weapon_compactrifle"},
-    {name:"Military Rifle",hash:"weapon_militaryrifle"},{name:"Heavy Rifle",hash:"weapon_heavyrifle"},
-    {name:"Service Carbine",hash:"weapon_tacticalrifle"},{name:"Battle Rifle",hash:"weapon_battlerifle"},
-  ],
-  "Shotgun": [
-    {name:"Pump Shotgun",hash:"weapon_pumpshotgun"},{name:"Pump Shotgun Mk II",hash:"weapon_pumpshotgun_mk2"},
-    {name:"Sawed-Off Shotgun",hash:"weapon_sawnoffshotgun"},{name:"Assault Shotgun",hash:"weapon_assaultshotgun"},
-    {name:"Bullpup Shotgun",hash:"weapon_bullpupshotgun"},{name:"Heavy Shotgun",hash:"weapon_heavyshotgun"},
-    {name:"Musket",hash:"weapon_musket"},{name:"Double Barrel Shotgun",hash:"weapon_dbshotgun"},
-    {name:"Sweeper Shotgun",hash:"weapon_autoshotgun"},{name:"Combat Shotgun",hash:"weapon_combatshotgun"},
-  ],
-  "Sniper": [
-    {name:"Sniper Rifle",hash:"weapon_sniperrifle"},{name:"Heavy Sniper",hash:"weapon_heavysniper"},
-    {name:"Heavy Sniper Mk II",hash:"weapon_heavysniper_mk2"},{name:"Marksman Rifle",hash:"weapon_marksmanrifle"},
-    {name:"Marksman Rifle Mk II",hash:"weapon_marksmanrifle_mk2"},{name:"Precision Rifle",hash:"weapon_precisionrifle"},
-  ],
-  "Machine Gun": [
-    {name:"MG",hash:"weapon_mg"},{name:"Combat MG",hash:"weapon_combatmg"},
-    {name:"Combat MG Mk II",hash:"weapon_combatmg_mk2"},{name:"Gusenberg Sweeper",hash:"weapon_gusenberg"},
-    {name:"Unholy Hellbringer",hash:"weapon_raycarbine"},
-  ],
-  "Melee": [
-    {name:"Unarmed",hash:"weapon_unarmed"},{name:"Knife",hash:"weapon_knife"},
-    {name:"Nightstick",hash:"weapon_nightstick"},{name:"Hammer",hash:"weapon_hammer"},
-    {name:"Baseball Bat",hash:"weapon_bat"},{name:"Golf Club",hash:"weapon_golfclub"},
-    {name:"Crowbar",hash:"weapon_crowbar"},{name:"Bottle",hash:"weapon_bottle"},
-    {name:"Dagger",hash:"weapon_dagger"},{name:"Hatchet",hash:"weapon_hatchet"},
-    {name:"Knuckle Duster",hash:"weapon_knuckle"},{name:"Machete",hash:"weapon_machete"},
-    {name:"Flashlight",hash:"weapon_flashlight"},{name:"Switchblade",hash:"weapon_switchblade"},
-    {name:"Battle Axe",hash:"weapon_battleaxe"},{name:"Pool Cue",hash:"weapon_poolcue"},
-    {name:"Wrench",hash:"weapon_wrench"},{name:"Stone Hatchet",hash:"weapon_stone_hatchet"},
-    {name:"Candy Cane",hash:"weapon_candycane"},{name:"Stun Rod",hash:"weapon_stunrod"},
-  ],
-  "Heavy": [
-    {name:"RPG",hash:"weapon_rpg"},{name:"Grenade Launcher",hash:"weapon_grenadelauncher"},
-    {name:"Smoke Grenade Launcher",hash:"weapon_grenadelauncher_smoke"},{name:"Minigun",hash:"weapon_minigun"},
-    {name:"Firework Launcher",hash:"weapon_firework"},{name:"Homing Launcher",hash:"weapon_hominglauncher"},
-    {name:"Railgun",hash:"weapon_railgun"},{name:"Compact Grenade Launcher",hash:"weapon_compactlauncher"},
-    {name:"Widowmaker",hash:"weapon_rayminigun"},{name:"Compact EMP Launcher",hash:"weapon_emplauncher"},
-    {name:"Snowball Launcher",hash:"weapon_snowlauncher"},{name:"Railgun XM3",hash:"weapon_railgunxm3"},
-  ],
-  "Throwables": [
-    {name:"Grenade",hash:"weapon_grenade"},{name:"BZ Gas",hash:"weapon_bzgas"},
-    {name:"Tear Gas",hash:"weapon_smokegrenade"},{name:"Molotov",hash:"weapon_molotov"},
-    {name:"Sticky Bomb",hash:"weapon_stickybomb"},{name:"Proximity Mine",hash:"weapon_proxmine"},
-    {name:"Snowball",hash:"weapon_snowball"},{name:"Pipe Bomb",hash:"weapon_pipebomb"},
-    {name:"Ball",hash:"weapon_ball"},{name:"Flare",hash:"weapon_flare"},
-    {name:"Acid Package",hash:"weapon_acidpackage"},
-  ],
-  "Tools": [
-    {name:"Jerry Can",hash:"weapon_petrolcan"},{name:"Hazardous Jerry Can",hash:"weapon_hazardcan"},
-    {name:"Fertilizer Can",hash:"weapon_fertilizercan"},{name:"Fire Extinguisher",hash:"weapon_fireextinguisher"},
-    {name:"Metal Detector",hash:"weapon_metaldetector"},{name:"Hacking Device",hash:"weapon_hackingdevice"},
-  ],
-  "Stun": [
-    {name:"Stun Gun",hash:"weapon_stungun"},{name:"Stun Gun MP",hash:"weapon_stungun_mp"},
-  ],
+  "Pistol":[{name:"Pistol",hash:"weapon_pistol"},{name:"Pistol Mk II",hash:"weapon_pistol_mk2"},{name:"Combat Pistol",hash:"weapon_combatpistol"},{name:"AP Pistol",hash:"weapon_appistol"},{name:"Pistol .50",hash:"weapon_pistol50"},{name:"SNS Pistol",hash:"weapon_snspistol"},{name:"SNS Pistol Mk II",hash:"weapon_snspistol_mk2"},{name:"Heavy Pistol",hash:"weapon_heavypistol"},{name:"Vintage Pistol",hash:"weapon_vintagepistol"},{name:"Marksman Pistol",hash:"weapon_marksmanpistol"},{name:"Heavy Revolver",hash:"weapon_revolver"},{name:"Heavy Revolver Mk II",hash:"weapon_revolver_mk2"},{name:"Double Action Revolver",hash:"weapon_doubleaction"},{name:"Ceramic Pistol",hash:"weapon_ceramicpistol"},{name:"Navy Revolver",hash:"weapon_navyrevolver"},{name:"Perico Pistol",hash:"weapon_gadgetpistol"},{name:"WM 29 Pistol",hash:"weapon_pistolxm3"},{name:"Flare Gun",hash:"weapon_flaregun"},{name:"Up-n-Atomizer",hash:"weapon_raypistol"}],
+  "SMG":[{name:"Micro SMG",hash:"weapon_microsmg"},{name:"SMG",hash:"weapon_smg"},{name:"SMG Mk II",hash:"weapon_smg_mk2"},{name:"Assault SMG",hash:"weapon_assaultsmg"},{name:"Combat PDW",hash:"weapon_combatpdw"},{name:"Machine Pistol",hash:"weapon_machinepistol"},{name:"Mini SMG",hash:"weapon_minismg"},{name:"Tactical SMG",hash:"weapon_tecpistol"}],
+  "Rifle":[{name:"Assault Rifle",hash:"weapon_assaultrifle"},{name:"Assault Rifle Mk II",hash:"weapon_assaultrifle_mk2"},{name:"Carbine Rifle",hash:"weapon_carbinerifle"},{name:"Carbine Rifle Mk II",hash:"weapon_carbinerifle_mk2"},{name:"Advanced Rifle",hash:"weapon_advancedrifle"},{name:"Special Carbine",hash:"weapon_specialcarbine"},{name:"Special Carbine Mk II",hash:"weapon_specialcarbine_mk2"},{name:"Bullpup Rifle",hash:"weapon_bullpuprifle"},{name:"Bullpup Rifle Mk II",hash:"weapon_bullpuprifle_mk2"},{name:"Compact Rifle",hash:"weapon_compactrifle"},{name:"Military Rifle",hash:"weapon_militaryrifle"},{name:"Heavy Rifle",hash:"weapon_heavyrifle"},{name:"Service Carbine",hash:"weapon_tacticalrifle"},{name:"Battle Rifle",hash:"weapon_battlerifle"}],
+  "Shotgun":[{name:"Pump Shotgun",hash:"weapon_pumpshotgun"},{name:"Pump Shotgun Mk II",hash:"weapon_pumpshotgun_mk2"},{name:"Sawed-Off Shotgun",hash:"weapon_sawnoffshotgun"},{name:"Assault Shotgun",hash:"weapon_assaultshotgun"},{name:"Bullpup Shotgun",hash:"weapon_bullpupshotgun"},{name:"Heavy Shotgun",hash:"weapon_heavyshotgun"},{name:"Musket",hash:"weapon_musket"},{name:"Double Barrel Shotgun",hash:"weapon_dbshotgun"},{name:"Sweeper Shotgun",hash:"weapon_autoshotgun"},{name:"Combat Shotgun",hash:"weapon_combatshotgun"}],
+  "Sniper":[{name:"Sniper Rifle",hash:"weapon_sniperrifle"},{name:"Heavy Sniper",hash:"weapon_heavysniper"},{name:"Heavy Sniper Mk II",hash:"weapon_heavysniper_mk2"},{name:"Marksman Rifle",hash:"weapon_marksmanrifle"},{name:"Marksman Rifle Mk II",hash:"weapon_marksmanrifle_mk2"},{name:"Precision Rifle",hash:"weapon_precisionrifle"}],
+  "Machine Gun":[{name:"MG",hash:"weapon_mg"},{name:"Combat MG",hash:"weapon_combatmg"},{name:"Combat MG Mk II",hash:"weapon_combatmg_mk2"},{name:"Gusenberg Sweeper",hash:"weapon_gusenberg"},{name:"Unholy Hellbringer",hash:"weapon_raycarbine"}],
+  "Melee":[{name:"Unarmed",hash:"weapon_unarmed"},{name:"Knife",hash:"weapon_knife"},{name:"Nightstick",hash:"weapon_nightstick"},{name:"Hammer",hash:"weapon_hammer"},{name:"Baseball Bat",hash:"weapon_bat"},{name:"Golf Club",hash:"weapon_golfclub"},{name:"Crowbar",hash:"weapon_crowbar"},{name:"Bottle",hash:"weapon_bottle"},{name:"Dagger",hash:"weapon_dagger"},{name:"Hatchet",hash:"weapon_hatchet"},{name:"Knuckle Duster",hash:"weapon_knuckle"},{name:"Machete",hash:"weapon_machete"},{name:"Flashlight",hash:"weapon_flashlight"},{name:"Switchblade",hash:"weapon_switchblade"},{name:"Battle Axe",hash:"weapon_battleaxe"},{name:"Pool Cue",hash:"weapon_poolcue"},{name:"Wrench",hash:"weapon_wrench"},{name:"Stone Hatchet",hash:"weapon_stone_hatchet"},{name:"Candy Cane",hash:"weapon_candycane"},{name:"Stun Rod",hash:"weapon_stunrod"}],
+  "Heavy":[{name:"RPG",hash:"weapon_rpg"},{name:"Grenade Launcher",hash:"weapon_grenadelauncher"},{name:"Smoke Grenade Launcher",hash:"weapon_grenadelauncher_smoke"},{name:"Minigun",hash:"weapon_minigun"},{name:"Firework Launcher",hash:"weapon_firework"},{name:"Homing Launcher",hash:"weapon_hominglauncher"},{name:"Railgun",hash:"weapon_railgun"},{name:"Compact Grenade Launcher",hash:"weapon_compactlauncher"},{name:"Widowmaker",hash:"weapon_rayminigun"},{name:"Compact EMP Launcher",hash:"weapon_emplauncher"},{name:"Snowball Launcher",hash:"weapon_snowlauncher"},{name:"Railgun XM3",hash:"weapon_railgunxm3"}],
+  "Throwables":[{name:"Grenade",hash:"weapon_grenade"},{name:"BZ Gas",hash:"weapon_bzgas"},{name:"Tear Gas",hash:"weapon_smokegrenade"},{name:"Molotov",hash:"weapon_molotov"},{name:"Sticky Bomb",hash:"weapon_stickybomb"},{name:"Proximity Mine",hash:"weapon_proxmine"},{name:"Snowball",hash:"weapon_snowball"},{name:"Pipe Bomb",hash:"weapon_pipebomb"},{name:"Ball",hash:"weapon_ball"},{name:"Flare",hash:"weapon_flare"},{name:"Acid Package",hash:"weapon_acidpackage"}],
+  "Tools":[{name:"Jerry Can",hash:"weapon_petrolcan"},{name:"Hazardous Jerry Can",hash:"weapon_hazardcan"},{name:"Fertilizer Can",hash:"weapon_fertilizercan"},{name:"Fire Extinguisher",hash:"weapon_fireextinguisher"},{name:"Metal Detector",hash:"weapon_metaldetector"},{name:"Hacking Device",hash:"weapon_hackingdevice"}],
+  "Stun":[{name:"Stun Gun",hash:"weapon_stungun"},{name:"Stun Gun MP",hash:"weapon_stungun_mp"}],
 };
 
-// weapon UI state (mirrored from lua)
+// ── STATE ────────────────────────────────────────────────────────────
+let tab        = 'main';     // 'main' | 'config'
+let selIdx     = 0, scrollOff = 0;   // main category list
+let curCatIdx  = null;               // index into CAT_STRUCTURE (null = at root)
+let subTabIdx  = 0;                  // which sub-tab is active inside a category
+let itemSelIdx = 0, itemScrollOff = 0; // item selection within sub-tab
+
+// Online sub-state
+let nearbyPlayers   = [];
+let selectedPlayers = {};
+let playerSel       = 0;
+let trollActions    = ["Teleport","Ragdoll","Silent Kill","Stun Player","Spectate","Revive","Smash Attack","Launch Player","Cage Player","Cage Player M2","Stop Cage Player M2","Bug Player BMX","Bug Player Avenger","Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle"];
+let trollSel        = 0;
+
+// Weapon sub-state
 let weaponMenuOpen = false;
 let weaponCatIdx   = 0;
 let weaponSelIdx   = 0;
-let weaponCatName  = "Pistol";
 
+// Toggles
 const toggleStates = {};
-const TOGGLE_KEYS = new Set([
-  "Player_1","Player_2","Player_3","Player_4","Player_5",
-  "Player_8","Player_9","Player_10","Player_11","Player_12","Player_13",
-  "Vehicle_2","Vehicle_6","Vehicle_7",
-  "Misc_1","Misc_2","Misc_3","Misc_4",
-  "Combat_1","Combat_2",
-  "Protection_1",
-  "Settings_1",   // Auto Load Config
-  "Settings_4",   // Deux Couleurs
-  "Destroyer_5",
-]);
 
-// ── UI STATE ─────────────────────────────────────────────────────────
-let tab         = 'main';
-let selIdx      = 0, scrollOff = 0;
-let curCatName  = null;
-let catSel      = 0, catScroll = 0;
-const MAX_VIS   = 10;
-
-let onlineSubMenu   = null;
-let onlineSubSel    = 0;
-let nearbyPlayers   = [];
-let selectedPlayers = {};
-let trollActions    = [
-  "Teleport","Ragdoll","Silent Kill","Stun Player","Spectate","Revive",
-  "Smash Attack","Launch Player","Cage Player","Cage Player M2",
-  "Stop Cage Player M2","Bug Player BMX","Bug Player Avenger",
-  "Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle"
-];
-let trollSel = 0, playerSel = 0;
+const MAX_VIS  = 10;
+const MAX_VIS_W = 9;
 
 const tabMainEl  = document.getElementById('tab-main');
 const tabCfgEl   = document.getElementById('tab-cfg');
+const subTabsEl  = document.getElementById('sub-tabs');
 const catHeader  = document.getElementById('cat-header');
 const itemsList  = document.getElementById('items-list');
 
-// ── COLOUR THEME PICKER ──────────────────────────────────────────────
-// Rendered inline when "Couleur du Menu" is selected
-function renderColorPicker() {
-  itemsList.innerHTML = '';
-  const strip = document.createElement('div');
-  strip.className = 'color-strip';
-  strip.style.padding = '8px 28px';
-  strip.style.gap = '10px';
+// ── PLAYER PANEL ────────────────────────────────────────────────────
+const playerPanel = document.getElementById('player-panel');
 
-  ['red','purple','blue','green'].forEach(c => {
-    const dot = document.createElement('div');
-    dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
-    dot.title = c;
-    itemsList.appendChild(dot);
-    // clicking sends action back to Lua via the callback bridge
-    dot.addEventListener('click', () => {
-      applyTheme(c, false);
-      // notify Lua
-      sendToLua({ type:'colorChange', theme: c, twotone: false });
-      render();
-    });
+function updatePlayerPanel(player) {
+  if (!player) { playerPanel.classList.remove('visible'); return; }
+  playerPanel.classList.add('visible');
+  document.getElementById('pp-name').textContent = player.name || '—';
+  document.getElementById('pp-sid').textContent = '#' + (player.serverId || '—');
+  document.getElementById('pp-avatar').textContent = (player.name || '?').charAt(0).toUpperCase();
+  const hp = Math.max(0, Math.min(100, player.health ?? 100));
+  const hpBar = document.getElementById('pp-hp-bar');
+  hpBar.style.width = hp + '%';
+  hpBar.className = 'pp-bar-fill health' + (hp < 30 ? ' low' : hp < 60 ? ' mid' : '');
+  document.getElementById('pp-hp-pct').textContent = hp + '%';
+  const arm = Math.max(0, Math.min(100, player.armor ?? 0));
+  document.getElementById('pp-arm-bar').style.width = arm + '%';
+  document.getElementById('pp-arm-pct').textContent = arm + '%';
+  document.getElementById('pp-dist').textContent = (player.distance ?? '—') + 'm';
+  const veh = document.getElementById('pp-veh');
+  veh.textContent = player.vehicle || 'on foot';
+  veh.className = 'pp-value' + (player.vehicle && player.vehicle !== 'on foot' ? ' warn' : '');
+  document.getElementById('pp-spd').textContent = (player.speed ?? '—') + ' km/h';
+  const wpn = document.getElementById('pp-wpn');
+  const wpnName = (player.weapon || 'unarmed').replace('weapon_','').replace(/_/g,' ');
+  wpn.textContent = wpnName;
+  wpn.className = 'pp-value' + (player.weapon && player.weapon !== 'weapon_unarmed' ? ' danger' : '');
+  const inv = document.getElementById('pp-inv');
+  inv.textContent = player.invisible ? 'yes' : 'no';
+  inv.className = 'pp-value' + (player.invisible ? ' danger' : ' ok');
+  document.getElementById('pp-job').textContent = player.job || '—';
+  document.getElementById('pp-radio').textContent = player.radio || 'None';
+  if (player.coords) {
+    document.getElementById('pp-coords').textContent = 'X ' + Math.floor(player.coords.x) + '  Y ' + Math.floor(player.coords.y) + '  Z ' + Math.floor(player.coords.z);
+  } else {
+    document.getElementById('pp-coords').textContent = 'X —  Y —  Z —';
+  }
+}
+
+// ── RENDER SUB-TABS BAR ─────────────────────────────────────────────
+function renderSubTabs(cat) {
+  if (!cat || cat.subTabs.length <= 1) {
+    subTabsEl.innerHTML = '';
+    subTabsEl.className = '';
+    return;
+  }
+  subTabsEl.className = 'show';
+  subTabsEl.innerHTML = '';
+  cat.subTabs.forEach((st, i) => {
+    const el = document.createElement('div');
+    el.className = 'sub-tab' + (i === subTabIdx ? ' active' : '');
+    el.textContent = st.name;
+    subTabsEl.appendChild(el);
   });
-
-  // Dots direct to itemsList
-  strip.innerHTML = '';
-  ['red','purple','blue','green'].forEach(c => {
-    const dot = document.createElement('div');
-    dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
-    strip.appendChild(dot);
-    dot.addEventListener('click', () => {
-      applyTheme(c, false);
-      sendToLua({ type:'colorChange', theme: c, twotone: false });
-      render();
-    });
-  });
-
-  itemsList.innerHTML = '';
-  itemsList.appendChild(strip);
 }
 
 // ── RENDER ───────────────────────────────────────────────────────────
-function getCurCat() {
-  if (!curCatName) return null;
-  return CATEGORIES.find(c => c.name === curCatName) || null;
-}
-
 function render() {
   itemsList.innerHTML = '';
-  const cat = getCurCat();
 
   if (tab === 'config') {
+    subTabsEl.innerHTML = ''; subTabsEl.className = '';
     catHeader.className = '';
-    renderList(CONFIG_ITEMS, selIdx, scrollOff, null);
-    return;
-  }
-  if (cat) {
-        catHeader.className = '';
-        if (cat.name === 'Online') { renderOnline(); return; }
-        if (cat.name === 'Weapon' && weaponMenuOpen) { renderWeaponList(); return; }
-        catHeader.textContent = cat.name.toUpperCase();
-        catHeader.className = 'show';
-        renderList(cat.items, catSel, catScroll, cat.name);
-    } else {
-        renderCategories();
-    }
-  }
-
-
-function renderOnline() {
-  if (onlineSubMenu === null) {
-    ['Players','Troll'].forEach((name,i) => {
-      const el = document.createElement('div');
-      el.className = 'menu-item' + (i === onlineSubSel ? ' sel' : '');
-      el.innerHTML = `<div class="bar"></div><span class="item-name">${name}</span><span class="item-ind">›</span>`;
-      itemsList.appendChild(el);
-    });
-  } else if (onlineSubMenu === 'Players') {
-    const selCount = Object.keys(selectedPlayers).length;
-    if (selCount > 0) {
-      const hd = document.createElement('div');
-      hd.style.cssText = 'padding:2px 14px;font-size:10px;color:#32c832;font-family:"Share Tech Mono",monospace;';
-      hd.textContent = `● ${selCount} sélectionné(s)`;
-      itemsList.appendChild(hd);
-    }
-    if (nearbyPlayers.length === 0) {
-      const el = document.createElement('div');
-      el.className = 'menu-item';
-      el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun joueur à proximité</span>';
-      itemsList.appendChild(el);
-    } else {
-      nearbyPlayers.slice(0,10).forEach((p,i) => {
-        const isOn = selectedPlayers[p.serverId] === true;
-        const el = document.createElement('div');
-        el.className = 'menu-item' + (i === playerSel ? ' sel' : '');
-        el.innerHTML = `<div class="bar"></div>
-          <span class="item-name" style="font-size:11px">[${p.serverId}] ${p.name} <span style="color:var(--dimmed)">${p.distance}m</span></span>
-          <div class="tog${isOn ? ' on' : ''}"></div>`;
-        itemsList.appendChild(el);
-      });
-    }
-  } else if (onlineSubMenu === 'Troll') {
-    const selCount = Object.keys(selectedPlayers).length;
-    const hd = document.createElement('div');
-    hd.style.cssText = 'padding:2px 14px;font-size:10px;font-family:"Share Tech Mono",monospace;';
-    hd.style.color = selCount > 0 ? '#32c832' : '#dc821e';
-    hd.textContent = selCount > 0 ? `● ${selCount} joueur(s) ciblé(s)` : '⚠ Aucun joueur sélectionné';
-    itemsList.appendChild(hd);
-    trollActions.forEach((name,i) => {
-      const el = document.createElement('div');
-      el.className = 'menu-item' + (i === trollSel ? ' sel' : '');
-      el.innerHTML = `<div class="bar"></div><span class="item-name">${name}</span><span class="item-ind">▶</span>`;
-      itemsList.appendChild(el);
-    });
-  }
-}
-
-function renderWeaponList() {
-  const catName  = WEAPON_CAT_ORDER[weaponCatIdx] || "Pistol";
-  const weapons  = WEAPON_DATA[catName] || [];
-  const catCount = WEAPON_CAT_ORDER.length;
-
-  // Category nav header
-  catHeader.textContent = `← ${catName.toUpperCase()} → (${weaponCatIdx + 1}/${catCount})`;
-  catHeader.className   = 'show';
-
-  // hint bar
-  const hint = document.createElement('div');
-  hint.style.cssText = 'padding:2px 14px;font-size:9px;letter-spacing:1px;color:rgba(180,180,180,0.45);font-family:"Share Tech Mono",monospace;background:rgba(5,5,5,0.9);border-bottom:1px solid rgba(40,10,10,0.5);';
-  hint.textContent = '← → CATÉGORIE   ↑ ↓ ARME   ↵ DONNER';
-  itemsList.appendChild(hint);
-
-  if (weapons.length === 0) {
-    const el = document.createElement('div');
-    el.className = 'menu-item';
-    el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucune arme</span>';
-    itemsList.appendChild(el);
+    renderConfigList();
     return;
   }
 
-  // scroll window: keep selected visible in 9 rows
-  const MAX_W = 9;
-  let scrollStart = 0;
-  if (weaponSelIdx >= MAX_W) scrollStart = weaponSelIdx - MAX_W + 1;
-
-  for (let i = 0; i < MAX_W; i++) {
-    const idx = i + scrollStart;
-    if (idx >= weapons.length) break;
-    const w   = weapons[idx];
-    const sel = idx === weaponSelIdx;
-    const el  = document.createElement('div');
-    el.className = 'menu-item' + (sel ? ' sel' : '');
-
-    const hashShort = w.hash.replace('weapon_', '').replace(/_/g, ' ');
-    el.innerHTML = `
-      <div class="bar"></div>
-      <span class="item-name" style="font-size:12px">${w.name}</span>
-      <span class="item-ind" style="font-size:9px;opacity:0.45;font-family:'Share Tech Mono',monospace;">${hashShort}</span>`;
-    itemsList.appendChild(el);
+  if (curCatIdx === null) {
+    // Root: category list
+    subTabsEl.innerHTML = ''; subTabsEl.className = '';
+    catHeader.className = '';
+    renderCategoryRoot();
+    return;
   }
 
-  // scroll indicator
-  if (weapons.length > MAX_W) {
-    const ind = document.createElement('div');
-    ind.style.cssText = 'padding:2px 14px;font-size:9px;color:rgba(180,180,180,0.4);font-family:"Share Tech Mono",monospace;text-align:right;';
-    ind.textContent = `${weaponSelIdx + 1} / ${weapons.length}`;
-    itemsList.appendChild(ind);
+  const cat = CAT_STRUCTURE[curCatIdx];
+  renderSubTabs(cat);
+
+  if (cat.special === 'online') {
+    renderOnline(cat);
+    return;
   }
+
+  if (cat.name === 'Weapon' && weaponMenuOpen) {
+    catHeader.textContent = '← ' + (WEAPON_CAT_ORDER[weaponCatIdx] || 'Pistol').toUpperCase() + ' → (' + (weaponCatIdx+1) + '/' + WEAPON_CAT_ORDER.length + ')';
+    catHeader.className = 'show';
+    renderWeaponList();
+    return;
+  }
+
+  const stab = cat.subTabs[subTabIdx];
+  catHeader.textContent = cat.name.toUpperCase() + ' › ' + (stab ? stab.name : '');
+  catHeader.className = 'show';
+
+  if (stab) renderItemList(stab.items, cat.name);
 }
 
-function renderCategories() {
+function renderCategoryRoot() {
   for (let i = 0; i < MAX_VIS; i++) {
     const idx = i + scrollOff;
-    if (idx >= CATEGORIES.length) break;
-    const c   = CATEGORIES[idx];
-    const has = c.items.length > 0 || c.name === 'Online';
-    makeItem(c.name, idx === selIdx, has ? '›' : '', null);
+    if (idx >= CAT_STRUCTURE.length) break;
+    const c   = CAT_STRUCTURE[idx];
+    makeItem(c.name, idx === selIdx, '›', null);
   }
 }
 
-function renderList(items, si, so, catName) {
-  if (items.length === 0) {
+function renderConfigList() {
+  CONFIG_ITEMS.forEach((name, i) => {
+    makeItem(name, i === itemSelIdx, '+', null);
+  });
+}
+
+function renderItemList(items, catName) {
+  if (!items || items.length === 0) {
     const d = document.createElement('div');
     d.className = 'menu-item';
     d.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun élément</span>';
@@ -951,24 +730,24 @@ function renderList(items, si, so, catName) {
     return;
   }
   for (let i = 0; i < MAX_VIS; i++) {
-    const idx  = i + so;
+    const idx  = i + itemScrollOff;
     if (idx >= items.length) break;
     const name = items[idx];
-    const key  = catName ? catName + '_' + (idx + 1) : null;
-    const isTog = key !== null && TOGGLE_KEYS.has(key);
-    // Special: "Couleur du Menu" shows colour dots inline
-    if (catName === 'Settings' && name === 'Couleur du Menu') {
+    const isTog = TOGGLE_NAMES.has(name);
+    const tk    = luaToggleKey(name);
+    const togVal = isTog ? (toggleStates[tk] === true) : null;
+
+    // Settings: Couleur du Menu — special colour picker row
+    if (name === 'Couleur du Menu') {
       const el = document.createElement('div');
-      el.className = 'menu-item' + (idx === si ? ' sel' : '');
+      el.className = 'menu-item' + (idx === itemSelIdx ? ' sel' : '');
       el.style.height = 'auto'; el.style.padding = '4px 14px 4px 28px';
-      el.style.flexWrap = 'wrap'; el.style.gap = '6px';
       el.innerHTML = `<div class="bar"></div><span class="item-name" style="font-size:12px">Couleur</span>`;
       const strip = document.createElement('div');
       strip.style.cssText = 'display:flex;gap:6px;align-items:center;margin-left:auto;';
       ['red','purple','blue','green'].forEach(c => {
         const dot = document.createElement('div');
         dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
-        dot.style.cursor = 'pointer';
         dot.addEventListener('click', () => {
           applyTheme(c, false);
           sendToLua({ type:'colorChange', theme:c, twotone:false });
@@ -980,19 +759,94 @@ function renderList(items, si, so, catName) {
       itemsList.appendChild(el);
       continue;
     }
-    // Special: "Activer Deux Couleurs" — dynamic toggle label
-    if (catName === 'Settings' && name === 'Activer Deux Couleurs') {
-      const togVal = twoToneEnabled;
-      makeItem(name, idx === si, null, togVal);
+
+    if (name === 'Activer Deux Couleurs') {
+      makeItem(name, idx === itemSelIdx, null, twoToneEnabled);
       continue;
     }
-    const togVal = isTog ? (toggleStates[key] === true) : null;
-    makeItem(name, idx === si, isTog ? null : '+', togVal);
+
+    makeItem(name, idx === itemSelIdx, isTog ? null : '+', togVal);
+  }
+}
+
+function renderOnline(cat) {
+  // subTabIdx 0 = Players, 1 = Troll
+  catHeader.textContent = 'ONLINE › ' + cat.subTabs[subTabIdx].name;
+  catHeader.className = 'show';
+
+  if (subTabIdx === 0) {
+    // Players list
+    const selCount = Object.keys(selectedPlayers).length;
+    if (selCount > 0) {
+      const hd = document.createElement('div');
+      hd.style.cssText = 'padding:2px 14px;font-size:10px;color:#32c832;font-family:"Share Tech Mono",monospace;';
+      hd.textContent = '● ' + selCount + ' sélectionné(s)';
+      itemsList.appendChild(hd);
+    }
+    if (nearbyPlayers.length === 0) {
+      const el = document.createElement('div');
+      el.className = 'menu-item';
+      el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun joueur à proximité</span>';
+      itemsList.appendChild(el);
+    } else {
+      nearbyPlayers.slice(0, MAX_VIS).forEach((p, i) => {
+        const isOn = selectedPlayers[p.serverId] === true;
+        const el = document.createElement('div');
+        el.className = 'menu-item' + (i === playerSel ? ' sel' : '');
+        el.innerHTML = `<div class="bar"></div>
+          <span class="item-name" style="font-size:11px">[${p.serverId}] ${p.name} <span style="color:var(--dimmed)">${p.distance}m</span></span>
+          <div class="tog${isOn ? ' on' : ''}"></div>`;
+        itemsList.appendChild(el);
+      });
+    }
+  } else {
+    // Troll actions
+    const selCount = Object.keys(selectedPlayers).length;
+    const hd = document.createElement('div');
+    hd.style.cssText = 'padding:2px 14px;font-size:10px;font-family:"Share Tech Mono",monospace;';
+    hd.style.color = selCount > 0 ? '#32c832' : '#dc821e';
+    hd.textContent = selCount > 0 ? '● ' + selCount + ' joueur(s) ciblé(s)' : '⚠ Aucun joueur sélectionné';
+    itemsList.appendChild(hd);
+    trollActions.forEach((name, i) => {
+      const el = document.createElement('div');
+      el.className = 'menu-item' + (i === trollSel ? ' sel' : '');
+      el.innerHTML = `<div class="bar"></div><span class="item-name">${name}</span><span class="item-ind">▶</span>`;
+      itemsList.appendChild(el);
+    });
+  }
+}
+
+function renderWeaponList() {
+  const catName = WEAPON_CAT_ORDER[weaponCatIdx] || 'Pistol';
+  const weapons = WEAPON_DATA[catName] || [];
+  const hint = document.createElement('div');
+  hint.style.cssText = 'padding:2px 14px;font-size:9px;letter-spacing:1px;color:rgba(180,180,180,0.45);font-family:"Share Tech Mono",monospace;background:rgba(5,5,5,0.9);border-bottom:1px solid rgba(40,10,10,0.5);';
+  hint.textContent = '← → CATÉGORIE   ↑ ↓ ARME   ↵ DONNER';
+  itemsList.appendChild(hint);
+  let scrollStart = 0;
+  if (weaponSelIdx >= MAX_VIS_W) scrollStart = weaponSelIdx - MAX_VIS_W + 1;
+  for (let i = 0; i < MAX_VIS_W; i++) {
+    const idx = i + scrollStart;
+    if (idx >= weapons.length) break;
+    const w   = weapons[idx];
+    const el  = document.createElement('div');
+    el.className = 'menu-item' + (idx === weaponSelIdx ? ' sel' : '');
+    const hashShort = w.hash.replace('weapon_','').replace(/_/g,' ');
+    el.innerHTML = `<div class="bar"></div>
+      <span class="item-name" style="font-size:12px">${w.name}</span>
+      <span class="item-ind" style="font-size:9px;opacity:0.45;font-family:'Share Tech Mono',monospace;">${hashShort}</span>`;
+    itemsList.appendChild(el);
+  }
+  if (weapons.length > MAX_VIS_W) {
+    const ind = document.createElement('div');
+    ind.style.cssText = 'padding:2px 14px;font-size:9px;color:rgba(180,180,180,0.4);font-family:"Share Tech Mono",monospace;text-align:right;';
+    ind.textContent = (weaponSelIdx + 1) + ' / ' + weapons.length;
+    itemsList.appendChild(ind);
   }
 }
 
 function makeItem(name, selected, ind, togState) {
-  const el = document.createElement('div');
+  const el  = document.createElement('div');
   el.className = 'menu-item' + (selected ? ' sel' : '');
   const bar = document.createElement('div');
   bar.className = 'bar';
@@ -1014,19 +868,13 @@ function makeItem(name, selected, ind, togState) {
   itemsList.appendChild(el);
 }
 
-function setTab(t) {
-  tab = t; curCatName = null; selIdx = 0; scrollOff = 0;
-  tabMainEl.className = 'tab' + (t === 'main'   ? ' active' : '');
-  tabCfgEl.className  = 'tab' + (t === 'config' ? ' active' : '');
-  render();
-}
-
 // ── LUA BRIDGE ───────────────────────────────────────────────────────
 function sendToLua(obj) {
   if (!window.__yariCallback) return;
   try { window.__yariCallback(JSON.stringify(obj)); } catch(_) {}
 }
 
+// ── MESSAGE HANDLER ──────────────────────────────────────────────────
 window.addEventListener('message', function(e) {
   let d = e.data;
   if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
@@ -1034,57 +882,35 @@ window.addEventListener('message', function(e) {
 
   if (d.type === 'showMenu') { appEl.style.display = 'flex'; render(); return; }
   if (d.type === 'hideMenu') { appEl.style.display = 'none'; return; }
-  if (d.type === 'cycleBanner') { cycleBanner(); return; }
 
   if (d.type === 'spectatorToggle') {
-  document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
-  if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
-  return;
-}
-
-if (d.type === 'spectatorUpdate') {
-  const hud = document.getElementById('spec-hud');
-  if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
-  hud.className = 'visible';
-
-  const list = d.list || [];
-  let html = `
-    <div class="spec-header">
-      <div class="spec-dot"></div>
-      <span class="spec-count">${list.length}</span>
-      <span class="spec-label">SPECTATEURS</span>
-    </div>`;
-
-  if (list.length === 0) {
-    html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
-  } else {
-    list.forEach(p => {
-      const isNoclip = p.type.includes('Noclip');
-      const isAdmin  = p.type.includes('Admin');
-      const rowCls   = (isNoclip && isAdmin) ? 'both' : isNoclip ? 'noclip' : 'admin';
-      const typeLabel = p.type.replace(/[\[\]]/g, '');
-      html += `
-        <div class="spec-row ${isNoclip ? 'noclip' : 'admin'}">
-          <span class="spec-sid">${p.serverId}</span>
-          <span class="spec-name">${p.name}</span>
-          <span class="spec-dist">${p.distance}m</span>
-          <span class="spec-type ${rowCls}">${typeLabel}</span>
-        </div>`;
-    });
+    document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
+    if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
+    return;
   }
-  hud.innerHTML = html;
-  return;
-}
 
-  if (d.type === 'setBanner') {
-      const idx = (typeof d.index === 'number') ? d.index : 0;
-      bannerIdx = idx;
-      const src = BANNERS[bannerIdx] || BANNERS[0];
-      // Force direct, pas de test onload/onerror qui peut rater
-      bannerImg.src = src;
-      bannerImg.onerror = () => { bannerImg.src = BANNERS[0]; };
-      return;
+  if (d.type === 'spectatorUpdate') {
+    const hud = document.getElementById('spec-hud');
+    if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
+    hud.className = 'visible';
+    const list = d.list || [];
+    let html = `<div class="spec-header"><div class="spec-dot"></div><span class="spec-count">${list.length}</span><span class="spec-label">SPECTATEURS</span></div>`;
+    if (list.length === 0) {
+      html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
+    } else {
+      list.forEach(p => {
+        const isNoclip = p.type.includes('Noclip');
+        const isAdmin  = p.type.includes('Admin');
+        const rowCls   = isNoclip ? 'noclip' : 'admin';
+        const typeLabel = p.type.replace(/[\[\]]/g,'');
+        html += `<div class="spec-row ${rowCls}"><span class="spec-sid">${p.serverId}</span><span class="spec-name">${p.name}</span><span class="spec-dist">${p.distance}m</span><span class="spec-type ${rowCls}">${typeLabel}</span></div>`;
+      });
+    }
+    hud.innerHTML = html;
+    return;
   }
+
+  if (d.type === 'setBanner') { setBanner(d.index || 0); return; }
 
   if (d.type === 'applyTheme') {
     applyTheme(d.theme || currentTheme, d.twotone === true);
@@ -1093,7 +919,6 @@ if (d.type === 'spectatorUpdate') {
 
   if (d.type === 'setToggleStates') {
     if (d.states) Object.assign(toggleStates, d.states);
-    // sync two-tone from toggle state
     if ('Settings_4' in (d.states || {})) {
       twoToneEnabled = d.states['Settings_4'] === true;
       applyTheme(currentTheme, twoToneEnabled);
@@ -1102,14 +927,8 @@ if (d.type === 'spectatorUpdate') {
   }
 
   if (d.type === 'sync') {
-    // Mise à jour du panel: ne cacher que si on quitte le submenu "Players"
-    if (d.focusedPlayer) {
-      updatePlayerPanel(d.focusedPlayer);
-    } else if ('onlineSubMenu' in d && d.onlineSubMenu !== 'Players') {
-      // On a quitté le submenu Players, cache le panel
-      updatePlayerPanel(null);
-    }
-    // Sinon, garde le dernier joueur affiché (lastFocusedPlayer reste visible)
+    if (d.focusedPlayer) updatePlayerPanel(d.focusedPlayer);
+    else if (d.onlineSubMenu !== 0 && d.onlineSubMenu !== 'Players') updatePlayerPanel(null);
 
     if (d.toggles) {
       Object.assign(toggleStates, d.toggles);
@@ -1118,25 +937,48 @@ if (d.type === 'spectatorUpdate') {
         applyTheme(currentTheme, twoToneEnabled);
       }
     }
+
+    // Tab
     if (d.tab) {
       tab = d.tab;
       tabMainEl.className = 'tab' + (tab === 'main'   ? ' active' : '');
       tabCfgEl.className  = 'tab' + (tab === 'config' ? ' active' : '');
     }
-    curCatName = d.curCatName || null;
-    if (d.selIdx    !== undefined) { if (curCatName) catSel    = d.selIdx;    else selIdx    = d.selIdx; }
-    if (d.scrollOff !== undefined) { if (curCatName) catScroll = d.scrollOff; else scrollOff = d.scrollOff; }
-    if ('onlineSubMenu'    in d) onlineSubMenu   = d.onlineSubMenu === false ? null : d.onlineSubMenu;
-    if (d.onlineSubSel   !== undefined) onlineSubSel    = d.onlineSubSel;
-    if (d.nearbyPlayers  !== undefined) nearbyPlayers   = d.nearbyPlayers;
-    if (d.selectedPlayers!== undefined) selectedPlayers = d.selectedPlayers;
-    if (d.trollSel       !== undefined) trollSel        = d.trollSel;
-    if (d.playerSel      !== undefined) playerSel       = d.playerSel;
+
+    // Category cursor
+    if ('curCatName' in d) {
+      if (!d.curCatName) {
+        curCatIdx = null;
+      } else {
+        const idx = CAT_STRUCTURE.findIndex(c => c.name === d.curCatName);
+        curCatIdx = idx >= 0 ? idx : null;
+      }
+    }
+
+    // Indices
+    if (d.selIdx      !== undefined) { if (curCatIdx !== null) itemSelIdx   = d.selIdx;    else selIdx    = d.selIdx; }
+    if (d.scrollOff   !== undefined) { if (curCatIdx !== null) itemScrollOff= d.scrollOff; else scrollOff = d.scrollOff; }
+
+    // Sub-tab from Lua (for categories where Lua drives Q/E)
+    if (d.subTabIdx !== undefined) subTabIdx = d.subTabIdx;
+
+    // Online
+    if (d.nearbyPlayers   !== undefined) nearbyPlayers   = d.nearbyPlayers;
+    if (d.selectedPlayers !== undefined) selectedPlayers = d.selectedPlayers;
+    if (d.trollSel        !== undefined) trollSel        = d.trollSel;
+    if (d.playerSel       !== undefined) playerSel       = d.playerSel;
+    // Map onlineSubMenu string → subTabIdx
+    if ('onlineSubMenu' in d) {
+      if      (d.onlineSubMenu === 'Troll')   subTabIdx = 1;
+      else if (d.onlineSubMenu === 'Players' || d.onlineSubMenu === null || d.onlineSubMenu === false) subTabIdx = 0;
+    }
+
+    // Weapon
     if ('weaponMenuOpen' in d) weaponMenuOpen = d.weaponMenuOpen === true;
     if (d.weaponCatIdx  !== undefined) weaponCatIdx  = d.weaponCatIdx;
     if (d.weaponSelIdx  !== undefined) weaponSelIdx  = d.weaponSelIdx;
-    if (d.weaponCatName !== undefined) weaponCatName = d.weaponCatName;
-    render(); return;
+
+    render();
   }
 });
 
