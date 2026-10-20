@@ -105,17 +105,19 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── THEME VARIABLES ── */
 :root {
   --accent:      #DC1E1E;
   --accent-glow: #FF3232;
   --accent-dark: #8C0A0A;
-  --accent-l:    #DC1E1E;
-  --accent-r:    #8B1FDC;
+  --accent-l:    #DC1E1E;   /* two-tone left  */
+  --accent-r:    #8B1FDC;   /* two-tone right */
   --bg:          #0A0A0A;
   --dimmed:      #B0B0B0;
   --sep:         rgba(50,15,15,0.9);
 }
 
+/* ── SINGLE-COLOUR THEMES ── */
 .theme-red    { --accent:#DC1E1E; --accent-glow:#FF3232; --accent-dark:#8C0A0A; --sep:rgba(50,15,15,0.9); }
 .theme-purple { --accent:#8B1FDC; --accent-glow:#AA44FF; --accent-dark:#4A0A8C; --sep:rgba(35,10,50,0.9); }
 .theme-blue   { --accent:#1E5ADC; --accent-glow:#3278FF; --accent-dark:#0A2A8C; --sep:rgba(10,20,50,0.9); }
@@ -123,209 +125,62 @@
 
 html, body { width:100%; height:100%; background:transparent; overflow:hidden; font-family:'Rajdhani',sans-serif; }
 
-/* ── MENU WRAPPER (permet d'aligner menu + panel côte à côte) ── */
-#menu-wrapper {
-  position: fixed;
-  top: 150px;
-  left: 200px;
-  display: none;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 8px;
-}
-#menu-wrapper.visible { display: flex; }
-
 #app {
-  width: 350px;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  border-top: 3px solid var(--accent);
-  border-bottom: 3px solid var(--accent);
-  box-shadow: 0 0 20px rgba(0,0,0,0.45), 0 0 6px rgba(0,0,0,0.3) inset;
-  user-select: none;
+  position:fixed; top:150px; left:200px; width:350px;
+  display:none; flex-direction:column;
+  background:var(--bg);
+  border-top:3px solid var(--accent);
+  border-bottom:3px solid var(--accent);
+  box-shadow:0 0 20px rgba(0,0,0,0.45), 0 0 6px rgba(0,0,0,0.3) inset;
+  user-select:none;
   transition: border-color 0.25s;
 }
 
-/* ── TWO-TONE ── */
+/* ── TWO-TONE: gradient border via outline trick ── */
 #app.twotone {
-  border-top-color: transparent;
-  border-bottom-color: transparent;
-  border-top: none;
-  border-bottom: none;
+  border-top-color:   transparent;
+  border-bottom-color:transparent;
+  /* layered box-shadows fake the gradient border */
+  position:fixed;
 }
+#app.twotone::before,
+#app.twotone::after { display:none !important; } /* reset banner pseudo if needed */
+
+/* Real gradient top/bottom borders via a pseudo on #app wrapper */
+#app.twotone {
+  outline: none;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+/* We draw the gradient border as an inset element */
 #top-border, #bot-border {
-  display: none; height: 3px; flex-shrink: 0; width: 100%;
+  display:none; height:3px; flex-shrink:0; width:100%;
   background: linear-gradient(90deg, var(--accent-l) 0%, var(--accent-l) 38%, var(--accent-r) 62%, var(--accent-r) 100%);
 }
 #app.twotone #top-border,
-#app.twotone #bot-border { display: block; }
-
-/* ── INFO PANEL ── */
-#info-panel {
-  width: 220px;
-  display: none;
-  flex-direction: column;
-  background: var(--bg);
-  border-top: 3px solid var(--accent);
-  border-bottom: 3px solid var(--accent);
-  box-shadow: 0 0 20px rgba(0,0,0,0.45);
-  font-family: 'Share Tech Mono', monospace;
-  transition: border-color 0.25s;
-  overflow: hidden;
-}
-#info-panel.visible { display: flex; }
-
-/* two-tone info panel borders */
-#app.twotone ~ #info-panel {
-  border-top-color: var(--accent-l);
-  border-bottom-color: var(--accent-r);
-}
-
-.ip-header {
-  padding: 6px 12px;
-  background: rgba(15,5,5,0.98);
-  border-bottom: 1px solid rgba(var(--accent), 0.3);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.ip-header-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 5px var(--accent-glow);
-  flex-shrink: 0;
-}
-.ip-player-name {
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: 1;
-}
-.ip-sid {
-  font-size: 10px;
-  color: var(--accent);
-  white-space: nowrap;
-}
-
-/* health bar */
-.ip-bars {
-  padding: 7px 12px 5px;
-  background: rgba(10,5,5,0.95);
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-.ip-bar-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 5px;
-}
-.ip-bar-row:last-child { margin-bottom: 0; }
-.ip-bar-label {
-  font-size: 9px;
-  color: var(--dimmed);
-  letter-spacing: 1px;
-  width: 40px;
-  flex-shrink: 0;
-}
-.ip-bar-track {
-  flex: 1;
-  height: 5px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 3px;
-  overflow: hidden;
-}
-.ip-bar-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-.ip-bar-fill.health { background: linear-gradient(90deg, #c81e1e, #32c832); }
-.ip-bar-fill.armor  { background: linear-gradient(90deg, #1e5adc, #32aaff); }
-.ip-bar-val {
-  font-size: 10px;
-  color: #fff;
-  width: 30px;
-  text-align: right;
-  flex-shrink: 0;
-}
-
-/* info rows */
-.ip-section {
-  padding: 5px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-.ip-row {
-  display: flex;
-  align-items: center;
-  padding: 3px 12px;
-  gap: 6px;
-}
-.ip-icon {
-  font-size: 11px;
-  width: 16px;
-  text-align: center;
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-.ip-key {
-  font-size: 10px;
-  color: rgba(180,180,180,0.55);
-  letter-spacing: 1px;
-  flex: 1;
-}
-.ip-val {
-  font-size: 11px;
-  color: #e8e8e8;
-  text-align: right;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 110px;
-}
-.ip-val.accent  { color: var(--accent); }
-.ip-val.warning { color: #dcaa1e; }
-.ip-val.ok      { color: #32c832; }
-.ip-val.danger  { color: #dc321e; }
-
-/* coords block */
-.ip-coords {
-  padding: 5px 12px 7px;
-  background: rgba(5,5,5,0.6);
-}
-.ip-coords-label {
-  font-size: 9px;
-  color: rgba(180,180,180,0.4);
-  letter-spacing: 2px;
-  margin-bottom: 3px;
-}
-.ip-coords-val {
-  font-size: 10px;
-  color: rgba(220,220,220,0.7);
-  letter-spacing: 0.5px;
-}
+#app.twotone #bot-border { display:block; }
+#app.twotone { border-top:none; border-bottom:none; }
 
 /* ── BANNER ── */
 #banner {
-  position: relative; height: 90px; flex-shrink: 0;
-  background: linear-gradient(180deg,rgba(40,5,5,0.95) 0%,rgba(10,10,10,1) 100%);
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 5px; overflow: hidden;
+  position:relative; height:90px; flex-shrink:0;
+  background:linear-gradient(180deg,rgba(40,5,5,0.95) 0%,rgba(10,10,10,1) 100%);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:5px; overflow:hidden;
 }
 #banner::before {
   content:''; position:absolute; left:0; top:0; bottom:0; width:5px;
-  background: linear-gradient(180deg,var(--accent-l),var(--accent-dark));
+  background:linear-gradient(180deg,var(--accent-l),var(--accent-dark));
   transition: background 0.25s;
 }
 #banner::after {
   content:''; position:absolute; right:0; top:0; bottom:0; width:5px;
-  background: linear-gradient(180deg,var(--accent-r),var(--accent-dark));
+  background:linear-gradient(180deg,var(--accent-r),var(--accent-dark));
   opacity:0.7; transition: background 0.25s;
 }
+/* single-colour mode: right stripe matches accent */
 #app:not(.twotone) #banner::before { background:linear-gradient(180deg,var(--accent),var(--accent-dark)); }
 #app:not(.twotone) #banner::after  { background:linear-gradient(180deg,var(--accent),var(--accent-dark)); opacity:0.7; }
 
@@ -340,9 +195,11 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   border-top:1px solid rgba(30,5,5,0.7);
 }
 
+/* ── TABS ── */
 #tabs { height:28px; flex-shrink:0; display:flex; border-bottom:2px solid var(--accent); transition: border-color 0.25s; }
 #app.twotone #tabs {
-  border-bottom: none; position: relative;
+  border-bottom: none;
+  position: relative;
 }
 #app.twotone #tabs::after {
   content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
@@ -357,6 +214,8 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 }
 .tab:last-child { border-right:none; }
 .tab.active { background:var(--accent); color:#fff; }
+
+/* two-tone: active tab uses left accent */
 #app.twotone .tab.active { background:var(--accent-l); }
 
 #cat-header {
@@ -366,6 +225,7 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 }
 #cat-header.show { display:block; }
 
+/* ── LIST ITEMS ── */
 #items-list { flex-shrink:0; }
 .menu-item {
   height:30px; display:flex; align-items:center;
@@ -385,6 +245,7 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 .menu-item.sel .item-ind { opacity:1; }
 .menu-item:not(.sel) .item-ind { opacity:0.65; }
 
+/* selected bar in twotone uses gradient */
 #app.twotone .menu-item.sel .bar {
   background: linear-gradient(180deg, var(--accent-l), var(--accent-r));
   box-shadow: 0 0 6px var(--accent-l);
@@ -392,6 +253,7 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 #app.twotone .menu-item.sel .item-name { color:#fff; }
 #app.twotone .item-ind { color: var(--accent-r); }
 
+/* ── TOGGLE ── */
 .tog {
   width:34px; height:14px; border-radius:7px;
   background:#333; position:relative; flex-shrink:0;
@@ -405,6 +267,7 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 }
 .tog.on::after { left:calc(100% - 12px); }
 
+/* ── FOOTER ── */
 #footer {
   height:36px; flex-shrink:0; display:flex;
   align-items:center; justify-content:center; gap:16px;
@@ -420,6 +283,7 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   background:rgba(220,30,30,0.07);
 }
 
+/* ── COLOUR PICKER STRIP ── */
 .color-strip {
   display:flex; gap:6px; align-items:center; padding:4px 14px 0;
   flex-shrink:0;
@@ -437,76 +301,63 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 </style>
 </head>
 <body>
-
-<!-- WRAPPER : menu + info panel côte à côte -->
-<div id="menu-wrapper" style="display:none">
-
-  <div id="app" class="theme-red">
-    <div id="top-border"></div>
-    <div id="banner">
-      <img src="yari_menu_banniere_rouge.png" alt="banner"
-           style="width:100%; height:90px; object-fit:cover; object-position:center; display:block;" />
-    </div>
-    <div id="subbanner">YARI MENU</div>
-    <div id="tabs">
-      <div class="tab active" id="tab-main">MAIN</div>
-      <div class="tab"        id="tab-cfg">CONFIG</div>
-    </div>
-    <div id="cat-header"></div>
-    <div id="items-list"></div>
-    <div id="bot-border"></div>
-    <div id="footer">
-      <div class="kh"><span class="k">↑</span><span class="k">↓</span> Nav</div>
-      <div class="kh"><span class="k">↵</span> OK</div>
-      <div class="kh"><span class="k">⌫</span> Back</div>
-      <div class="kh"><span class="k">Q</span><span class="k">E</span> Tab</div>
-    </div>
+<div id="app" class="theme-red">
+  <div id="top-border"></div>
+  <div id="banner">
+    <img src="yari_menu_banniere_rouge.png" alt="banner"
+         style="width:100%; height:90px; object-fit:cover; object-position:center; display:block;" />
   </div>
-
-  <!-- INFO PANEL -->
-  <div id="info-panel">
-    <!-- dynamically filled -->
+  <div id="subbanner">YARI MENU</div>
+  <div id="tabs">
+    <div class="tab active" id="tab-main">MAIN</div>
+    <div class="tab"        id="tab-cfg">CONFIG</div>
   </div>
-
-</div><!-- /menu-wrapper -->
+  <div id="cat-header"></div>
+  <div id="items-list"></div>
+  <div id="bot-border"></div>
+  <div id="footer">
+    <div class="kh"><span class="k">↑</span><span class="k">↓</span> Nav</div>
+    <div class="kh"><span class="k">↵</span> OK</div>
+    <div class="kh"><span class="k">⌫</span> Back</div>
+    <div class="kh"><span class="k">Q</span><span class="k">E</span> Tab</div>
+  </div>
+</div>
 
 <div id="spec-hud"></div>
 
 <script>
-// ── THEME ────────────────────────────────────────────────────────────
+// ── THEME STATE ─────────────────────────────────────────────────────
 const THEMES = {
   red:    { accent:'#DC1E1E', glow:'#FF3232', dark:'#8C0A0A', sep:'rgba(50,15,15,0.9)' },
   purple: { accent:'#8B1FDC', glow:'#AA44FF', dark:'#4A0A8C', sep:'rgba(35,10,50,0.9)' },
   blue:   { accent:'#1E5ADC', glow:'#3278FF', dark:'#0A2A8C', sep:'rgba(10,20,50,0.9)' },
   green:  { accent:'#1EDC4A', glow:'#32FF6E', dark:'#0A8C26', sep:'rgba(10,40,20,0.9)' },
 };
-const TWOTONE_LEFT  = '#DC1E1E';
-const TWOTONE_RIGHT = '#8B1FDC';
+const TWOTONE_LEFT  = '#DC1E1E';  // rouge — côté gauche
+const TWOTONE_RIGHT = '#8B1FDC'; // violet — côté droit
 
 let currentTheme   = 'red';
 let twoToneEnabled = false;
 
-const appEl      = document.getElementById('app');
-const wrapperEl  = document.getElementById('menu-wrapper');
-const infoPanelEl = document.getElementById('info-panel');
-const root       = document.documentElement;
+const appEl = document.getElementById('app');
+const root  = document.documentElement;
 
 function applyTheme(name, twotone) {
   currentTheme   = name;
   twoToneEnabled = twotone;
 
+  // Remove all theme classes
   appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green','twotone');
 
   if (twotone) {
     appEl.classList.add('twotone');
-    root.style.setProperty('--accent-l',    TWOTONE_LEFT);
-    root.style.setProperty('--accent-r',    TWOTONE_RIGHT);
+    root.style.setProperty('--accent-l',   TWOTONE_LEFT);
+    root.style.setProperty('--accent-r',   TWOTONE_RIGHT);
+    // derive accent from left for toggles/bars
     root.style.setProperty('--accent',      TWOTONE_LEFT);
     root.style.setProperty('--accent-glow', '#FF3232');
     root.style.setProperty('--accent-dark', '#8C0A0A');
     root.style.setProperty('--sep', 'rgba(50,10,40,0.9)');
-    infoPanelEl.style.borderTopColor    = TWOTONE_LEFT;
-    infoPanelEl.style.borderBottomColor = TWOTONE_RIGHT;
   } else {
     appEl.classList.add('theme-' + name);
     const t = THEMES[name];
@@ -516,22 +367,23 @@ function applyTheme(name, twotone) {
     root.style.setProperty('--sep',         t.sep);
     root.style.setProperty('--accent-l',    t.accent);
     root.style.setProperty('--accent-r',    t.accent);
-    infoPanelEl.style.borderTopColor    = t.accent;
-    infoPanelEl.style.borderBottomColor = t.accent;
   }
 }
 
-// ── BANNER ───────────────────────────────────────────────────────────
+// ── BANNER CYCLING ───────────────────────────────────────────────────
 const BANNERS = [
   "yari_menu_banniere_rouge.png",
-  "banniere.gif","banniere1.png","banniere2.png","banniere2giff.gif",
+  "banniere.gif","banniere1.png","banniere2.png", "banniere2giff.gif",
 ];
 let bannerIdx = 0;
 const bannerImg = document.querySelector('#banner img');
-
+  
 function cycleBanner() {
   bannerIdx = (bannerIdx + 1) % BANNERS.length;
+  
+  // Envoie l'index IMMÉDIATEMENT, sans attendre onload
   sendToLua({ type: 'bannerChange', index: bannerIdx });
+  
   const next = BANNERS[bannerIdx];
   const test = new Image();
   test.onload  = () => { bannerImg.src = next; };
@@ -546,7 +398,7 @@ const CATEGORIES = [
   {name:"Weapon",        items:["Give Weapons","Give Weapon by Name","Remove All Weapons"]},
   {name:"Combat",        items:["Laser Eye","Fast Punch"]},
   {name:"Vehicle",       items:["Spawn Véhicule Personnalisé","Porter/Lancer Véhicule","Full Performance","Delete Close Véhicule","Réparer Véhicule","Vehicle God Mode","Shift Boost","Unlock Vehicle","Lock Vehicle"]},
-  {name:"Construction",  items:["Wing Vehicle","Tower Vehicle","Ramp Vehicle","Transformer Vehicle","Detach Vehicle"]},
+  {name:"Construction",  items:["Wing Vehicle","Tower Vehicle","Ramp Vehicle", "Transformer Vehicle", "Detach Vehicle"]},
   {name:"Misc",          items:["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll Player","Ragdoll All Players","Anti Aim"]},
   {name:"Server",        items:["Bypass Sunlife","Prime Bypass"]},
   {name:"Settings",      items:["Auto Load Config","Change Banner","Couleur du Menu","Activer Deux Couleurs"]},
@@ -565,8 +417,8 @@ const TOGGLE_KEYS = new Set([
   "Misc_1","Misc_2","Misc_3","Misc_4",
   "Combat_1","Combat_2",
   "Protection_1",
-  "Settings_1",
-  "Settings_4",
+  "Settings_1",   // Auto Load Config
+  "Settings_4",   // Deux Couleurs
   "Destroyer_5",
 ]);
 
@@ -594,148 +446,44 @@ const tabCfgEl   = document.getElementById('tab-cfg');
 const catHeader  = document.getElementById('cat-header');
 const itemsList  = document.getElementById('items-list');
 
-// ── INFO PANEL ───────────────────────────────────────────────────────
-function getSelectedPlayer() {
-  if (!nearbyPlayers.length) return null;
-  // priority: joueur sélectionné dans selectedPlayers; sinon playerSel courant
-  for (let i = 0; i < nearbyPlayers.length; i++) {
-    const p = nearbyPlayers[i];
-    if (selectedPlayers[p.serverId]) return p;
-  }
-  // fallback: joueur sous le curseur dans Players subMenu
-  if (onlineSubMenu === 'Players' && nearbyPlayers[playerSel]) {
-    return nearbyPlayers[playerSel];
-  }
-  return null;
-}
+// ── COLOUR THEME PICKER ──────────────────────────────────────────────
+// Rendered inline when "Couleur du Menu" is selected
+function renderColorPicker() {
+  itemsList.innerHTML = '';
+  const strip = document.createElement('div');
+  strip.className = 'color-strip';
+  strip.style.padding = '8px 28px';
+  strip.style.gap = '10px';
 
-function shouldShowInfoPanel() {
-  return curCatName === 'Online' &&
-         (onlineSubMenu === 'Players' || onlineSubMenu === 'Troll' || onlineSubMenu === null) &&
-         nearbyPlayers.length > 0;
-}
+  ['red','purple','blue','green'].forEach(c => {
+    const dot = document.createElement('div');
+    dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
+    dot.title = c;
+    itemsList.appendChild(dot);
+    // clicking sends action back to Lua via the callback bridge
+    dot.addEventListener('click', () => {
+      applyTheme(c, false);
+      // notify Lua
+      sendToLua({ type:'colorChange', theme: c, twotone: false });
+      render();
+    });
+  });
 
-function renderInfoPanel() {
-  if (!shouldShowInfoPanel()) {
-    infoPanelEl.classList.remove('visible');
-    infoPanelEl.innerHTML = '';
-    return;
-  }
+  // Dots direct to itemsList
+  strip.innerHTML = '';
+  ['red','purple','blue','green'].forEach(c => {
+    const dot = document.createElement('div');
+    dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
+    strip.appendChild(dot);
+    dot.addEventListener('click', () => {
+      applyTheme(c, false);
+      sendToLua({ type:'colorChange', theme: c, twotone: false });
+      render();
+    });
+  });
 
-  // Choisir le joueur à afficher
-  let p = null;
-  if (onlineSubMenu === 'Players' && nearbyPlayers[playerSel]) {
-    p = nearbyPlayers[playerSel];
-  } else {
-    p = getSelectedPlayer();
-  }
-  if (!p) {
-    // Montrer le premier joueur en liste si aucune sélection
-    p = nearbyPlayers[0];
-  }
-  if (!p) {
-    infoPanelEl.classList.remove('visible');
-    infoPanelEl.innerHTML = '';
-    return;
-  }
-
-  infoPanelEl.classList.add('visible');
-
-  const hp     = p.health    !== undefined ? p.health    : 100;
-  const maxHp  = p.maxHealth !== undefined ? p.maxHealth : 100;
-  const armor  = p.armor     !== undefined ? p.armor     : 0;
-  const hpPct  = Math.max(0, Math.min(100, Math.round((hp / maxHp) * 100)));
-  const arPct  = Math.max(0, Math.min(100, armor));
-
-  // Health gradient: red below 30%, yellow 30-60%, green above
-  let hpColor = '#32c832';
-  if (hpPct < 30)       hpColor = '#dc321e';
-  else if (hpPct < 60)  hpColor = '#dcaa1e';
-
-  const veh       = p.vehicle || 'on foot';
-  const speed     = p.speed   !== undefined ? p.speed + ' km/h' : '—';
-  const dist      = p.distance !== undefined ? p.distance + 'm' : '—';
-  const inVeh     = veh !== 'on foot';
-  const isInvis   = p.invisible === true;
-  const isGod     = p.godMode   === true;
-  const coords    = p.coords    || null;
-  const isSelected = selectedPlayers[p.serverId] === true;
-
-  // Couleur distance
-  let distClass = 'ok';
-  if (p.distance > 500)       distClass = 'warning';
-  if (p.distance > 1000)      distClass = 'danger';
-
-  infoPanelEl.innerHTML = `
-    <div class="ip-header">
-      <div class="ip-header-dot"></div>
-      <span class="ip-player-name">${escHtml(p.name)}</span>
-      <span class="ip-sid">#${p.serverId}</span>
-    </div>
-
-    <div class="ip-bars">
-      <div class="ip-bar-row">
-        <span class="ip-bar-label">HP</span>
-        <div class="ip-bar-track">
-          <div class="ip-bar-fill health" style="width:${hpPct}%; background:${hpColor};"></div>
-        </div>
-        <span class="ip-bar-val">${hpPct}%</span>
-      </div>
-      <div class="ip-bar-row">
-        <span class="ip-bar-label">ARMOR</span>
-        <div class="ip-bar-track">
-          <div class="ip-bar-fill armor" style="width:${arPct}%;"></div>
-        </div>
-        <span class="ip-bar-val">${arPct}%</span>
-      </div>
-    </div>
-
-    <div class="ip-section">
-      <div class="ip-row">
-        <span class="ip-icon">📍</span>
-        <span class="ip-key">DIST</span>
-        <span class="ip-val ${distClass}">${dist}</span>
-      </div>
-      <div class="ip-row">
-        <span class="ip-icon">🚗</span>
-        <span class="ip-key">VEHICLE</span>
-        <span class="ip-val ${inVeh ? 'warning' : ''}">${escHtml(veh)}</span>
-      </div>
-      <div class="ip-row">
-        <span class="ip-icon">⚡</span>
-        <span class="ip-key">SPEED</span>
-        <span class="ip-val">${speed}</span>
-      </div>
-    </div>
-
-    <div class="ip-section">
-      <div class="ip-row">
-        <span class="ip-icon">👁</span>
-        <span class="ip-key">INVIS</span>
-        <span class="ip-val ${isInvis ? 'danger' : 'ok'}">${isInvis ? 'OUI' : 'NON'}</span>
-      </div>
-      <div class="ip-row">
-        <span class="ip-icon">🛡</span>
-        <span class="ip-key">GOD</span>
-        <span class="ip-val ${isGod ? 'danger' : 'ok'}">${isGod ? 'OUI' : 'NON'}</span>
-      </div>
-      <div class="ip-row">
-        <span class="ip-icon">✔</span>
-        <span class="ip-key">SELECT</span>
-        <span class="ip-val ${isSelected ? 'accent' : ''}">${isSelected ? 'OUI' : 'NON'}</span>
-      </div>
-    </div>
-
-    ${coords ? `
-    <div class="ip-coords">
-      <div class="ip-coords-label">COORDS</div>
-      <div class="ip-coords-val">X ${coords.x}  Y ${coords.y}  Z ${coords.z}</div>
-    </div>` : ''}
-  `;
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  itemsList.innerHTML = '';
+  itemsList.appendChild(strip);
 }
 
 // ── RENDER ───────────────────────────────────────────────────────────
@@ -751,12 +499,11 @@ function render() {
   if (tab === 'config') {
     catHeader.className = '';
     renderList(CONFIG_ITEMS, selIdx, scrollOff, null);
-    renderInfoPanel();
     return;
   }
   if (cat) {
     catHeader.className = '';
-    if (cat.name === 'Online') { renderOnline(); renderInfoPanel(); return; }
+    if (cat.name === 'Online') { renderOnline(); return; }
     catHeader.textContent = cat.name.toUpperCase();
     catHeader.className = 'show';
     renderList(cat.items, catSel, catScroll, cat.name);
@@ -764,7 +511,6 @@ function render() {
     catHeader.className = '';
     renderCategories();
   }
-  renderInfoPanel();
 }
 
 function renderOnline() {
@@ -794,7 +540,7 @@ function renderOnline() {
         const el = document.createElement('div');
         el.className = 'menu-item' + (i === playerSel ? ' sel' : '');
         el.innerHTML = `<div class="bar"></div>
-          <span class="item-name" style="font-size:11px">[${p.serverId}] ${escHtml(p.name)} <span style="color:var(--dimmed)">${p.distance}m</span></span>
+          <span class="item-name" style="font-size:11px">[${p.serverId}] ${p.name} <span style="color:var(--dimmed)">${p.distance}m</span></span>
           <div class="tog${isOn ? ' on' : ''}"></div>`;
         itemsList.appendChild(el);
       });
@@ -839,6 +585,7 @@ function renderList(items, si, so, catName) {
     const name = items[idx];
     const key  = catName ? catName + '_' + (idx + 1) : null;
     const isTog = key !== null && TOGGLE_KEYS.has(key);
+    // Special: "Couleur du Menu" shows colour dots inline
     if (catName === 'Settings' && name === 'Couleur du Menu') {
       const el = document.createElement('div');
       el.className = 'menu-item' + (idx === si ? ' sel' : '');
@@ -862,8 +609,10 @@ function renderList(items, si, so, catName) {
       itemsList.appendChild(el);
       continue;
     }
+    // Special: "Activer Deux Couleurs" — dynamic toggle label
     if (catName === 'Settings' && name === 'Activer Deux Couleurs') {
-      makeItem(name, idx === si, null, twoToneEnabled);
+      const togVal = twoToneEnabled;
+      makeItem(name, idx === si, null, togVal);
       continue;
     }
     const togVal = isTog ? (toggleStates[key] === true) : null;
@@ -912,62 +661,58 @@ window.addEventListener('message', function(e) {
   if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
   if (!d || !d.type) return;
 
-  if (d.type === 'showMenu') {
-    wrapperEl.classList.add('visible');
-    render(); return;
-  }
-  if (d.type === 'hideMenu') {
-    wrapperEl.classList.remove('visible');
-    infoPanelEl.classList.remove('visible');
-    infoPanelEl.innerHTML = '';
-    return;
-  }
+  if (d.type === 'showMenu') { appEl.style.display = 'flex'; render(); return; }
+  if (d.type === 'hideMenu') { appEl.style.display = 'none'; return; }
   if (d.type === 'cycleBanner') { cycleBanner(); return; }
 
   if (d.type === 'spectatorToggle') {
-    document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
-    if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
-    return;
-  }
+  document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
+  if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
+  return;
+}
 
-  if (d.type === 'spectatorUpdate') {
-    const hud = document.getElementById('spec-hud');
-    if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
-    hud.className = 'visible';
-    const list = d.list || [];
-    let html = `
-      <div class="spec-header">
-        <div class="spec-dot"></div>
-        <span class="spec-count">${list.length}</span>
-        <span class="spec-label">SPECTATEURS</span>
-      </div>`;
-    if (list.length === 0) {
-      html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
-    } else {
-      list.forEach(p => {
-        const isNoclip = p.type.includes('Noclip');
-        const isAdmin  = p.type.includes('Admin');
-        const rowCls   = (isNoclip && isAdmin) ? 'both' : isNoclip ? 'noclip' : 'admin';
-        const typeLabel = p.type.replace(/[\[\]]/g, '');
-        html += `
-          <div class="spec-row ${isNoclip ? 'noclip' : 'admin'}">
-            <span class="spec-sid">${p.serverId}</span>
-            <span class="spec-name">${escHtml(p.name)}</span>
-            <span class="spec-dist">${p.distance}m</span>
-            <span class="spec-type ${rowCls}">${typeLabel}</span>
-          </div>`;
-      });
-    }
-    hud.innerHTML = html;
-    return;
+if (d.type === 'spectatorUpdate') {
+  const hud = document.getElementById('spec-hud');
+  if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
+  hud.className = 'visible';
+
+  const list = d.list || [];
+  let html = `
+    <div class="spec-header">
+      <div class="spec-dot"></div>
+      <span class="spec-count">${list.length}</span>
+      <span class="spec-label">SPECTATEURS</span>
+    </div>`;
+
+  if (list.length === 0) {
+    html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
+  } else {
+    list.forEach(p => {
+      const isNoclip = p.type.includes('Noclip');
+      const isAdmin  = p.type.includes('Admin');
+      const rowCls   = (isNoclip && isAdmin) ? 'both' : isNoclip ? 'noclip' : 'admin';
+      const typeLabel = p.type.replace(/[\[\]]/g, '');
+      html += `
+        <div class="spec-row ${isNoclip ? 'noclip' : 'admin'}">
+          <span class="spec-sid">${p.serverId}</span>
+          <span class="spec-name">${p.name}</span>
+          <span class="spec-dist">${p.distance}m</span>
+          <span class="spec-type ${rowCls}">${typeLabel}</span>
+        </div>`;
+    });
   }
+  hud.innerHTML = html;
+  return;
+}
 
   if (d.type === 'setBanner') {
-    const idx = (typeof d.index === 'number') ? d.index : 0;
-    bannerIdx = idx;
-    bannerImg.src = BANNERS[bannerIdx] || BANNERS[0];
-    bannerImg.onerror = () => { bannerImg.src = BANNERS[0]; };
-    return;
+      const idx = (typeof d.index === 'number') ? d.index : 0;
+      bannerIdx = idx;
+      const src = BANNERS[bannerIdx] || BANNERS[0];
+      // Force direct, pas de test onload/onerror qui peut rater
+      bannerImg.src = src;
+      bannerImg.onerror = () => { bannerImg.src = BANNERS[0]; };
+      return;
   }
 
   if (d.type === 'applyTheme') {
@@ -977,6 +722,7 @@ window.addEventListener('message', function(e) {
 
   if (d.type === 'setToggleStates') {
     if (d.states) Object.assign(toggleStates, d.states);
+    // sync two-tone from toggle state
     if ('Settings_4' in (d.states || {})) {
       twoToneEnabled = d.states['Settings_4'] === true;
       applyTheme(currentTheme, twoToneEnabled);
@@ -1000,7 +746,7 @@ window.addEventListener('message', function(e) {
     curCatName = d.curCatName || null;
     if (d.selIdx    !== undefined) { if (curCatName) catSel    = d.selIdx;    else selIdx    = d.selIdx; }
     if (d.scrollOff !== undefined) { if (curCatName) catScroll = d.scrollOff; else scrollOff = d.scrollOff; }
-    if ('onlineSubMenu' in d)          onlineSubMenu   = d.onlineSubMenu === false ? null : d.onlineSubMenu;
+    if ('onlineSubMenu'    in d) onlineSubMenu   = d.onlineSubMenu === false ? null : d.onlineSubMenu;
     if (d.onlineSubSel   !== undefined) onlineSubSel    = d.onlineSubSel;
     if (d.nearbyPlayers  !== undefined) nearbyPlayers   = d.nearbyPlayers;
     if (d.selectedPlayers!== undefined) selectedPlayers = d.selectedPlayers;
