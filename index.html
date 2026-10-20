@@ -946,11 +946,14 @@ window.addEventListener('message', function(e) {
     }
 
     // Category cursor
-    if ('curCatName' in d) {
-      if (!d.curCatName) {
+    // curCatName absent from JSON means Lua sent nil → clear category
+    if ('curCatName' in d || d.type === 'sync') {
+      const name = d.curCatName || null;
+      if (!name) {
         curCatIdx = null;
+        subTabIdx = 0;
       } else {
-        const idx = CAT_STRUCTURE.findIndex(c => c.name === d.curCatName);
+        const idx = CAT_STRUCTURE.findIndex(c => c.name === name);
         curCatIdx = idx >= 0 ? idx : null;
       }
     }
