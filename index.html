@@ -105,19 +105,17 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── THEME VARIABLES ── */
 :root {
   --accent:      #DC1E1E;
   --accent-glow: #FF3232;
   --accent-dark: #8C0A0A;
-  --accent-l:    #DC1E1E;   /* two-tone left  */
-  --accent-r:    #8B1FDC;   /* two-tone right */
+  --accent-l:    #DC1E1E;
+  --accent-r:    #8B1FDC;
   --bg:          #0A0A0A;
   --dimmed:      #B0B0B0;
   --sep:         rgba(50,15,15,0.9);
 }
 
-/* ── SINGLE-COLOUR THEMES ── */
 .theme-red    { --accent:#DC1E1E; --accent-glow:#FF3232; --accent-dark:#8C0A0A; --sep:rgba(50,15,15,0.9); }
 .theme-purple { --accent:#8B1FDC; --accent-glow:#AA44FF; --accent-dark:#4A0A8C; --sep:rgba(35,10,50,0.9); }
 .theme-blue   { --accent:#1E5ADC; --accent-glow:#3278FF; --accent-dark:#0A2A8C; --sep:rgba(10,20,50,0.9); }
@@ -136,17 +134,6 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   transition: border-color 0.25s;
 }
 
-/* ── TWO-TONE: gradient border via outline trick ── */
-#app.twotone {
-  border-top-color:   transparent;
-  border-bottom-color:transparent;
-  /* layered box-shadows fake the gradient border */
-  position:fixed;
-}
-#app.twotone::before,
-#app.twotone::after { display:none !important; } /* reset banner pseudo if needed */
-
-/* Real gradient top/bottom borders via a pseudo on #app wrapper */
 #app.twotone {
   outline: none;
   border-top: 3px solid transparent;
@@ -154,7 +141,6 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   background-clip: padding-box;
   position: relative;
 }
-/* We draw the gradient border as an inset element */
 #top-border, #bot-border {
   display:none; height:3px; flex-shrink:0; width:100%;
   background: linear-gradient(90deg, var(--accent-l) 0%, var(--accent-l) 38%, var(--accent-r) 62%, var(--accent-r) 100%);
@@ -163,7 +149,6 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 #app.twotone #bot-border { display:block; }
 #app.twotone { border-top:none; border-bottom:none; }
 
-/* ── BANNER ── */
 #banner {
   position:relative; height:90px; flex-shrink:0;
   background:linear-gradient(180deg,rgba(40,5,5,0.95) 0%,rgba(10,10,10,1) 100%);
@@ -180,7 +165,6 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   background:linear-gradient(180deg,var(--accent-r),var(--accent-dark));
   opacity:0.7; transition: background 0.25s;
 }
-/* single-colour mode: right stripe matches accent */
 #app:not(.twotone) #banner::before { background:linear-gradient(180deg,var(--accent),var(--accent-dark)); }
 #app:not(.twotone) #banner::after  { background:linear-gradient(180deg,var(--accent),var(--accent-dark)); opacity:0.7; }
 
@@ -195,7 +179,6 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   border-top:1px solid rgba(30,5,5,0.7);
 }
 
-/* ── TABS ── */
 #tabs { height:28px; flex-shrink:0; display:flex; border-bottom:2px solid var(--accent); transition: border-color 0.25s; }
 #app.twotone #tabs {
   border-bottom: none;
@@ -214,8 +197,6 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 }
 .tab:last-child { border-right:none; }
 .tab.active { background:var(--accent); color:#fff; }
-
-/* two-tone: active tab uses left accent */
 #app.twotone .tab.active { background:var(--accent-l); }
 
 #cat-header {
@@ -225,11 +206,10 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 }
 #cat-header.show { display:block; }
 
-/* ── LIST ITEMS ── */
 #items-list { flex-shrink:0; }
 .menu-item {
   height:30px; display:flex; align-items:center;
-  padding:0 16px 0 28px; position:relative;
+  padding:0 16px 0 10px; position:relative;
   border-bottom:1px solid var(--sep);
 }
 .menu-item .bar {
@@ -239,13 +219,24 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 }
 .menu-item.sel { background:rgba(220,30,30,0.07); }
 .menu-item.sel .bar { display:block; }
+
+/* ICON WRAPPER */
+.item-icon {
+  width:20px; height:20px; flex-shrink:0; margin-right:8px; margin-left:8px;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0.6; transition: opacity 0.15s;
+}
+.menu-item.sel .item-icon { opacity:1; }
+.item-icon svg { width:16px; height:16px; fill:var(--accent); }
+/* dimmed for non-selected */
+.menu-item:not(.sel) .item-icon svg { fill:var(--dimmed); }
+
 .item-name { flex:1; font-size:13px; font-weight:500; color:rgba(255,255,255,0.85); letter-spacing:0.4px; }
 .menu-item.sel .item-name { color:#fff; font-weight:600; }
 .item-ind { font-size:13px; font-weight:700; color:var(--accent); margin-left:6px; }
 .menu-item.sel .item-ind { opacity:1; }
 .menu-item:not(.sel) .item-ind { opacity:0.65; }
 
-/* selected bar in twotone uses gradient */
 #app.twotone .menu-item.sel .bar {
   background: linear-gradient(180deg, var(--accent-l), var(--accent-r));
   box-shadow: 0 0 6px var(--accent-l);
@@ -253,7 +244,6 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 #app.twotone .menu-item.sel .item-name { color:#fff; }
 #app.twotone .item-ind { color: var(--accent-r); }
 
-/* ── TOGGLE ── */
 .tog {
   width:34px; height:14px; border-radius:7px;
   background:#333; position:relative; flex-shrink:0;
@@ -267,7 +257,6 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 }
 .tog.on::after { left:calc(100% - 12px); }
 
-/* ── FOOTER ── */
 #footer {
   height:36px; flex-shrink:0; display:flex;
   align-items:center; justify-content:center; gap:16px;
@@ -283,7 +272,6 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   background:rgba(220,30,30,0.07);
 }
 
-/* ── COLOUR PICKER STRIP ── */
 .color-strip {
   display:flex; gap:6px; align-items:center; padding:4px 14px 0;
   flex-shrink:0;
@@ -326,6 +314,142 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 <div id="spec-hud"></div>
 
 <script>
+// ── CATEGORY ICONS (GTA-style SVG paths) ─────────────────────────────
+const CATEGORY_ICONS = {
+  // Player — running person silhouette
+  "Player": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="8" cy="2.5" r="1.8"/>
+    <path d="M5 5.5 C5 4.8 6.2 4.2 8 4.2 C9.8 4.2 11 4.8 11 5.5 L10.5 8.5 L9 8 L8.8 11.5 L9.5 14.5 L8 15 L6.5 14.5 L7.2 11.5 L7 8 L5.5 8.5 Z"/>
+    <path d="M5 8.5 L3.5 10.5 M11 8.5 L12.5 10.5" stroke-width="1.2" stroke="currentColor" fill="none"/>
+  </svg>`,
+
+  // Online — two people / network nodes
+  "Online": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="5" cy="3" r="1.6"/>
+    <circle cx="11" cy="3" r="1.6"/>
+    <path d="M2 9.5 C2 7.5 3.5 6 5 6 C6 6 6.8 6.5 7.5 7 C8.2 6.5 9 6 10 6 C11.5 6 13 7.5 13 9.5 L13 11 L8.5 11 L8.5 14 L6.5 14 L6.5 11 L2 11 Z"/>
+    <line x1="8" y1="7" x2="8" y2="11" stroke="currentColor" stroke-width="0.8" fill="none"/>
+  </svg>`,
+
+  // Weapon — pistol side silhouette
+  "Weapon": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1.5 6 L1.5 4.5 L11 4.5 L13.5 4.5 L14.5 5.5 L14.5 6.5 L13 6.5 L13 7.5 L11 7.5 L11 9 L9 9 L9 10 L5 10 L5 9 L3.5 9 L3.5 10.5 L2.5 10.5 L2.5 9 L1.5 9 Z"/>
+    <rect x="4" y="9" width="4" height="3.5" rx="0.5"/>
+    <rect x="1.5" y="5.5" width="1.5" height="1.5"/>
+  </svg>`,
+
+  // Combat — fist / crossed swords
+  "Combat": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5.5 9 L5.5 5 Q5.5 4 6.5 4 Q7.5 4 7.5 5 L7.5 7 Q7.5 6 8.5 6 Q9.5 6 9.5 7 L9.5 7.5 Q9.5 6.5 10.5 6.5 Q11.5 6.5 11.5 7.5 L11.5 9 Q11.5 8.5 12.2 8.5 Q13 8.5 13 9.5 L13 11 Q13 13 11 13.5 L7 13.5 Q5 13.5 5 11.5 L5 9 Z"/>
+    <rect x="3" y="4.5" width="2" height="5" rx="1"/>
+  </svg>`,
+
+  // Vehicle — car top-down
+  "Vehicle": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 6 L4.8 3.5 Q5 3 5.5 3 L10.5 3 Q11 3 11.2 3.5 L12 6 L13 6.5 L13 11 L11.5 11 L11.5 12.5 Q11.5 13 11 13 L10 13 Q9.5 13 9.5 12.5 L9.5 11 L6.5 11 L6.5 12.5 Q6.5 13 6 13 L5 13 Q4.5 13 4.5 12.5 L4.5 11 L3 11 L3 6.5 Z"/>
+    <path d="M4.5 6 L11.5 6" stroke="currentColor" stroke-width="0.6" fill="none"/>
+    <rect x="4" y="6.5" width="3" height="2" rx="0.4"/>
+    <rect x="9" y="6.5" width="3" height="2" rx="0.4"/>
+  </svg>`,
+
+  // Construction — crane / wrench
+  "Construction": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 14 L2 4 L4 4 L4 2 L12 2 L12 4 L4 4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+    <line x1="4" y1="2" x2="4" y2="14" stroke="currentColor" stroke-width="1.5" fill="none"/>
+    <line x1="2" y1="14" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" fill="none"/>
+    <line x1="4" y1="4" x2="4" y2="10" stroke="currentColor" stroke-width="0.8" fill="none"/>
+    <rect x="3" y="10" width="2" height="4"/>
+    <path d="M4 5 L8 5 L8 6 L4 6"/>
+    <path d="M4 7 L10 7 L10 8 L4 8"/>
+  </svg>`,
+
+  // Misc — star / lightning bolt
+  "Misc": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9.5 2 L7 7 L11 7 L6.5 14 L8.5 9 L4.5 9 Z"/>
+  </svg>`,
+
+  // Server — rack / database stack
+  "Server": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="2" width="12" height="3.5" rx="0.8"/>
+    <rect x="2" y="6.5" width="12" height="3.5" rx="0.8"/>
+    <rect x="2" y="11" width="12" height="3.5" rx="0.8"/>
+    <circle cx="11.5" cy="3.75" r="0.8"/>
+    <circle cx="11.5" cy="8.25" r="0.8"/>
+    <circle cx="11.5" cy="12.75" r="0.8"/>
+    <line x1="4" y1="3.75" x2="9" y2="3.75" stroke="currentColor" stroke-width="0.7" fill="none"/>
+    <line x1="4" y1="8.25" x2="9" y2="8.25" stroke="currentColor" stroke-width="0.7" fill="none"/>
+    <line x1="4" y1="12.75" x2="9" y2="12.75" stroke="currentColor" stroke-width="0.7" fill="none"/>
+  </svg>`,
+
+  // Settings — gear cog
+  "Settings": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6.5 1.5 L7 3 Q6.3 3.3 5.7 3.8 L4.2 3.2 L2.7 5.8 L4 6.8 Q3.9 7.2 3.9 7.6 Q3.9 8 4 8.4 L2.7 9.4 L4.2 12 L5.7 11.4 Q6.3 11.9 7 12.2 L6.5 13.7 L9.5 13.7 L10 12.2 Q10.7 11.9 11.3 11.4 L12.8 12 L14.3 9.4 L13 8.4 Q13.1 8 13.1 7.6 Q13.1 7.2 13 6.8 L14.3 5.8 L12.8 3.2 L11.3 3.8 Q10.7 3.3 10 3 L9.5 1.5 Z"/>
+    <circle cx="8" cy="7.6" r="2.2" fill="var(--bg)"/>
+  </svg>`,
+
+  // Keybind — keyboard key
+  "Keybind": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1.5" y="3" width="13" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <rect x="3" y="4.5" width="2" height="2" rx="0.4"/>
+    <rect x="6" y="4.5" width="2" height="2" rx="0.4"/>
+    <rect x="9" y="4.5" width="2" height="2" rx="0.4"/>
+    <rect x="4.5" y="7.5" width="2" height="2" rx="0.4"/>
+    <rect x="7.5" y="7.5" width="2" height="2" rx="0.4"/>
+    <rect x="4.5" y="10.5" width="7" height="1.5" rx="0.4"/>
+    <rect x="12" y="4.5" width="1.5" height="2" rx="0.4"/>
+  </svg>`,
+
+  // Sunlife/Prime — crown / VIP badge
+  "Sunlife/Prime": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 11 L2 6 L4.5 8.5 L8 4 L11.5 8.5 L14 6 L14 11 Z"/>
+    <rect x="2" y="11" width="12" height="2" rx="0.5"/>
+    <circle cx="8" cy="4" r="1"/>
+    <circle cx="2" cy="6" r="0.9"/>
+    <circle cx="14" cy="6" r="0.9"/>
+  </svg>`,
+
+  // Protection — shield
+  "Protection": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8 1.5 L14 4 L14 8.5 Q14 12.5 8 14.5 Q2 12.5 2 8.5 L2 4 Z"/>
+    <path d="M8 1.5 L14 4 L14 8.5 Q14 12.5 8 14.5 Q2 12.5 2 8.5 L2 4 Z" fill="var(--bg)" transform="scale(0.7) translate(3.4 2.5)"/>
+    <path d="M5.5 8 L7 9.5 L10.5 6" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+  </svg>`,
+
+  // Destroyer — explosion / skull
+  "Destroyer": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8 1 L9.2 5 L13 3.5 L10.5 7 L14.5 8 L11 9.5 L13 13 L9 11.5 L8 15 L7 11.5 L3 13 L5 9.5 L1.5 8 L5.5 7 L3 3.5 L6.8 5 Z"/>
+    <circle cx="8" cy="8" r="2.5" fill="var(--bg)"/>
+    <circle cx="8" cy="8" r="1"/>
+  </svg>`,
+
+  // Config items — save/floppy
+  "Save Config": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 2 L2 14 L14 14 L14 5 L11 2 Z"/>
+    <path d="M2 2 L2 14 L14 14 L14 5 L11 2 Z" fill="var(--bg)" transform="scale(0.6) translate(5.3 5.3)"/>
+    <rect x="4" y="2" width="6" height="4"/>
+    <rect x="4" y="9" width="8" height="4" fill="var(--bg)"/>
+    <rect x="5" y="9.5" width="6" height="3"/>
+    <rect x="7" y="2.5" width="1.5" height="2.5" fill="var(--bg)"/>
+  </svg>`,
+
+  "Load Config": `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 4 L2 13 Q2 14 3 14 L13 14 Q14 14 14 13 L14 6 L10 6 L10 4 Z"/>
+    <path d="M2 4 L6 4 L8 2 L14 2 L14 6 L2 6 Z" fill="currentColor"/>
+    <path d="M6 9.5 L8 7.5 L10 9.5 M8 7.5 L8 13" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  </svg>`,
+};
+
+// Default fallback icon (diamond)
+const DEFAULT_ICON = `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8 2 L13 8 L8 14 L3 8 Z"/>
+</svg>`;
+
+function getIcon(catName, itemName) {
+  if (CATEGORY_ICONS[catName]) return CATEGORY_ICONS[catName];
+  if (CATEGORY_ICONS[itemName]) return CATEGORY_ICONS[itemName];
+  return DEFAULT_ICON;
+}
+
 // ── THEME STATE ─────────────────────────────────────────────────────
 const THEMES = {
   red:    { accent:'#DC1E1E', glow:'#FF3232', dark:'#8C0A0A', sep:'rgba(50,15,15,0.9)' },
@@ -333,8 +457,8 @@ const THEMES = {
   blue:   { accent:'#1E5ADC', glow:'#3278FF', dark:'#0A2A8C', sep:'rgba(10,20,50,0.9)' },
   green:  { accent:'#1EDC4A', glow:'#32FF6E', dark:'#0A8C26', sep:'rgba(10,40,20,0.9)' },
 };
-const TWOTONE_LEFT  = '#DC1E1E';  // rouge — côté gauche
-const TWOTONE_RIGHT = '#8B1FDC'; // violet — côté droit
+const TWOTONE_LEFT  = '#DC1E1E';
+const TWOTONE_RIGHT = '#8B1FDC';
 
 let currentTheme   = 'red';
 let twoToneEnabled = false;
@@ -345,15 +469,11 @@ const root  = document.documentElement;
 function applyTheme(name, twotone) {
   currentTheme   = name;
   twoToneEnabled = twotone;
-
-  // Remove all theme classes
   appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green','twotone');
-
   if (twotone) {
     appEl.classList.add('twotone');
     root.style.setProperty('--accent-l',   TWOTONE_LEFT);
     root.style.setProperty('--accent-r',   TWOTONE_RIGHT);
-    // derive accent from left for toggles/bars
     root.style.setProperty('--accent',      TWOTONE_LEFT);
     root.style.setProperty('--accent-glow', '#FF3232');
     root.style.setProperty('--accent-dark', '#8C0A0A');
@@ -380,10 +500,7 @@ const bannerImg = document.querySelector('#banner img');
   
 function cycleBanner() {
   bannerIdx = (bannerIdx + 1) % BANNERS.length;
-  
-  // Envoie l'index IMMÉDIATEMENT, sans attendre onload
   sendToLua({ type: 'bannerChange', index: bannerIdx });
-  
   const next = BANNERS[bannerIdx];
   const test = new Image();
   test.onload  = () => { bannerImg.src = next; };
@@ -398,7 +515,7 @@ const CATEGORIES = [
   {name:"Weapon",        items:["Give Weapons","Give Weapon by Name","Remove All Weapons"]},
   {name:"Combat",        items:["Laser Eye","Fast Punch"]},
   {name:"Vehicle",       items:["Spawn Véhicule Personnalisé","Porter/Lancer Véhicule","Full Performance","Delete Close Véhicule","Réparer Véhicule","Vehicle God Mode","Shift Boost","Unlock Vehicle","Lock Vehicle"]},
-  {name:"Construction",  items:["Wing Vehicle","Tower Vehicle","Ramp Vehicle", "Transformer Vehicle", "Detach Vehicle"]},
+  {name:"Construction",  items:["Wing Vehicle","Tower Vehicle","Ramp Vehicle","Transformer Vehicle","Detach Vehicle"]},
   {name:"Misc",          items:["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll Player","Ragdoll All Players","Anti Aim"]},
   {name:"Server",        items:["Bypass Sunlife","Prime Bypass"]},
   {name:"Settings",      items:["Auto Load Config","Change Banner","Couleur du Menu","Activer Deux Couleurs"]},
@@ -417,12 +534,11 @@ const TOGGLE_KEYS = new Set([
   "Misc_1","Misc_2","Misc_3","Misc_4",
   "Combat_1","Combat_2",
   "Protection_1",
-  "Settings_1",   // Auto Load Config
-  "Settings_4",   // Deux Couleurs
+  "Settings_1",
+  "Settings_4",
   "Destroyer_5",
 ]);
 
-// ── UI STATE ─────────────────────────────────────────────────────────
 let tab         = 'main';
 let selIdx      = 0, scrollOff = 0;
 let curCatName  = null;
@@ -446,52 +562,6 @@ const tabCfgEl   = document.getElementById('tab-cfg');
 const catHeader  = document.getElementById('cat-header');
 const itemsList  = document.getElementById('items-list');
 
-// ── COLOUR THEME PICKER ──────────────────────────────────────────────
-// Rendered inline when "Couleur du Menu" is selected
-function renderColorPicker() {
-  itemsList.innerHTML = '';
-  const strip = document.createElement('div');
-  strip.className = 'color-strip';
-  strip.style.padding = '8px 28px';
-  strip.style.gap = '10px';
-
-  ['red','purple','blue','green'].forEach(c => {
-    const dot = document.createElement('div');
-    dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
-    dot.title = c;
-    itemsList.appendChild(dot);
-    // clicking sends action back to Lua via the callback bridge
-    dot.addEventListener('click', () => {
-      applyTheme(c, false);
-      // notify Lua
-      sendToLua({ type:'colorChange', theme: c, twotone: false });
-      render();
-    });
-  });
-
-  // Dots direct to itemsList
-  strip.innerHTML = '';
-  ['red','purple','blue','green'].forEach(c => {
-    const dot = document.createElement('div');
-    dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
-    strip.appendChild(dot);
-    dot.addEventListener('click', () => {
-      applyTheme(c, false);
-      sendToLua({ type:'colorChange', theme: c, twotone: false });
-      render();
-    });
-  });
-
-  itemsList.innerHTML = '';
-  itemsList.appendChild(strip);
-}
-
-// ── RENDER ───────────────────────────────────────────────────────────
-function getCurCat() {
-  if (!curCatName) return null;
-  return CATEGORIES.find(c => c.name === curCatName) || null;
-}
-
 function render() {
   itemsList.innerHTML = '';
   const cat = getCurCat();
@@ -513,12 +583,20 @@ function render() {
   }
 }
 
+function getCurCat() {
+  if (!curCatName) return null;
+  return CATEGORIES.find(c => c.name === curCatName) || null;
+}
+
 function renderOnline() {
   if (onlineSubMenu === null) {
     ['Players','Troll'].forEach((name,i) => {
       const el = document.createElement('div');
       el.className = 'menu-item' + (i === onlineSubSel ? ' sel' : '');
-      el.innerHTML = `<div class="bar"></div><span class="item-name">${name}</span><span class="item-ind">›</span>`;
+      el.innerHTML = `<div class="bar"></div>
+        <div class="item-icon">${getIcon(name, name)}</div>
+        <span class="item-name">${name}</span>
+        <span class="item-ind">›</span>`;
       itemsList.appendChild(el);
     });
   } else if (onlineSubMenu === 'Players') {
@@ -567,7 +645,7 @@ function renderCategories() {
     if (idx >= CATEGORIES.length) break;
     const c   = CATEGORIES[idx];
     const has = c.items.length > 0 || c.name === 'Online';
-    makeItem(c.name, idx === selIdx, has ? '›' : '', null);
+    makeItem(c.name, idx === selIdx, has ? '›' : '', null, c.name);
   }
 }
 
@@ -585,13 +663,14 @@ function renderList(items, si, so, catName) {
     const name = items[idx];
     const key  = catName ? catName + '_' + (idx + 1) : null;
     const isTog = key !== null && TOGGLE_KEYS.has(key);
-    // Special: "Couleur du Menu" shows colour dots inline
     if (catName === 'Settings' && name === 'Couleur du Menu') {
       const el = document.createElement('div');
       el.className = 'menu-item' + (idx === si ? ' sel' : '');
-      el.style.height = 'auto'; el.style.padding = '4px 14px 4px 28px';
+      el.style.height = 'auto'; el.style.padding = '4px 14px 4px 10px';
       el.style.flexWrap = 'wrap'; el.style.gap = '6px';
-      el.innerHTML = `<div class="bar"></div><span class="item-name" style="font-size:12px">Couleur</span>`;
+      el.innerHTML = `<div class="bar"></div>
+        <div class="item-icon">${getIcon('Settings', name)}</div>
+        <span class="item-name" style="font-size:12px">Couleur</span>`;
       const strip = document.createElement('div');
       strip.style.cssText = 'display:flex;gap:6px;align-items:center;margin-left:auto;';
       ['red','purple','blue','green'].forEach(c => {
@@ -609,27 +688,36 @@ function renderList(items, si, so, catName) {
       itemsList.appendChild(el);
       continue;
     }
-    // Special: "Activer Deux Couleurs" — dynamic toggle label
     if (catName === 'Settings' && name === 'Activer Deux Couleurs') {
       const togVal = twoToneEnabled;
-      makeItem(name, idx === si, null, togVal);
+      makeItem(name, idx === si, null, togVal, catName);
       continue;
     }
     const togVal = isTog ? (toggleStates[key] === true) : null;
-    makeItem(name, idx === si, isTog ? null : '+', togVal);
+    makeItem(name, idx === si, isTog ? null : '+', togVal, catName);
   }
 }
 
-function makeItem(name, selected, ind, togState) {
+function makeItem(name, selected, ind, togState, catName) {
   const el = document.createElement('div');
   el.className = 'menu-item' + (selected ? ' sel' : '');
+
   const bar = document.createElement('div');
   bar.className = 'bar';
   el.appendChild(bar);
+
+  // Icon — only on category list (top level) and config items
+  const iconSvg = getIcon(catName || name, name);
+  const iconWrap = document.createElement('div');
+  iconWrap.className = 'item-icon';
+  iconWrap.innerHTML = iconSvg;
+  el.appendChild(iconWrap);
+
   const nm = document.createElement('span');
   nm.className = 'item-name';
   nm.textContent = name;
   el.appendChild(nm);
+
   if (togState !== null && togState !== undefined) {
     const t = document.createElement('div');
     t.className = 'tog' + (togState ? ' on' : '');
@@ -650,7 +738,6 @@ function setTab(t) {
   render();
 }
 
-// ── LUA BRIDGE ───────────────────────────────────────────────────────
 function sendToLua(obj) {
   if (!window.__yariCallback) return;
   try { window.__yariCallback(JSON.stringify(obj)); } catch(_) {}
@@ -666,44 +753,42 @@ window.addEventListener('message', function(e) {
   if (d.type === 'cycleBanner') { cycleBanner(); return; }
 
   if (d.type === 'spectatorToggle') {
-  document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
-  if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
-  return;
-}
-
-if (d.type === 'spectatorUpdate') {
-  const hud = document.getElementById('spec-hud');
-  if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
-  hud.className = 'visible';
-
-  const list = d.list || [];
-  let html = `
-    <div class="spec-header">
-      <div class="spec-dot"></div>
-      <span class="spec-count">${list.length}</span>
-      <span class="spec-label">SPECTATEURS</span>
-    </div>`;
-
-  if (list.length === 0) {
-    html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
-  } else {
-    list.forEach(p => {
-      const isNoclip = p.type.includes('Noclip');
-      const isAdmin  = p.type.includes('Admin');
-      const rowCls   = (isNoclip && isAdmin) ? 'both' : isNoclip ? 'noclip' : 'admin';
-      const typeLabel = p.type.replace(/[\[\]]/g, '');
-      html += `
-        <div class="spec-row ${isNoclip ? 'noclip' : 'admin'}">
-          <span class="spec-sid">${p.serverId}</span>
-          <span class="spec-name">${p.name}</span>
-          <span class="spec-dist">${p.distance}m</span>
-          <span class="spec-type ${rowCls}">${typeLabel}</span>
-        </div>`;
-    });
+    document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
+    if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
+    return;
   }
-  hud.innerHTML = html;
-  return;
-}
+
+  if (d.type === 'spectatorUpdate') {
+    const hud = document.getElementById('spec-hud');
+    if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
+    hud.className = 'visible';
+    const list = d.list || [];
+    let html = `
+      <div class="spec-header">
+        <div class="spec-dot"></div>
+        <span class="spec-count">${list.length}</span>
+        <span class="spec-label">SPECTATEURS</span>
+      </div>`;
+    if (list.length === 0) {
+      html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
+    } else {
+      list.forEach(p => {
+        const isNoclip = p.type.includes('Noclip');
+        const isAdmin  = p.type.includes('Admin');
+        const rowCls   = (isNoclip && isAdmin) ? 'both' : isNoclip ? 'noclip' : 'admin';
+        const typeLabel = p.type.replace(/[\[\]]/g, '');
+        html += `
+          <div class="spec-row ${isNoclip ? 'noclip' : 'admin'}">
+            <span class="spec-sid">${p.serverId}</span>
+            <span class="spec-name">${p.name}</span>
+            <span class="spec-dist">${p.distance}m</span>
+            <span class="spec-type ${rowCls}">${typeLabel}</span>
+          </div>`;
+      });
+    }
+    hud.innerHTML = html;
+    return;
+  }
 
   if (d.type === 'setBanner') {
     bannerIdx = d.index || 0;
@@ -722,7 +807,6 @@ if (d.type === 'spectatorUpdate') {
 
   if (d.type === 'setToggleStates') {
     if (d.states) Object.assign(toggleStates, d.states);
-    // sync two-tone from toggle state
     if ('Settings_4' in (d.states || {})) {
       twoToneEnabled = d.states['Settings_4'] === true;
       applyTheme(currentTheme, twoToneEnabled);
