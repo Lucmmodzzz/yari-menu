@@ -172,6 +172,20 @@
   z-index: 9999; pointer-events: none;
 }
 #kb-hud.visible { display: block; }
+<div id="freecam-hud">
+  <div class="fc-title">
+    <div class="fc-dot"></div>
+    <span>FREE CAM</span>
+    <span class="fc-aimed none" id="fc-aimed">— aucun joueur visé —</span>
+  </div>
+  <div class="fc-actions" id="fc-actions"></div>
+  <div class="fc-hint">
+    <div><span>MOLETTE</span> Changer action</div>
+    <div><span>F</span> Exécuter</div>
+    <div><span>ZQSD</span> Déplacer cam</div>
+    <div><span>F10</span> Désactiver</div>
+  </div>
+</div>
 .kb-title {
   display: flex; align-items: center; gap: 8px; padding: 6px 12px;
   background: rgba(20,5,5,0.95);
@@ -419,21 +433,6 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 <div id="spec-hud"></div>
 
 <div id="kb-hud"></div>
-
-<div id="freecam-hud">
-  <div class="fc-title">
-    <div class="fc-dot"></div>
-    <span>FREE CAM</span>
-    <span class="fc-aimed none" id="fc-aimed">— aucun joueur visé —</span>
-  </div>
-  <div class="fc-actions" id="fc-actions"></div>
-  <div class="fc-hint">
-    <div><span>MOLETTE</span> Changer action</div>
-    <div><span>F</span> Exécuter</div>
-    <div><span>ZQSD</span> Déplacer cam</div>
-    <div><span>F9</span> Désactiver</div>
-  </div>
-</div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════
