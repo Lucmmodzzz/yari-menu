@@ -11,7 +11,7 @@
   display: none;
   position: fixed;
   top: 150px;
-  left: 358px; /* juste à droite de #app (350px) + 8px gap */
+  left: 560px; /* #app: left 200px + width 350px + 10px gap = 560px */
   width: 240px;
   background: var(--bg);
   border-top: 3px solid var(--accent);
@@ -492,10 +492,12 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 <script>
 
 const playerPanel = document.getElementById('player-panel');
+let lastFocusedPlayer = null; // Cache le dernier joueur pour éviter la disparition du panel
 
 function updatePlayerPanel(player) {
   if (!player) { playerPanel.classList.remove('visible'); return; }
 
+  lastFocusedPlayer = player; // Sauvegarde le joueur sélectionné
   playerPanel.classList.add('visible');
 
   // Header
@@ -952,11 +954,15 @@ if (d.type === 'spectatorUpdate') {
   }
 
   if (d.type === 'sync') {
+    // Mise à jour du panel: ne cacher que si on quitte le submenu "Players"
     if (d.focusedPlayer) {
       updatePlayerPanel(d.focusedPlayer);
-    } else {
+    } else if ('onlineSubMenu' in d && d.onlineSubMenu !== 'Players') {
+      // On a quitté le submenu Players, cache le panel
       updatePlayerPanel(null);
     }
+    // Sinon, garde le dernier joueur affiché (lastFocusedPlayer reste visible)
+
     if (d.toggles) {
       Object.assign(toggleStates, d.toggles);
       if ('Settings_4' in d.toggles) {
