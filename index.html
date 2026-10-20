@@ -411,6 +411,7 @@ const CAT_STRUCTURE = [
       { name: "KEYBIND", items: ["Delete All Keybinds"] },
     ]
   },
+  { name: "Search", special: "search", subTabs: [ { name: "SEARCH", items: [] } ] },
 ];
 
 const CONFIG_ITEMS = ["Save Config","Load Config"];
@@ -623,6 +624,8 @@ let selectedPlayers = {};
 let playerSel       = 0;
 let trollActions    = ["Teleport","Ragdoll","Silent Kill","Stun Player","Spectate","Revive","Smash Attack","Launch Player","Cage Player","Cage Player M2","Stop Cage Player M2","Bug Player BMX","Bug Player Avenger","Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle"];
 let trollSel        = 0;
+let searchQuery   = '';
+let searchResults = [];
 
 // Weapon sub-state
 let weaponMenuOpen = false;
@@ -699,6 +702,11 @@ function renderSubTabs(cat) {
 // ── RENDER ───────────────────────────────────────────────────────────
 function render() {
   itemsList.innerHTML = '';
+
+   if (cat.special === 'search') {
+      renderSearch(cat);
+      return;
+    }
 
   if (tab === 'config') {
     subTabsEl.innerHTML = ''; subTabsEl.className = '';
@@ -851,6 +859,53 @@ function renderOnline(cat) {
       el.innerHTML = `<div class="bar"></div><span class="item-name">${name}</span><span class="item-ind">▶</span>`;
       itemsList.appendChild(el);
     });
+  }
+}
+
+function renderSearch(cat) {
+  catHeader.textContent = 'SEARCH › ' + searchResults.length + ' résultat(s)';
+  catHeader.className = 'show';
+
+  const rows = [{ input: true }];
+  if (searchQuery && searchResults.length === 0) rows.push({ empty: true });
+  searchResults.forEach(r => rows.push(r));
+
+  for (let i = 0; i < MAX_VIS; i++) {
+    const idx = i + itemScrollOff;
+    if (idx >= rows.length) break;
+    const r  = rows[idx];
+    const el = document.createElement('div');
+    el.className = 'menu-item' + (idx === itemSelIdx ? ' sel' : '');
+    const bar = document.createElement('div'); bar.className = 'bar'; el.appendChild(bar);
+
+    const nm = document.createElement('span'); nm.className = 'item-name';
+    if (r.input) {
+      nm.textContent = '🔍 ' + (searchQuery || 'Entrée pour rechercher...');
+      if (!searchQuery) nm.style.opacity = '0.55';
+      el.appendChild(nm);
+      const ind = document.createElement('span'); ind.className = 'item-ind'; ind.textContent = '⌨';
+      el.appendChild(ind);
+    } else if (r.empty) {
+      nm.textContent = 'Aucun résultat';
+      nm.style.cssText = 'color:var(--dimmed);font-size:11px';
+      el.appendChild(nm);
+    } else {
+      nm.textContent = r.name;
+      el.appendChild(nm);
+      const tag = document.createElement('span');
+      tag.textContent = r.cat + ' › ' + r.sub;
+      tag.style.cssText = 'font-size:9px;margin-right:8px;color:rgba(180,180,180,0.45);font-family:"Share Tech Mono",monospace;';
+      el.appendChild(tag);
+      if (TOGGLE_NAMES.has(r.name)) {
+        const t = document.createElement('div');
+        t.className = 'tog' + (toggleStates[luaToggleKey(r.name)] === true ? ' on' : '');
+        el.appendChild(t);
+      } else {
+        const ind = document.createElement('span'); ind.className = 'item-ind'; ind.textContent = '+';
+        el.appendChild(ind);
+      }
+    }
+    itemsList.appendChild(el);
   }
 }
 
@@ -1049,6 +1104,9 @@ window.addEventListener('message', function(e) {
     if (d.weaponCatIdx  !== undefined) weaponCatIdx  = d.weaponCatIdx;
     if (d.weaponSelIdx  !== undefined) weaponSelIdx  = d.weaponSelIdx;
 
+    if (d.searchQuery !== undefined) searchQuery = d.searchQuery || '';
+    if (d.searchResults !== undefined) searchResults = Array.isArray(d.searchResults) ? d.searchResults : [];
+    
     render();
   }
 });
