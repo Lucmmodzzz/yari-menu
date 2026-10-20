@@ -115,7 +115,6 @@
   --bg:          #0A0A0A;
   --dimmed:      #B0B0B0;
   --sep:         rgba(50,15,15,0.9);
-  --icon-glow:   #CCCCCC;   /* glow blanc/gris pour les icônes */
 }
 
 /* ── SINGLE-COLOUR THEMES ── */
@@ -245,18 +244,6 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
 .item-ind { font-size:13px; font-weight:700; color:var(--accent); margin-left:6px; }
 .menu-item.sel .item-ind { opacity:1; }
 .menu-item:not(.sel) .item-ind { opacity:0.65; }
-
-/* ── CATEGORY ICON ── */
-.item-icon {
-  width:24px; height:24px; flex-shrink:0;
-  margin-right:10px; object-fit:contain;
-  opacity:1; transition: opacity 0.2s;
-  filter: drop-shadow(0 0 2px var(--icon-glow));
-}
-.menu-item.sel .item-icon {
-  opacity:1;
-  filter: drop-shadow(0 0 4px var(--icon-glow));
-}
 
 /* selected bar in twotone uses gradient */
 #app.twotone .menu-item.sel .bar {
@@ -580,8 +567,7 @@ function renderCategories() {
     if (idx >= CATEGORIES.length) break;
     const c   = CATEGORIES[idx];
     const has = c.items.length > 0 || c.name === 'Online';
-    const iconSrc = c.name.toLowerCase() + '.png';
-    makeItem(c.name, idx === selIdx, has ? '›' : '', null, iconSrc);
+    makeItem(c.name, idx === selIdx, has ? '›' : '', null);
   }
 }
 
@@ -634,22 +620,12 @@ function renderList(items, si, so, catName) {
   }
 }
 
-function makeItem(name, selected, ind, togState, iconSrc) {
+function makeItem(name, selected, ind, togState) {
   const el = document.createElement('div');
   el.className = 'menu-item' + (selected ? ' sel' : '');
   const bar = document.createElement('div');
   bar.className = 'bar';
   el.appendChild(bar);
-
-  // Add icon if provided
-  if (iconSrc) {
-    const img = document.createElement('img');
-    img.className = 'item-icon';
-    img.src = iconSrc;
-    img.alt = name;
-    el.appendChild(img);
-  }
-
   const nm = document.createElement('span');
   nm.className = 'item-name';
   nm.textContent = name;
