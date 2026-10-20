@@ -273,20 +273,6 @@
   z-index: 9999; pointer-events: none;
 }
 #kb-hud.visible { display: block; }
-<div id="freecam-hud">
-  <div class="fc-title">
-    <div class="fc-dot"></div>
-    <span>FREE CAM</span>
-    <span class="fc-aimed none" id="fc-aimed">— aucun joueur visé —</span>
-  </div>
-  <div class="fc-actions" id="fc-actions"></div>
-  <div class="fc-hint">
-    <div><span>MOLETTE</span> Changer action</div>
-    <div><span>F</span> Exécuter</div>
-    <div><span>ZQSD</span> Déplacer cam</div>
-    <div><span>F10</span> Désactiver</div>
-  </div>
-</div>
 .kb-title {
   display: flex; align-items: center; gap: 8px; padding: 6px 12px;
   background: rgba(20,5,5,0.95);
@@ -304,6 +290,21 @@
 .kb-ind.on  { background: #32ff6e; box-shadow: 0 0 5px #32ff6e; }
 .kb-ind.off { background: #ff3232; box-shadow: 0 0 5px #ff3232; }
 .kb-empty { padding: 8px 12px; font-size: 10px; letter-spacing: 1px; color: rgba(180,180,180,0.4); }
+
+<div id="freecam-hud">
+  <div class="fc-title">
+    <div class="fc-dot"></div>
+    <span>FREE CAM</span>
+    <span class="fc-aimed none" id="fc-aimed">— aucun joueur visé —</span>
+  </div>
+  <div class="fc-actions" id="fc-actions"></div>
+  <div class="fc-hint">
+    <div><span>MOLETTE</span> Changer action</div>
+    <div><span>F</span> Exécuter</div>
+    <div><span>ZQSD</span> Déplacer cam</div>
+    <div><span>F10</span> Désactiver</div>
+  </div>
+</div>
   
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
