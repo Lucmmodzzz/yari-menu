@@ -706,13 +706,13 @@ if (d.type === 'spectatorUpdate') {
 }
 
   if (d.type === 'setBanner') {
-    bannerIdx = d.index || 0;
-    const src = BANNERS[bannerIdx] || BANNERS[0];
-    const test = new Image();
-    test.onload  = () => { bannerImg.src = src; };
-    test.onerror = () => { bannerImg.src = BANNERS[0]; bannerIdx = 0; };
-    test.src = src;
-    return;
+      const idx = (typeof d.index === 'number') ? d.index : 0;
+      bannerIdx = idx;
+      const src = BANNERS[bannerIdx] || BANNERS[0];
+      // Force direct, pas de test onload/onerror qui peut rater
+      bannerImg.src = src;
+      bannerImg.onerror = () => { bannerImg.src = BANNERS[0]; };
+      return;
   }
 
   if (d.type === 'applyTheme') {
