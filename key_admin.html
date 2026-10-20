@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>YARI KEY ADMIN</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0a; color: #e0e0e0; font-family: 'Share Tech Mono', monospace; padding: 30px; }
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+  h1 { color: #dc1e1e; letter-spacing: 4px; font-size: 20px; margin-bottom: 20px; }
+  .section { background: #111; border: 1px solid #2a0a0a; border-left: 3px solid #dc1e1e; padding: 16px; margin-bottom: 16px; }
+  label { font-size: 11px; color: #888; letter-spacing: 2px; display: block; margin-bottom: 6px; }
+  textarea, input { width: 100%; background: #0d0d0d; border: 1px solid #333; color: #e0e0e0; padding: 8px 10px; font-family: inherit; font-size: 12px; border-radius: 2px; }
+  textarea { height: 180px; resize: vertical; }
+  button { background: #dc1e1e; color: #fff; border: none; padding: 10px 24px; font-family: inherit; font-size: 13px; letter-spacing: 2px; cursor: pointer; border-radius: 2px; margin-top: 10px; }
+  button:hover { background: #ff3232; }
+  button.sec { background: #1e3adc; }
+  button.sec:hover { background: #3252ff; }
+  #log { background: #050505; border: 1px solid #1a1a1a; padding: 10px; height: 200px; overflow-y: auto; font-size: 11px; line-height: 1.7; margin-top: 12px; }
+  .ok  { color: #32ff6e; }
+  .err { color: #ff3232; }
+  .warn { color: #ffaa32; }
+  .flex { display: flex; gap: 10px; }
+</style>
+</head>
+<body>
+<h1>YARI KEY ADMIN</h1>
+
+<div class="section">
+  <label>FIREBASE URL</label>
+  <input id="fb-url" type="text" value="https://config-8cd06-default-rtdb.firebaseio.com" placeholder="https://your-project-default-rtdb.firebaseio.com">
+  <label style="margin-top:10px">FIREBASE AUTH SECRET</label>
+  <input id="fb-auth" type="text" value="VTUKX2InFygDqdENLevAU7vw0dKk8qwGSMiNiANs">
+</div>
+
+<div class="section">
+  <label>PASTE KEYS (one per line — format: YARI-MENU-1MONTH-XXXXXX or YARI-MENU-LIFETIME-XXXXXX)</label>
+  <textarea id="keys-input" placeholder="YARI-MENU-1MONTH-ABC123&#10;YARI-MENU-LIFETIME-XYZ999"></textarea>
+  <div class="flex">
+    <button onclick="uploadKeys()">⬆ UPLOAD KEYS TO FIREBASE</button>
+    <button class="sec" onclick="listKeys()">📋 LIST ALL KEYS</button>
+    <button class="sec" onclick="clearExpired()">🗑 CLEAR EXPIRED</button>
+  </div>
+</div>
+
+<div id="log"></div>
+
+<script>
+function log(msg, cls='') {
+  const el = document.getElementById('log');
+  const d = document.createElement('div');
+  d.className = cls;
+  d.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+function fbUrl() { return document.getElementById('fb-url').value.replace(/\/$/, ''); }
+function fbAuth() { return document.getElementById('fb-auth').value; }
+
+function parseKeys(raw) {
+  return raw.split('\n')
+    .map(l => l.trim())
+    .filter(l => /^YARI-MENU-(1MONTH|LIFETIME)-[A-Z0-9]{7}$/.test(l));
+}
+
+function keyType(key) {
+  if (key.includes('-1MONTH-'))  return '1month';
+  if (key.includes('-LIFETIME-')) return 'lifetime';
+  return 'unknown';
+}
+
+async function uploadKeys() {
+  const raw   = document.getElementById('keys-input').value;
+  const keys  = parseKeys(raw);
+  if (!keys.length) { log('Aucune clé valide trouvée.', 'err'); return; }
+  log('Upload de ' + keys.length + ' clé(s)...', 'warn');
+
+  for (const key of keys) {
+    const safeKey = key.replace(/\./g, '_');
+    const url = `${fbUrl()}/yari_keys/${safeKey}.json?auth=${fbAuth()}`;
+    try {
+      const existing = await fetch(url).then(r => r.json());
+      if (existing && existing.hwid) {
+        log(`SKIP  ${key} — déjà utilisée par HWID ${existing.hwid.slice(0,12)}...`, 'warn');
+        continue;
+      }
+      const payload = {
+        type:      keyType(key),
+        used:      false,
+        hwid:      null,
+        expiry:    null,
+        activated: null,
+        created:   Date.now()
+      };
+      const r = await fetch(url, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      if (r.ok) log(`OK    ${key}  [${keyType(key)}]`, 'ok');
+      else      log(`ERR   ${key}  status=${r.status}`, 'err');
+    } catch(e) { log(`FAIL  ${key}  ${e.message}`, 'err'); }
+  }
+  log('Upload terminé.', 'ok');
+}
+
+async function listKeys() {
+  log('Récupération des clés...', 'warn');
+  const url = `${fbUrl()}/yari_keys.json?auth=${fbAuth()}`;
+  try {
+    const data = await fetch(url).then(r => r.json());
+    if (!data) { log('Aucune clé en base.', 'warn'); return; }
+    let total = 0, used = 0, active = 0;
+    for (const [k, v] of Object.entries(data)) {
+      total++;
+      const key = k.replace(/_/g, '.');
+      if (v.used) {
+        used++;
+        const exp = v.expiry ? new Date(v.expiry).toLocaleDateString() : '∞';
+        const expired = v.expiry && Date.now() > v.expiry;
+        log(`${expired ? '✗ EXP' : '✓ ACT'} ${key}  HWID:${(v.hwid||'').slice(0,14)}  exp:${exp}`, expired ? 'err' : 'ok');
+        if (!expired) active++;
+      } else {
+        log(`○ FREE ${key}  [${v.type}]`, '');
+      }
+    }
+    log(`Total: ${total} | Utilisées: ${used} | Actives: ${active} | Libres: ${total - used}`, 'warn');
+  } catch(e) { log('Erreur: ' + e.message, 'err'); }
+}
+
+async function clearExpired() {
+  log('Recherche des clés expirées...', 'warn');
+  const url = `${fbUrl()}/yari_keys.json?auth=${fbAuth()}`;
+  try {
+    const data = await fetch(url).then(r => r.json());
+    if (!data) { log('Aucune clé.', 'warn'); return; }
+    let cleared = 0;
+    for (const [k, v] of Object.entries(data)) {
+      if (v.used && v.expiry && Date.now() > v.expiry) {
+        const delUrl = `${fbUrl()}/yari_keys/${k}.json?auth=${fbAuth()}`;
+        await fetch(delUrl, { method: 'DELETE' });
+        log(`CLEARED ${k.replace(/_/g,'.')}`, 'warn');
+        cleared++;
+      }
+    }
+    log(`${cleared} clé(s) expirée(s) supprimée(s).`, 'ok');
+  } catch(e) { log('Erreur: ' + e.message, 'err'); }
+}
+</script>
+</body>
+</html>
