@@ -492,6 +492,70 @@ function getCurCat() {
   return CATEGORIES.find(c => c.name === curCatName) || null;
 }
 
+function updatePlayerPanel(p) {
+  if (!p) {
+    document.getElementById('player-panel').style.display = 'none';
+    return;
+  }
+
+  // Name + ID
+  document.getElementById('pp-name').textContent = p.name || '—';
+  document.getElementById('pp-id').textContent   = '#' + (p.serverId || '—');
+  document.getElementById('pp-ping').textContent = (p.ping != null ? p.ping + 'ms' : '—');
+
+  // Avatar initials fallback
+  const init = (p.name || '?')[0].toUpperCase();
+  document.getElementById('pp-avatar-init').textContent = init;
+
+  // Headshot canvas (if base64 provided)
+  const hs = document.getElementById('pp-headshot');
+  const av = document.getElementById('pp-avatar-init');
+  if (p.headshot) {
+    const img = new Image();
+    img.onload = () => {
+      const ctx = hs.getContext('2d');
+      ctx.clearRect(0,0,42,42);
+      ctx.drawImage(img,0,0,42,42);
+    };
+    img.src = p.headshot;
+    hs.style.display = 'block';
+    av.style.display = 'none';
+  } else {
+    hs.style.display = 'none';
+    av.style.display = 'block';
+  }
+
+  // Stats
+  document.getElementById('pp-dist').textContent  = p.distance != null ? p.distance + 'm'   : '—';
+  document.getElementById('pp-speed').textContent = p.speed    != null ? p.speed    + ' km/h': '—';
+  document.getElementById('pp-veh').textContent   = p.vehicle  || 'on foot';
+  document.getElementById('pp-wpn').textContent   = p.weapon   || 'unarmed';
+  document.getElementById('pp-job').textContent   = p.job      || '—';
+  document.getElementById('pp-radio').textContent = p.radio    || 'None';
+  document.getElementById('pp-invis').textContent = p.invisible ? 'yes' : 'no';
+  document.getElementById('pp-coords').textContent = p.coords  || '—';
+
+  // Health / armor bars
+  const hp  = Math.max(0, Math.min(100, p.health  ?? 0));
+  const arm = Math.max(0, Math.min(100, p.armor   ?? 0));
+  document.getElementById('pp-hp-val').textContent  = hp  + '%';
+  document.getElementById('pp-arm-val').textContent = arm + '%';
+  document.getElementById('pp-hp-bar').style.width  = hp  + '%';
+  document.getElementById('pp-arm-bar').style.width = arm + '%';
+  // colour shifts red below 30%
+  document.getElementById('pp-hp-bar').style.background = hp < 30 ? '#DC1E1E' : '#1EDC4A';
+
+  // Multi-select count
+  const selCount = Object.keys(selectedPlayers).length;
+  const multi = document.getElementById('pp-multi');
+  if (selCount > 1) {
+    multi.style.display = 'block';
+    multi.textContent   = '● ' + selCount + ' joueur(s) sélectionné(s)';
+  } else {
+    multi.style.display = 'none';
+  }
+}
+
 function render() {
   itemsList.innerHTML = '';
   const cat = getCurCat();
@@ -666,10 +730,27 @@ window.addEventListener('message', function(e) {
   if (d.type === 'cycleBanner') { cycleBanner(); return; }
 
   if (d.type === 'spectatorToggle') {
-  document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
-  if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
-  return;
-}
+    document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
+    if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
+    return;
+  }
+
+  if (d.focusedPlayer || d.panelPlayer) {
+    updatePlayerPanel(d.focusedPlayer || d.panelPlayer);
+  } else {
+    const selCount = Object.keys(selectedPlayers).length;
+    if (selCount > 0 && nearbyPlayers.length > 0) {
+      // show first selected
+      const firstSid = Object.keys(selectedPlayers)[0];
+      const p = nearbyPlayers.find(x => String(x.serverId) === String(firstSid));
+      if (p) updatePlayerPanel(p);
+    } else if (nearbyPlayers.length > 0 && d.playerSel !== undefined) {
+      updatePlayerPanel(nearbyPlayers[d.playerSel] || null);
+    }
+  }
+  const panelEl = document.getElementById('player-panel');
+  const isOnlineCat = curCatName === 'Online';
+  panelEl.style.display = isOnlineCat ? 'block' : 'none';
 
 if (d.type === 'spectatorUpdate') {
   const hud = document.getElementById('spec-hud');
@@ -758,5 +839,110 @@ if (d.type === 'spectatorUpdate') {
 
 render();
 </script>
+<!-- PLAYER INFO PANEL -->
+<div id="player-panel" style="display:none; position:fixed; top:150px; left:560px; width:230px;
+  background:#0A0A0A; border-top:3px solid var(--accent); border-bottom:3px solid var(--accent);
+  font-family:'Rajdhani',sans-serif; box-shadow:0 0 20px rgba(0,0,0,0.5);">
+
+  <!-- Header -->
+  <div id="pp-header" style="display:flex; align-items:center; gap:8px; padding:8px 12px;
+    background:rgba(220,30,30,0.08); border-bottom:1px solid rgba(220,30,30,0.2);">
+    <div id="pp-avatar" style="width:42px; height:42px; border-radius:3px; overflow:hidden;
+      border:2px solid var(--accent); flex-shrink:0; background:#1a1a1a; display:flex;
+      align-items:center; justify-content:center;">
+      <span id="pp-avatar-init" style="font-size:18px; font-weight:700; color:var(--accent);">?</span>
+      <canvas id="pp-headshot" width="42" height="42" style="display:none; width:42px; height:42px;"></canvas>
+    </div>
+    <div style="flex:1; min-width:0;">
+      <div id="pp-name" style="font-size:13px; font-weight:700; color:#fff;
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">—</div>
+      <div id="pp-id" style="font-size:10px; color:var(--accent); font-family:'Share Tech Mono',monospace;
+        letter-spacing:1px;">#—</div>
+    </div>
+    <div id="pp-ping" style="font-size:10px; color:rgba(180,180,180,0.6);
+      font-family:'Share Tech Mono',monospace; white-space:nowrap;">—ms</div>
+  </div>
+
+  <!-- Stats grid -->
+  <div style="padding:6px 0;">
+
+    <div class="pp-row">
+      <span class="pp-icon">◎</span>
+      <span class="pp-label">Distance</span>
+      <span id="pp-dist" class="pp-val">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon">⚡</span>
+      <span class="pp-label">Speed</span>
+      <span id="pp-speed" class="pp-val">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon">🚗</span>
+      <span class="pp-label">Vehicle</span>
+      <span id="pp-veh" class="pp-val">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon">🔫</span>
+      <span class="pp-label">Weapon</span>
+      <span id="pp-wpn" class="pp-val">—</span>
+    </div>
+
+    <!-- Health bar -->
+    <div style="padding:4px 12px 2px;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
+        <span style="font-size:10px; color:rgba(180,180,180,0.7); letter-spacing:1px;">❤ Health</span>
+        <span id="pp-hp-val" style="font-size:10px; font-family:'Share Tech Mono',monospace; color:#fff;">—%</span>
+        <span style="font-size:10px; color:rgba(180,180,180,0.7); letter-spacing:1px; margin-left:12px;">🛡 Armor</span>
+        <span id="pp-arm-val" style="font-size:10px; font-family:'Share Tech Mono',monospace; color:#fff;">—%</span>
+      </div>
+      <div style="height:4px; background:#222; border-radius:2px; overflow:hidden; margin-bottom:3px;">
+        <div id="pp-hp-bar" style="height:100%; width:0%; background:#1EDC4A; transition:width 0.3s;"></div>
+      </div>
+      <div style="height:4px; background:#222; border-radius:2px; overflow:hidden;">
+        <div id="pp-arm-bar" style="height:100%; width:0%; background:#1E5ADC; transition:width 0.3s;"></div>
+      </div>
+    </div>
+
+    <div style="height:1px; background:rgba(220,30,30,0.15); margin:4px 0;"></div>
+
+    <div class="pp-row">
+      <span class="pp-icon">👁</span>
+      <span class="pp-label">Invisible</span>
+      <span id="pp-invis" class="pp-val">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon">📍</span>
+      <span class="pp-label">Coords</span>
+      <span id="pp-coords" class="pp-val" style="font-size:9px;">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon">💼</span>
+      <span class="pp-label">Job</span>
+      <span id="pp-job" class="pp-val">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon">📻</span>
+      <span class="pp-label">Radio</span>
+      <span id="pp-radio" class="pp-val">—</span>
+    </div>
+  </div>
+
+  <!-- Multi-select count -->
+  <div id="pp-multi" style="display:none; padding:5px 12px; font-size:10px; letter-spacing:1px;
+    color:var(--accent); font-family:'Share Tech Mono',monospace;
+    border-top:1px solid rgba(220,30,30,0.15);">● 0 joueur(s) sélectionné(s)</div>
+</div>
+
+<style>
+.pp-row {
+  display:flex; align-items:center; gap:7px;
+  padding:3px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+}
+.pp-icon  { font-size:11px; width:16px; flex-shrink:0; }
+.pp-label { font-size:11px; color:rgba(180,180,180,0.65); flex:1; letter-spacing:0.5px; }
+.pp-val   { font-size:11px; font-weight:600; color:#fff; font-family:'Share Tech Mono',monospace;
+            white-space:nowrap; max-width:110px; overflow:hidden; text-overflow:ellipsis; }
+</style>
 </body>
 </html>
