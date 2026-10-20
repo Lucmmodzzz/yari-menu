@@ -585,10 +585,6 @@ function renderList(items, si, so, catName) {
     const name = items[idx];
     const key  = catName ? catName + '_' + (idx + 1) : null;
     const isTog = key !== null && TOGGLE_KEYS.has(key);
-    
-    if (catName === 'Keybind' && window._keybindItemsOverride) {
-        items = window._keybindItemsOverride;
-    }
     // Special: "Couleur du Menu" shows colour dots inline
     if (catName === 'Settings' && name === 'Couleur du Menu') {
       const el = document.createElement('div');
@@ -621,46 +617,7 @@ function renderList(items, si, so, catName) {
     }
     const togVal = isTog ? (toggleStates[key] === true) : null;
     makeItem(name, idx === si, isTog ? null : '+', togVal);
-
-    for (let i = 0; i < MAX_VIS; i++) {
-        const idx  = i + so;
-        if (idx >= items.length) break;
-        const name = items[idx];
-    
-        if (catName === 'Keybind' && idx === 0) {
-            // "Delete All Keybinds" — item normal
-            makeItem(name, idx === si, '+', null);
-        } else if (catName === 'Keybind' && idx >= 1) {
-            // Bind individuel — affiche ✕ rouge, style différent
-            makeItemBind(name, idx === si);
-        } else {
-            const key    = catName ? catName + '_' + (idx + 1) : null;
-            const isTog  = key !== null && TOGGLE_KEYS.has(key);
-            const togVal = isTog ? (toggleStates[key] === true) : null;
-            makeItem(name, idx === si, isTog ? null : '+', togVal);
-        }
-    }
   }
-}
-
-function makeItemBind(name, selected) {
-    const el = document.createElement('div');
-    el.className = 'menu-item' + (selected ? ' sel' : '');
-    const bar = document.createElement('div');
-    bar.className = 'bar';
-    el.appendChild(bar);
-    const nm = document.createElement('span');
-    nm.className = 'item-name';
-    nm.style.fontSize = '12px';
-    nm.textContent = name;
-    el.appendChild(nm);
-    const del = document.createElement('span');
-    del.className = 'item-ind';
-    del.style.color = selected ? 'var(--accent)' : 'rgba(220,30,30,0.5)';
-    del.style.fontSize = '14px';
-    del.textContent = '✕';
-    el.appendChild(del);
-    itemsList.appendChild(el);
 }
 
 function makeItem(name, selected, ind, togState) {
@@ -785,13 +742,6 @@ if (d.type === 'spectatorUpdate') {
       tab = d.tab;
       tabMainEl.className = 'tab' + (tab === 'main'   ? ' active' : '');
       tabCfgEl.className  = 'tab' + (tab === 'config' ? ' active' : '');
-    }
-
-    if (d.keybindItems !== undefined && d.curCatName === 'Keybind') {
-        // Remplace temporairement les items de la catégorie Keybind pour le rendu
-        window._keybindItemsOverride = d.keybindItems;
-    } else if (d.curCatName !== 'Keybind') {
-        window._keybindItemsOverride = null;
     }
     curCatName = d.curCatName || null;
     if (d.selIdx    !== undefined) { if (curCatName) catSel    = d.selIdx;    else selIdx    = d.selIdx; }
