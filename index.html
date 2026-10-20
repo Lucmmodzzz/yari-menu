@@ -7,111 +7,6 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
-#key-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.88);
-  z-index: 99999;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Rajdhani', sans-serif;
-  pointer-events: auto;
-}
-#key-overlay.visible { display: flex; }
-
-#key-box {
-  width: 420px;
-  background: #0A0A0A;
-  border-top: 3px solid #DC1E1E;
-  border-bottom: 3px solid #DC1E1E;
-  box-shadow: 0 0 40px rgba(220,30,30,0.25), 0 0 80px rgba(0,0,0,0.8);
-  display: flex; flex-direction: column;
-}
-
-.key-banner {
-  height: 80px;
-  background: linear-gradient(180deg, rgba(40,5,5,0.98) 0%, rgba(10,10,10,1) 100%);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 4px;
-  border-bottom: 1px solid rgba(220,30,30,0.2);
-  position: relative; overflow: hidden;
-}
-.key-banner::before {
-  content:''; position:absolute; left:0; top:0; bottom:0; width:4px;
-  background: linear-gradient(180deg,#DC1E1E,#8C0A0A);
-}
-.key-banner::after {
-  content:''; position:absolute; right:0; top:0; bottom:0; width:4px;
-  background: linear-gradient(180deg,#DC1E1E,#8C0A0A); opacity:0.6;
-}
-.key-title {
-  font-size: 26px; font-weight: 700; letter-spacing: 6px; color: #fff;
-  text-shadow: 0 0 14px #FF3232, 0 0 30px rgba(220,30,30,0.4);
-}
-.key-sub {
-  font-size: 10px; letter-spacing: 3px; color: #B0B0B0;
-  font-family: 'Share Tech Mono', monospace;
-}
-
-.key-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
-
-.key-label {
-  font-size: 10px; letter-spacing: 2px; color: #B0B0B0;
-  font-family: 'Share Tech Mono', monospace;
-}
-
-.key-input-wrap {
-  position: relative;
-  border: 1px solid rgba(220,30,30,0.4);
-  background: rgba(15,5,5,0.95);
-}
-.key-input-wrap::before {
-  content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
-  background: #DC1E1E; box-shadow: 0 0 6px #FF3232;
-}
-#key-input {
-  width: 100%; padding: 10px 14px 10px 18px;
-  background: transparent; border: none; outline: none;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 14px; letter-spacing: 3px; color: #fff;
-  text-transform: uppercase;
-  pointer-events: auto;
-  cursor: text;
-}
-#key-input::placeholder { color: rgba(180,180,180,0.3); letter-spacing: 2px; }
-
-#key-submit {
-  padding: 10px; background: #DC1E1E; border: none; cursor: pointer;
-  font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700;
-  letter-spacing: 3px; color: #fff;
-  transition: background 0.15s, box-shadow 0.15s;
-  pointer-events: auto;
-}
-#key-submit:hover { background: #ff2020; box-shadow: 0 0 14px rgba(220,30,30,0.5); }
-#key-submit:disabled { background: #3a1010; color: rgba(255,255,255,0.3); cursor: not-allowed; }
-
-#key-status {
-  min-height: 18px; font-size: 11px; letter-spacing: 1px;
-  font-family: 'Share Tech Mono', monospace; text-align: center;
-}
-#key-status.error   { color: #ff4444; }
-#key-status.success { color: #32ff6e; }
-#key-status.pending { color: #ffaa32; }
-
-.key-hwid {
-  font-size: 9px; letter-spacing: 1px; color: rgba(180,180,180,0.3);
-  font-family: 'Share Tech Mono', monospace; text-align: center;
-  padding-bottom: 4px;
-}
-
-.key-footer {
-  padding: 8px 24px;
-  border-top: 1px solid rgba(40,10,10,0.6);
-  background: rgba(8,8,8,0.99);
-  font-size: 9px; letter-spacing: 1px; color: rgba(180,180,180,0.35);
-  font-family: 'Share Tech Mono', monospace; text-align: center;
-}
-
 #freecam-hud {
   display: none;
   position: fixed;
@@ -277,6 +172,20 @@
   z-index: 9999; pointer-events: none;
 }
 #kb-hud.visible { display: block; }
+<div id="freecam-hud">
+  <div class="fc-title">
+    <div class="fc-dot"></div>
+    <span>FREE CAM</span>
+    <span class="fc-aimed none" id="fc-aimed">— aucun joueur visé —</span>
+  </div>
+  <div class="fc-actions" id="fc-actions"></div>
+  <div class="fc-hint">
+    <div><span>MOLETTE</span> Changer action</div>
+    <div><span>F</span> Exécuter</div>
+    <div><span>ZQSD</span> Déplacer cam</div>
+    <div><span>F10</span> Désactiver</div>
+  </div>
+</div>
 .kb-title {
   display: flex; align-items: center; gap: 8px; padding: 6px 12px;
   background: rgba(20,5,5,0.95);
@@ -294,21 +203,6 @@
 .kb-ind.on  { background: #32ff6e; box-shadow: 0 0 5px #32ff6e; }
 .kb-ind.off { background: #ff3232; box-shadow: 0 0 5px #ff3232; }
 .kb-empty { padding: 8px 12px; font-size: 10px; letter-spacing: 1px; color: rgba(180,180,180,0.4); }
-
-<div id="freecam-hud">
-  <div class="fc-title">
-    <div class="fc-dot"></div>
-    <span>FREE CAM</span>
-    <span class="fc-aimed none" id="fc-aimed">— aucun joueur visé —</span>
-  </div>
-  <div class="fc-actions" id="fc-actions"></div>
-  <div class="fc-hint">
-    <div><span>MOLETTE</span> Changer action</div>
-    <div><span>F</span> Exécuter</div>
-    <div><span>ZQSD</span> Déplacer cam</div>
-    <div><span>F10</span> Désactiver</div>
-  </div>
-</div>
   
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -480,30 +374,6 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 </style>
 </head>
 <body>
-
-<div id="key-overlay">
-  <div id="key-box">
-    <div class="key-banner">
-      <span class="key-title">YARI MENU</span>
-      <span class="key-sub">LICENCE REQUIRED</span>
-    </div>
-    <div class="key-body">
-      <span class="key-label">ENTREZ VOTRE CLÉ D'ACTIVATION</span>
-      <div class="key-input-wrap">
-        <input id="key-input" type="text"
-               placeholder="YARI-MENU-XXXXXX-XXXXXXX"
-               maxlength="40" autocomplete="off" spellcheck="false" autofocus />
-      </div>
-      <button id="key-submit">ACTIVER</button>
-      <div id="key-status"></div>
-      <div class="key-hwid" id="key-hwid"></div>
-    </div>
-    <div class="key-footer">
-      yari-menu.store &nbsp;·&nbsp; support discord
-    </div>
-  </div>
-</div>
-
 <div id="app" class="theme-red">
   <div id="top-border"></div>
   <div id="banner">
@@ -1215,47 +1085,6 @@ window.addEventListener('message', function(e) {
     return;
   }
 
-  if (d.type === 'showKeyMenu') {
-    keyOverlay.classList.add('visible');
-    keyInput.value = '';
-    keyStatus.className = '';
-    keyStatus.textContent = d.error
-      ? '✗ ' + d.error
-      : '';
-    if (d.error) keyStatus.className = 'error';
-    if (d.hwid) keyHwid.textContent = 'HWID: ' + d.hwid;
-    // Signal Lua to disable game input and show cursor
-    sendToLua({ type: 'keyMenuShown', visible: true });
-    // Focus with delay to ensure visibility
-    setTimeout(() => { keyInput.focus(); keyInput.select(); }, 50);
-    return;
-  }
-  if (d.type === 'hideKeyMenu') {
-    keyOverlay.classList.remove('visible');
-    // Signal Lua to re-enable game input and hide cursor
-    sendToLua({ type: 'keyMenuShown', visible: false });
-    return;
-  }
-  if (d.type === 'keyValidating') {
-    keyStatus.className = 'pending';
-    keyStatus.textContent = '⟳ Validation en cours...';
-    keySubmit.disabled = true;
-    return;
-  }
-  if (d.type === 'keyError') {
-    keyStatus.className = 'error';
-    keyStatus.textContent = '✗ ' + (d.message || 'Clé invalide');
-    keySubmit.disabled = false;
-    keyInput.focus();
-    return;
-  }
-  if (d.type === 'keySuccess') {
-    keyStatus.className = 'success';
-    keyStatus.textContent = '✓ Clé valide — ' + (d.plan || 'ACTIVE');
-    keySubmit.disabled = true;
-    return;
-  }
-
   if (d.type === 'freecam') {
     const hud = document.getElementById('freecam-hud');
     if (!d.enabled) {
@@ -1422,66 +1251,6 @@ window.addEventListener('message', function(e) {
     
     render();
   }
-});
-
-window.__yariKeyQueue = [];
-
-function keyBridge(obj) {
-  window.__yariKeyQueue.push(obj);
-}
-
-const keyOverlay = document.getElementById('key-overlay');
-const keyInput   = document.getElementById('key-input');
-const keySubmit  = document.getElementById('key-submit');
-const keyStatus  = document.getElementById('key-status');
-const keyHwid    = document.getElementById('key-hwid');
-
-// Prevent game input from intercepting key presses on overlay
-keyOverlay.addEventListener('keydown', function(e) {
-  e.stopPropagation();
-  e.stopImmediatePropagation();
-}, true);
-
-keyOverlay.addEventListener('keyup', function(e) {
-  e.stopPropagation();
-  e.stopImmediatePropagation();
-}, true);
-
-keyOverlay.addEventListener('mousedown', function(e) {
-  e.stopPropagation();
-  e.stopImmediatePropagation();
-}, true);
-
-keyOverlay.addEventListener('mouseup', function(e) {
-  e.stopPropagation();
-  e.stopImmediatePropagation();
-}, true);
-
-keySubmit.addEventListener('click', function() {
-  const val = keyInput.value.trim().toUpperCase();
-  if (!val || val.length < 8) {
-    keyStatus.className = 'error';
-    keyStatus.textContent = '✗ Clé trop courte';
-    return;
-  }
-  keyBridge({ type: 'submitKey', key: val });
-});
-
-keyInput.addEventListener('keydown', function(e) {
-  e.stopPropagation();
-  if (e.key === 'Enter') keySubmit.click();
-});
-
-// Auto-format: insère des tirets à YARI-MENU-PLAN-CODE
-keyInput.addEventListener('input', function() {
-  let v = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  // rebuild with dashes
-  const parts = [];
-  if (v.length > 0)  parts.push(v.slice(0,4));
-  if (v.length > 4)  parts.push(v.slice(4,8));
-  if (v.length > 8)  parts.push(v.slice(8,14));
-  if (v.length > 14) parts.push(v.slice(14,21));
-  this.value = parts.join('-');
 });
 
 render();
