@@ -7,6 +7,110 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
+#player-panel {
+  display: none;
+  position: fixed;
+  top: 150px;
+  left: 358px; /* juste à droite de #app (350px) + 8px gap */
+  width: 240px;
+  background: var(--bg);
+  border-top: 3px solid var(--accent);
+  border-bottom: 3px solid var(--accent);
+  border-left: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 0 20px rgba(0,0,0,0.45);
+  font-family: 'Share Tech Mono', monospace;
+  z-index: 9998;
+  pointer-events: none;
+}
+#player-panel.visible { display: block; }
+
+.pp-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px;
+  background: rgba(20,5,20,0.95);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.pp-avatar {
+  width: 28px; height: 28px; border-radius: 3px;
+  background: rgba(139,31,220,0.25);
+  border: 1px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--accent);
+  flex-shrink: 0;
+}
+.pp-name {
+  flex: 1; font-size: 12px; font-weight: 700;
+  color: #fff; letter-spacing: 1px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pp-sid {
+  font-size: 10px; color: var(--accent);
+  letter-spacing: 1px;
+}
+
+.pp-section {
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.pp-section:last-child { border-bottom: none; }
+
+.pp-row {
+  display: flex; align-items: center;
+  padding: 3px 10px; gap: 6px;
+  min-height: 22px;
+}
+.pp-icon {
+  width: 14px; font-size: 11px; text-align: center;
+  color: var(--accent); flex-shrink: 0;
+  opacity: 0.85;
+}
+.pp-label {
+  font-size: 10px; color: rgba(180,180,180,0.6);
+  letter-spacing: 1px; min-width: 62px; flex-shrink: 0;
+}
+.pp-value {
+  font-size: 10px; color: #e8e8e8;
+  text-align: right; flex: 1;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pp-value.danger  { color: #ff4444; }
+.pp-value.warn    { color: #ff9900; }
+.pp-value.ok      { color: #32ff6e; }
+
+/* Health / Armor bars */
+.pp-bar-wrap {
+  padding: 2px 10px 5px;
+}
+.pp-bar-row {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
+}
+.pp-bar-label {
+  font-size: 9px; color: rgba(180,180,180,0.6); letter-spacing: 1px;
+  min-width: 38px;
+}
+.pp-bar-pct {
+  font-size: 9px; color: #e8e8e8;
+  min-width: 32px; text-align: right;
+}
+.pp-bar-track {
+  flex: 1; height: 5px; background: rgba(255,255,255,0.08);
+  border-radius: 2px; overflow: hidden;
+}
+.pp-bar-fill {
+  height: 100%; border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.pp-bar-fill.health { background: linear-gradient(90deg, #1edc4a, #32ff6e); }
+.pp-bar-fill.armor  { background: linear-gradient(90deg, #1e5adc, #3278ff); }
+.pp-bar-fill.health.low  { background: linear-gradient(90deg, #dc1e1e, #ff3232); }
+.pp-bar-fill.health.mid  { background: linear-gradient(90deg, #dc8c1e, #ffaa32); }
+
+.pp-coords {
+  font-size: 9px; color: rgba(160,160,160,0.7);
+  padding: 3px 10px 5px;
+  letter-spacing: 0.5px; font-family: 'Share Tech Mono', monospace;
+}
+
 #spec-hud {
   display: none;
   position: fixed;
@@ -323,9 +427,126 @@ html, body { width:100%; height:100%; background:transparent; overflow:hidden; f
   </div>
 </div>
 
+<div id="player-panel">
+  <div class="pp-header">
+    <div class="pp-avatar" id="pp-avatar">👤</div>
+    <span class="pp-name" id="pp-name">—</span>
+    <span class="pp-sid" id="pp-sid">#—</span>
+  </div>
+  <div class="pp-bar-wrap">
+    <div class="pp-bar-row">
+      <span class="pp-bar-label">❤ HEALTH</span>
+      <div class="pp-bar-track"><div class="pp-bar-fill health" id="pp-hp-bar" style="width:100%"></div></div>
+      <span class="pp-bar-pct" id="pp-hp-pct">100%</span>
+    </div>
+    <div class="pp-bar-row">
+      <span class="pp-bar-label">🛡 ARMOR</span>
+      <div class="pp-bar-track"><div class="pp-bar-fill armor" id="pp-arm-bar" style="width:0%"></div></div>
+      <span class="pp-bar-pct" id="pp-arm-pct">0%</span>
+    </div>
+  </div>
+  <div class="pp-section">
+    <div class="pp-row">
+      <span class="pp-icon">◎</span>
+      <span class="pp-label">DISTANCE</span>
+      <span class="pp-value" id="pp-dist">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon">🚗</span>
+      <span class="pp-label">VEHICLE</span>
+      <span class="pp-value" id="pp-veh">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon">⚡</span>
+      <span class="pp-label">SPEED</span>
+      <span class="pp-value" id="pp-spd">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon">🔫</span>
+      <span class="pp-label">WEAPON</span>
+      <span class="pp-value" id="pp-wpn">—</span>
+    </div>
+  </div>
+  <div class="pp-section">
+    <div class="pp-row">
+      <span class="pp-icon">👁</span>
+      <span class="pp-label">INVISIBLE</span>
+      <span class="pp-value" id="pp-inv">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon">💼</span>
+      <span class="pp-label">JOB</span>
+      <span class="pp-value" id="pp-job">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon">📻</span>
+      <span class="pp-label">RADIO</span>
+      <span class="pp-value" id="pp-radio">—</span>
+    </div>
+  </div>
+  <div class="pp-coords" id="pp-coords">X — &nbsp; Y — &nbsp; Z —</div>
+</div>
+
 <div id="spec-hud"></div>
 
 <script>
+
+const playerPanel = document.getElementById('player-panel');
+
+function updatePlayerPanel(player) {
+  if (!player) { playerPanel.classList.remove('visible'); return; }
+
+  playerPanel.classList.add('visible');
+
+  // Header
+  document.getElementById('pp-name').textContent = player.name || '—';
+  document.getElementById('pp-sid').textContent = '#' + (player.serverId || '—');
+
+  // Avatar initiale
+  const initials = (player.name || '?').charAt(0).toUpperCase();
+  document.getElementById('pp-avatar').textContent = initials;
+
+  // Health bar
+  const hp = Math.max(0, Math.min(100, player.health ?? 100));
+  const hpBar = document.getElementById('pp-hp-bar');
+  hpBar.style.width = hp + '%';
+  hpBar.className = 'pp-bar-fill health' + (hp < 30 ? ' low' : hp < 60 ? ' mid' : '');
+  document.getElementById('pp-hp-pct').textContent = hp + '%';
+
+  // Armor bar
+  const arm = Math.max(0, Math.min(100, player.armor ?? 0));
+  document.getElementById('pp-arm-bar').style.width = arm + '%';
+  document.getElementById('pp-arm-pct').textContent = arm + '%';
+
+  // Stats
+  document.getElementById('pp-dist').textContent = (player.distance ?? '—') + 'm';
+
+  const veh = document.getElementById('pp-veh');
+  veh.textContent = player.vehicle || 'on foot';
+  veh.className = 'pp-value' + (player.vehicle && player.vehicle !== 'on foot' ? ' warn' : '');
+
+  document.getElementById('pp-spd').textContent = (player.speed ?? '—') + ' km/h';
+
+  const wpn = document.getElementById('pp-wpn');
+  const wpnName = (player.weapon || 'unarmed').replace('weapon_', '').replace(/_/g, ' ');
+  wpn.textContent = wpnName;
+  wpn.className = 'pp-value' + (player.weapon && player.weapon !== 'weapon_unarmed' ? ' danger' : '');
+
+  const inv = document.getElementById('pp-inv');
+  inv.textContent = player.invisible ? 'yes' : 'no';
+  inv.className = 'pp-value' + (player.invisible ? ' danger' : ' ok');
+
+  document.getElementById('pp-job').textContent = player.job || '—';
+  document.getElementById('pp-radio').textContent = player.radio || 'None';
+
+  // Coords
+  if (player.coords) {
+    document.getElementById('pp-coords').textContent =
+      'X ' + Math.floor(player.coords.x) + '  Y ' + Math.floor(player.coords.y) + '  Z ' + Math.floor(player.coords.z);
+  } else {
+    document.getElementById('pp-coords').textContent = 'X —  Y —  Z —';
+  }
+}
 // ── THEME STATE ─────────────────────────────────────────────────────
 const THEMES = {
   red:    { accent:'#DC1E1E', glow:'#FF3232', dark:'#8C0A0A', sep:'rgba(50,15,15,0.9)' },
@@ -731,6 +952,11 @@ if (d.type === 'spectatorUpdate') {
   }
 
   if (d.type === 'sync') {
+    if (d.focusedPlayer) {
+      updatePlayerPanel(d.focusedPlayer);
+    } else {
+      updatePlayerPanel(null);
+    }
     if (d.toggles) {
       Object.assign(toggleStates, d.toggles);
       if ('Settings_4' in d.toggles) {
