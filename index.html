@@ -789,10 +789,14 @@ function renderOnline(cat) {
       el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun joueur à proximité</span>';
       itemsList.appendChild(el);
     } else {
-      nearbyPlayers.slice(0, MAX_VIS).forEach((p, i) => {
+      // Compute scroll window so selected item stays visible
+      let pScrollStart = 0;
+      if (playerSel >= MAX_VIS) pScrollStart = playerSel - MAX_VIS + 1;
+      nearbyPlayers.slice(pScrollStart, pScrollStart + MAX_VIS).forEach((p, i) => {
+        const absIdx = i + pScrollStart;
         const isOn = selectedPlayers[p.serverId] === true;
         const el = document.createElement('div');
-        el.className = 'menu-item' + (i === playerSel ? ' sel' : '');
+        el.className = 'menu-item' + (absIdx === playerSel ? ' sel' : '');
         el.innerHTML = `<div class="bar"></div>
           <span class="item-name" style="font-size:11px">[${p.serverId}] ${p.name} <span style="color:var(--dimmed)">${p.distance}m</span></span>
           <div class="tog${isOn ? ' on' : ''}"></div>`;
@@ -807,9 +811,12 @@ function renderOnline(cat) {
     hd.style.color = selCount > 0 ? '#32c832' : '#dc821e';
     hd.textContent = selCount > 0 ? '● ' + selCount + ' joueur(s) ciblé(s)' : '⚠ Aucun joueur sélectionné';
     itemsList.appendChild(hd);
-    trollActions.forEach((name, i) => {
+    let tScrollStart = 0;
+    if (trollSel >= MAX_VIS) tScrollStart = trollSel - MAX_VIS + 1;
+    trollActions.slice(tScrollStart, tScrollStart + MAX_VIS).forEach((name, i) => {
+      const absIdx = i + tScrollStart;
       const el = document.createElement('div');
-      el.className = 'menu-item' + (i === trollSel ? ' sel' : '');
+      el.className = 'menu-item' + (absIdx === trollSel ? ' sel' : '');
       el.innerHTML = `<div class="bar"></div><span class="item-name">${name}</span><span class="item-ind">▶</span>`;
       itemsList.appendChild(el);
     });
@@ -970,11 +977,6 @@ window.addEventListener('message', function(e) {
     if (d.selectedPlayers !== undefined) selectedPlayers = d.selectedPlayers;
     if (d.trollSel        !== undefined) trollSel        = d.trollSel;
     if (d.playerSel       !== undefined) playerSel       = d.playerSel;
-    // Map onlineSubMenu string → subTabIdx
-    if ('onlineSubMenu' in d) {
-      if      (d.onlineSubMenu === 'Troll')   subTabIdx = 1;
-      else if (d.onlineSubMenu === 'Players' || d.onlineSubMenu === null || d.onlineSubMenu === false) subTabIdx = 0;
-    }
 
     // Weapon
     if ('weaponMenuOpen' in d) weaponMenuOpen = d.weaponMenuOpen === true;
