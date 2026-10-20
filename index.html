@@ -8,29 +8,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
 .menu-item .cat-icon {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
   margin-right: 10px;
-  color: var(--accent);
-  opacity: 0.75;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.15s;
 }
-.menu-item .cat-icon svg {
+.menu-item .cat-icon img {
   width: 100%;
   height: 100%;
-  stroke: currentColor;
+  object-fit: contain;
+  opacity: 0.75;
+  transition: opacity 0.15s, filter 0.15s;
 }
-.menu-item.sel .cat-icon {
+.menu-item.sel .cat-icon img {
   opacity: 1;
-  color: #fff;
   filter: drop-shadow(0 0 5px var(--accent-glow));
 }
 
-/* ── EFFET FOND PAR ROW ── */
+/* ── EFFET FOND RADIAL ── */
 .menu-item.has-icon {
   padding-left: 12px;
   overflow: hidden;
@@ -40,13 +38,12 @@
   inset: 0;
   opacity: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse at 20% 50%, var(--row-color, var(--accent)) 0%, transparent 65%);
+  background: radial-gradient(ellipse at 15% 50%, var(--accent) 0%, transparent 60%);
   transition: opacity 0.2s;
 }
 .menu-item.sel.has-icon .row-bg {
-  opacity: 0.10;
+  opacity: 0.12;
 }
-
 #spec-hud {
   display: none;
   position: fixed;
@@ -640,30 +637,29 @@ function renderCategories() {
     if (idx >= CATEGORIES.length) break;
     const c   = CATEGORIES[idx];
     const has = c.items.length > 0 || c.name === 'Online';
-    const icon = CATEGORY_ICONS[c.name] || '';
-    const rowColor = CATEGORY_ACCENT[c.name];
 
     const el = document.createElement('div');
     el.className = 'menu-item has-icon' + (idx === selIdx ? ' sel' : '');
 
-    // fond radial coloré
+    // fond radial
     const bgEl = document.createElement('div');
     bgEl.className = 'row-bg';
-    if (rowColor) bgEl.style.setProperty('--row-color', rowColor);
     el.appendChild(bgEl);
 
-    // barre latérale (déjà existante)
+    // barre latérale
     const bar = document.createElement('div');
     bar.className = 'bar';
     el.appendChild(bar);
 
-    // icône SVG
-    if (icon) {
-      const iconEl = document.createElement('div');
-      iconEl.className = 'cat-icon';
-      iconEl.innerHTML = icon;
-      el.appendChild(iconEl);
-    }
+    // icône .png — nom = nom de la catégorie
+    const iconEl = document.createElement('div');
+    iconEl.className = 'cat-icon';
+    const img = document.createElement('img');
+    img.src = `${c.name}.png`;          // Player.png, Online.png, etc.
+    img.alt = c.name;
+    img.onerror = () => { iconEl.style.display = 'none'; }; // fallback silencieux si manquant
+    iconEl.appendChild(img);
+    el.appendChild(iconEl);
 
     // nom
     const nm = document.createElement('span');
