@@ -703,11 +703,6 @@ function renderSubTabs(cat) {
 function render() {
   itemsList.innerHTML = '';
 
-   if (cat.special === 'search') {
-      renderSearch(cat);
-      return;
-    }
-
   if (tab === 'config') {
     subTabsEl.innerHTML = ''; subTabsEl.className = '';
     catHeader.className = '';
@@ -716,7 +711,6 @@ function render() {
   }
 
   if (curCatIdx === null) {
-    // Root: category list
     subTabsEl.innerHTML = ''; subTabsEl.className = '';
     catHeader.className = '';
     renderCategoryRoot();
@@ -728,6 +722,11 @@ function render() {
 
   if (cat.special === 'online') {
     renderOnline(cat);
+    return;
+  }
+
+  if (cat.special === 'search') {
+    renderSearch(cat);
     return;
   }
 
