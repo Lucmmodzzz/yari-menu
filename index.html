@@ -992,7 +992,7 @@ function renderOnline(cat) {
   if (subTabIdx === 0) {
     const HEADER_ROWS = 4;
 
-    // ── TP METHOD (bouton action) ──────────────────────────────────
+    // row 0 — TP METHOD
     const r0 = document.createElement('div');
     r0.className = 'menu-item' + (playerSel === 0 ? ' sel' : '');
     r0.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
@@ -1001,7 +1001,7 @@ function renderOnline(cat) {
       <span style="font-size:10px;color:var(--accent);font-family:'Share Tech Mono',monospace;letter-spacing:1px;white-space:nowrap">TO PLAYER ▶</span>`;
     itemsList.appendChild(r0);
 
-    // ── SORT BY ────────────────────────────────────────────────────
+    // row 1 — SORT BY
     const r1 = document.createElement('div');
     r1.className = 'menu-item' + (playerSel === 1 ? ' sel' : '');
     r1.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
@@ -1010,7 +1010,7 @@ function renderOnline(cat) {
       <span style="font-size:10px;color:var(--accent);font-family:'Share Tech Mono',monospace;letter-spacing:1px;white-space:nowrap">— ${onlineSortBy === 'distance' ? 'DISTANCE' : 'ALPHABETICAL'} —</span>`;
     itemsList.appendChild(r1);
 
-    // ── FREEZE LIST ────────────────────────────────────────────────
+    // row 2 — FREEZE LIST
     const r2 = document.createElement('div');
     r2.className = 'menu-item' + (playerSel === 2 ? ' sel' : '');
     r2.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
@@ -1019,7 +1019,7 @@ function renderOnline(cat) {
       <div class="tog${onlineFreezeList ? ' on' : ''}" style="transform:scale(0.85)"></div>`;
     itemsList.appendChild(r2);
 
-    // ── LINE TO SELECTED ───────────────────────────────────────────
+    // row 3 — LINE TO SEL
     const r3 = document.createElement('div');
     r3.className = 'menu-item' + (playerSel === 3 ? ' sel' : '');
     r3.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
@@ -1028,12 +1028,12 @@ function renderOnline(cat) {
       <div class="tog${onlineLineToSel ? ' on' : ''}" style="transform:scale(0.85)"></div>`;
     itemsList.appendChild(r3);
 
-    // ── SÉPARATEUR ─────────────────────────────────────────────────
+    // séparateur
     const sep = document.createElement('div');
     sep.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:2px 0;opacity:0.5;';
     itemsList.appendChild(sep);
 
-    // ── SELECTION COUNT ────────────────────────────────────────────
+    // sélection count
     const selCount = Object.keys(selectedPlayers).length;
     if (selCount > 0) {
       const hd = document.createElement('div');
@@ -1042,7 +1042,7 @@ function renderOnline(cat) {
       itemsList.appendChild(hd);
     }
 
-    // ── PLAYER LIST ────────────────────────────────────────────────
+    // joueurs
     if (nearbyPlayers.length === 0) {
       const el = document.createElement('div');
       el.className = 'menu-item';
@@ -1052,7 +1052,7 @@ function renderOnline(cat) {
       let sorted = [...nearbyPlayers];
       if (onlineSortBy === 'alpha') sorted.sort((a, b) => a.name.localeCompare(b.name));
 
-      const playerAbsSel = playerSel - HEADER_ROWS;
+      const playerAbsSel = playerSel - HEADER_ROWS; // 0-based dans sorted
       let pScrollStart = 0;
       if (playerAbsSel >= MAX_VIS) pScrollStart = playerAbsSel - MAX_VIS + 1;
       if (pScrollStart < 0) pScrollStart = 0;
@@ -1071,7 +1071,7 @@ function renderOnline(cat) {
     }
 
   } else {
-    // Troll
+    // Troll — inchangé
     const selCount = Object.keys(selectedPlayers).length;
     const hd = document.createElement('div');
     hd.style.cssText = 'padding:2px 14px;font-size:10px;font-family:"Share Tech Mono",monospace;';
