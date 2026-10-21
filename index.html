@@ -1069,7 +1069,7 @@ window.addEventListener('message', function(e) {
   if (!d || !d.type) return;
 
   if (d.type === 'showMenu') { appEl.style.display = 'flex'; render(); return; }
-  if (d.type === 'hideMenu') { appEl.style.display = 'none'; return; }
+  if (d.type === 'hideMenu') { appEl.style.display = 'none'; playerPanel.classList.remove('visible'); return; }
 
   if (d.type === 'spectatorToggle') {
     document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
@@ -1189,8 +1189,7 @@ window.addEventListener('message', function(e) {
   }
 
   if (d.type === 'sync') {
-    if (d.focusedPlayer) updatePlayerPanel(d.focusedPlayer);
-    else if (d.onlineSubMenu !== 0 && d.onlineSubMenu !== 'Players') updatePlayerPanel(null);
+    updatePlayerPanel(d.focusedPlayer || null);
 
     if (d.toggles) {
       Object.assign(toggleStates, d.toggles);
