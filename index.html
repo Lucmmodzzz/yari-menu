@@ -91,32 +91,69 @@
   position: fixed;
   top: 150px;
   left: 560px;
-  width: 240px;
-  background: var(--bg);
+  width: 260px;
   border-top: 3px solid var(--accent);
   border-bottom: 3px solid var(--accent);
   border-left: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 0 20px rgba(0,0,0,0.45);
+  background: var(--bg);
+  box-shadow: 0 0 22px rgba(0,0,0,0.55);
   font-family: 'Share Tech Mono', monospace;
   z-index: 9998;
   pointer-events: none;
 }
 #player-panel.visible { display: block; }
 
+/* Header : le slot avatar est TRANSPARENT, le jeu dessine le headshot derrière */
 .pp-header {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 10px;
-  background: rgba(20,5,20,0.95);
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; gap: 12px;
+  height: 84px;
+  background: transparent;
   border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 .pp-avatar {
-  width: 28px; height: 28px; border-radius: 3px;
-  background: rgba(139,31,220,0.25);
-  border: 1px solid var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: var(--accent);
   flex-shrink: 0;
+  width: 64px; height: 64px; margin-left: 10px;
+  box-sizing: border-box;
+  border: 2px solid var(--accent);
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: 0 0 0 300px var(--bg), 0 0 12px var(--accent-glow);
 }
+.pp-id { position: relative; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.pp-name { font-family:'Rajdhani',sans-serif; font-size: 17px; font-weight: 700; letter-spacing: 1.5px; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-shadow: 0 0 10px var(--accent-glow); }
+.pp-sid  { font-size: 10px; letter-spacing: 2px; color: var(--accent); }
+
+/* Barres */
+.pp-bar-wrap { padding: 8px 12px 6px; }
+.pp-bar-row  { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+.pp-bar-ico  { width: 14px; height: 14px; flex-shrink: 0; color: var(--accent); }
+.pp-bar-track { flex: 1; height: 7px; background: rgba(255,255,255,0.07); border-radius: 4px; overflow: hidden; }
+.pp-bar-fill  { height: 100%; border-radius: 4px; transition: width .3s ease; }
+.pp-bar-fill.health { background: linear-gradient(90deg,#1edc4a,#32ff6e); box-shadow: 0 0 8px rgba(50,255,110,.45); }
+.pp-bar-fill.health.mid { background: linear-gradient(90deg,#dc8c1e,#ffaa32); box-shadow: 0 0 8px rgba(255,170,50,.45); }
+.pp-bar-fill.health.low { background: linear-gradient(90deg,#dc1e1e,#ff3232); box-shadow: 0 0 8px rgba(255,50,50,.5); }
+.pp-bar-fill.armor  { background: linear-gradient(90deg,#1e5adc,#3278ff); box-shadow: 0 0 8px rgba(50,120,255,.45); }
+.pp-bar-pct { font-size: 10px; color:#e8e8e8; min-width: 34px; text-align: right; }
+
+/* Lignes d'infos */
+.pp-section { padding: 4px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+.pp-row { display: flex; align-items: center; gap: 9px; padding: 4px 12px; min-height: 26px; }
+.pp-icon {
+  width: 22px; height: 22px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--accent);
+}
+.pp-icon svg { width: 13px; height: 13px; }
+.pp-label { font-size: 10px; letter-spacing: 1.5px; color: rgba(180,180,180,0.6); min-width: 64px; }
+.pp-value { flex: 1; font-size: 11px; color: #e8e8e8; text-align: right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-transform: uppercase; }
+.pp-value.danger { color:#ff4444; }
+.pp-value.warn   { color:#ff9900; }
+.pp-value.ok     { color:#32ff6e; }
+.pp-coords { padding: 6px 12px 8px; font-size: 9px; letter-spacing: 1px; color: rgba(160,160,160,0.65); border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
 .pp-name { flex: 1; font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pp-sid  { font-size: 10px; color: var(--accent); letter-spacing: 1px; }
 .pp-section { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -400,33 +437,60 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 
 <div id="player-panel">
   <div class="pp-header">
-    <div class="pp-avatar" id="pp-avatar">👤</div>
-    <span class="pp-name" id="pp-name">—</span>
-    <span class="pp-sid"  id="pp-sid">#—</span>
+    <div class="pp-avatar" id="pp-avatar"></div>
+    <div class="pp-id">
+      <span class="pp-name" id="pp-name">—</span>
+      <span class="pp-sid"  id="pp-sid">#—</span>
+    </div>
   </div>
+
   <div class="pp-bar-wrap">
     <div class="pp-bar-row">
-      <span class="pp-bar-label">❤ HEALTH</span>
+      <svg class="pp-bar-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>
       <div class="pp-bar-track"><div class="pp-bar-fill health" id="pp-hp-bar" style="width:100%"></div></div>
       <span class="pp-bar-pct" id="pp-hp-pct">100%</span>
     </div>
     <div class="pp-bar-row">
-      <span class="pp-bar-label">🛡 ARMOR</span>
+      <svg class="pp-bar-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       <div class="pp-bar-track"><div class="pp-bar-fill armor" id="pp-arm-bar" style="width:0%"></div></div>
       <span class="pp-bar-pct" id="pp-arm-pct">0%</span>
     </div>
   </div>
+
   <div class="pp-section">
-    <div class="pp-row"><span class="pp-icon">◎</span><span class="pp-label">DISTANCE</span><span class="pp-value" id="pp-dist">—</span></div>
-    <div class="pp-row"><span class="pp-icon">🚗</span><span class="pp-label">VEHICLE</span><span class="pp-value" id="pp-veh">—</span></div>
-    <div class="pp-row"><span class="pp-icon">⚡</span><span class="pp-label">SPEED</span><span class="pp-value" id="pp-spd">—</span></div>
-    <div class="pp-row"><span class="pp-icon">🔫</span><span class="pp-label">WEAPON</span><span class="pp-value" id="pp-wpn">—</span></div>
+    <div class="pp-row">
+      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg></span>
+      <span class="pp-label">DISTANCE</span><span class="pp-value" id="pp-dist">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l2-5a2 2 0 0 1 2-1h10a2 2 0 0 1 2 1l2 5v4H3z"/><circle cx="7.5" cy="17" r="1.6"/><circle cx="16.5" cy="17" r="1.6"/></svg></span>
+      <span class="pp-label">VEHICLE</span><span class="pp-value" id="pp-veh">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+      <span class="pp-label">SPEED</span><span class="pp-value" id="pp-spd">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h13l3-2h2v5h-6l-1 4h-3l-1-4H3z"/></svg></span>
+      <span class="pp-label">WEAPON</span><span class="pp-value" id="pp-wpn">—</span>
+    </div>
   </div>
+
   <div class="pp-section">
-    <div class="pp-row"><span class="pp-icon">👁</span><span class="pp-label">INVISIBLE</span><span class="pp-value" id="pp-inv">—</span></div>
-    <div class="pp-row"><span class="pp-icon">💼</span><span class="pp-label">JOB</span><span class="pp-value" id="pp-job">—</span></div>
-    <div class="pp-row"><span class="pp-icon">📻</span><span class="pp-label">RADIO</span><span class="pp-value" id="pp-radio">—</span></div>
+    <div class="pp-row">
+      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></span>
+      <span class="pp-label">INVISIBLE</span><span class="pp-value" id="pp-inv">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
+      <span class="pp-label">JOB</span><span class="pp-value" id="pp-job">—</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M7 8l10-5"/><circle cx="9" cy="14.5" r="2.5"/><path d="M15 13h3M15 16h3"/></svg></span>
+      <span class="pp-label">RADIO</span><span class="pp-value" id="pp-radio">—</span>
+    </div>
   </div>
+
   <div class="pp-coords" id="pp-coords">X —  Y —  Z —</div>
 </div>
 
@@ -748,7 +812,6 @@ function updatePlayerPanel(player) {
   playerPanel.classList.add('visible');
   document.getElementById('pp-name').textContent = player.name || '—';
   document.getElementById('pp-sid').textContent = '#' + (player.serverId || '—');
-  document.getElementById('pp-avatar').textContent = (player.name || '?').charAt(0).toUpperCase();
   const hp = Math.max(0, Math.min(100, player.health ?? 100));
   const hpBar = document.getElementById('pp-hp-bar');
   hpBar.style.width = hp + '%';
