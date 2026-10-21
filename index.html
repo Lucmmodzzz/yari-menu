@@ -445,7 +445,7 @@ const CAT_STRUCTURE = [
   {
     name: "Player",
     subTabs: [
-      { name: "SELF",     items: ["God Mode","No Ragdoll","No Collision","Max Heal","Max Armor","Invisible","Super Jump","Walk On Wall"] },
+      { name: "SELF",     items: ["God Mode","No Ragdoll","No Collision","Max Heal","Max Armor","Invisible","Super Jump","Walk On Wall","Anti Aim V2"] },
       { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina"] },
     ]
   },
@@ -566,6 +566,7 @@ const LUA_ACTION = {
   "Super Jump":               ["Player", 11],
   "Infinite Stamina":         ["Player", 12],
   "Walk On Wall":             ["Player", 13],
+  "Anti Aim V2":              ["Player", 14],
   // Weapon
   "Give Weapons":             ["Weapon",  1],
   "Give Weapon by Name":      ["Weapon",  2],
@@ -627,7 +628,7 @@ const TOGGLE_NAMES = new Set([
   "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost",
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs",
   "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
-  "Vehicle Chaos","Show Keybinds",
+  "Vehicle Chaos","Show Keybinds","Anti Aim V2",
 ]);
 
 // LUA toggle key lookup (for toggleStates)
