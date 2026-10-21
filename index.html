@@ -990,40 +990,43 @@ function renderOnline(cat) {
   catHeader.className = 'show';
 
   if (subTabIdx === 0) {
-    // ── HEADER CONTROLS ──────────────────────────────────────────────
-    const mkRow = (label, value, id) => {
-      const el = document.createElement('div');
-      el.className = 'menu-item';
-      el.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
-      el.innerHTML = `<span class="item-name" style="font-size:11px;color:rgba(180,180,180,0.7);letter-spacing:1px">${label}</span>
-        <span id="${id}" style="font-size:10px;color:var(--accent);font-family:'Share Tech Mono',monospace;letter-spacing:1px;white-space:nowrap">— ${value} —</span>`;
-      itemsList.appendChild(el);
-    };
+    const HEADER_ROWS = 3;
 
-    // TP Method
-    mkRow('TP METHOD', onlineTPMethod === 'player' ? 'TO PLAYER' : 'TO COORDS', 'ol-tp-method');
+    // ── TP METHOD ──────────────────────────────────────────────────
+    const r0 = document.createElement('div');
+    r0.className = 'menu-item' + (playerSel === 0 ? ' sel' : '');
+    r0.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
+    r0.innerHTML = `<div class="bar"></div>
+      <span class="item-name" style="font-size:11px;color:rgba(180,180,180,0.7);letter-spacing:1px">TP METHOD</span>
+      <span style="font-size:10px;color:var(--accent);font-family:'Share Tech Mono',monospace;letter-spacing:1px;white-space:nowrap">— ${onlineTPMethod === 'player' ? 'TO PLAYER' : 'TO COORDS'} —</span>`;
+    itemsList.appendChild(r0);
 
-    // Sort By
-    mkRow('SORT BY', onlineSortBy === 'distance' ? 'DISTANCE' : 'ALPHABETICAL', 'ol-sort');
+    // ── SORT BY ────────────────────────────────────────────────────
+    const r1 = document.createElement('div');
+    r1.className = 'menu-item' + (playerSel === 1 ? ' sel' : '');
+    r1.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
+    r1.innerHTML = `<div class="bar"></div>
+      <span class="item-name" style="font-size:11px;color:rgba(180,180,180,0.7);letter-spacing:1px">SORT BY</span>
+      <span style="font-size:10px;color:var(--accent);font-family:'Share Tech Mono',monospace;letter-spacing:1px;white-space:nowrap">— ${onlineSortBy === 'distance' ? 'DISTANCE' : 'ALPHABETICAL'} —</span>`;
+    itemsList.appendChild(r1);
 
-    // Toggles row
-    const togRow = document.createElement('div');
-    togRow.className = 'menu-item';
-    togRow.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);gap:14px;';
-    togRow.innerHTML = `
+    // ── FREEZE / LINE ROW ──────────────────────────────────────────
+    const r2 = document.createElement('div');
+    r2.className = 'menu-item' + (playerSel === 2 ? ' sel' : '');
+    r2.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);gap:14px;';
+    r2.innerHTML = `<div class="bar"></div>
       <span class="item-name" style="font-size:10px;color:rgba(180,180,180,0.6);letter-spacing:1px">FREEZE LIST</span>
-      <div class="tog${onlineFreezeList ? ' on' : ''}" id="ol-freeze" style="transform:scale(0.85)"></div>
+      <div class="tog${onlineFreezeList ? ' on' : ''}" style="transform:scale(0.85)"></div>
       <span class="item-name" style="font-size:10px;color:rgba(180,180,180,0.6);letter-spacing:1px;margin-left:8px">LINE TO SEL</span>
-      <div class="tog${onlineLineToSel ? ' on' : ''}" id="ol-line" style="transform:scale(0.85)"></div>
-    `;
-    itemsList.appendChild(togRow);
+      <div class="tog${onlineLineToSel ? ' on' : ''}" style="transform:scale(0.85)"></div>`;
+    itemsList.appendChild(r2);
 
-    // Séparateur
+    // ── SÉPARATEUR ─────────────────────────────────────────────────
     const sep = document.createElement('div');
     sep.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:2px 0;opacity:0.5;';
     itemsList.appendChild(sep);
 
-    // Selection count
+    // ── SELECTION COUNT ────────────────────────────────────────────
     const selCount = Object.keys(selectedPlayers).length;
     if (selCount > 0) {
       const hd = document.createElement('div');
@@ -1032,33 +1035,35 @@ function renderOnline(cat) {
       itemsList.appendChild(hd);
     }
 
-    // Player list
+    // ── PLAYER LIST ────────────────────────────────────────────────
     if (nearbyPlayers.length === 0) {
       const el = document.createElement('div');
       el.className = 'menu-item';
       el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun joueur à proximité</span>';
       itemsList.appendChild(el);
     } else {
-      // Sort
       let sorted = [...nearbyPlayers];
       if (onlineSortBy === 'alpha') sorted.sort((a, b) => a.name.localeCompare(b.name));
-      // else already sorted by distance from Lua
 
+      const playerAbsSel = playerSel - HEADER_ROWS; // index dans sorted
       let pScrollStart = 0;
-      if (playerSel >= MAX_VIS) pScrollStart = playerSel - MAX_VIS + 1;
+      if (playerAbsSel >= MAX_VIS) pScrollStart = playerAbsSel - MAX_VIS + 1;
+
       sorted.slice(pScrollStart, pScrollStart + MAX_VIS).forEach((p, i) => {
         const absIdx = i + pScrollStart;
         const isOn = selectedPlayers[p.serverId] === true;
+        const isSel = absIdx === playerAbsSel;
         const el = document.createElement('div');
-        el.className = 'menu-item' + (absIdx === playerSel ? ' sel' : '');
+        el.className = 'menu-item' + (isSel ? ' sel' : '');
         el.innerHTML = `<div class="bar"></div>
           <span class="item-name" style="font-size:11px">[${p.serverId}] ${p.name} <span style="color:var(--dimmed)">${p.distance}m</span></span>
           <div class="tog${isOn ? ' on' : ''}"></div>`;
         itemsList.appendChild(el);
       });
     }
+
   } else {
-    // Troll actions (inchangé, Teleport retiré côté Lua)
+    // Troll — inchangé
     const selCount = Object.keys(selectedPlayers).length;
     const hd = document.createElement('div');
     hd.style.cssText = 'padding:2px 14px;font-size:10px;font-family:"Share Tech Mono",monospace;';
