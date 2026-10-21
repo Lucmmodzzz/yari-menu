@@ -796,7 +796,7 @@ let itemSelIdx = 0, itemScrollOff = 0; // item selection within sub-tab
 let nearbyPlayers   = [];
 let selectedPlayers = {};
 let playerSel       = 0;
-let trollActions    = ["Teleport","Ragdoll","Silent Kill","Stun Player","Spectate","Revive","Smash Attack","Launch Player","Cage Player","Cage Player M2","Stop Cage Player M2","Bug Player BMX","Bug Player Avenger","Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle"];
+let trollActions    = ["Ragdoll","Silent Kill","Stun Player","Spectate","Revive","Smash Attack","Launch Player","Cage Player","Cage Player M2","Stop Cage Player M2","Bug Player BMX","Bug Player Avenger","Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle"];
 let trollSel        = 0;
 let searchQuery   = '';
 let searchResults = [];
@@ -980,13 +980,50 @@ function renderItemList(items, catName) {
   }
 }
 
+let onlineTPMethod    = 'player';   // 'player' | 'coords'
+let onlineSortBy      = 'distance'; // 'distance' | 'alpha'
+let onlineFreezeList  = false;
+let onlineLineToSel   = false;
+
 function renderOnline(cat) {
-  // subTabIdx 0 = Players, 1 = Troll
   catHeader.textContent = 'ONLINE › ' + cat.subTabs[subTabIdx].name;
   catHeader.className = 'show';
 
   if (subTabIdx === 0) {
-    // Players list
+    // ── HEADER CONTROLS ──────────────────────────────────────────────
+    const mkRow = (label, value, id) => {
+      const el = document.createElement('div');
+      el.className = 'menu-item';
+      el.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
+      el.innerHTML = `<span class="item-name" style="font-size:11px;color:rgba(180,180,180,0.7);letter-spacing:1px">${label}</span>
+        <span id="${id}" style="font-size:10px;color:var(--accent);font-family:'Share Tech Mono',monospace;letter-spacing:1px;white-space:nowrap">— ${value} —</span>`;
+      itemsList.appendChild(el);
+    };
+
+    // TP Method
+    mkRow('TP METHOD', onlineTPMethod === 'player' ? 'TO PLAYER' : 'TO COORDS', 'ol-tp-method');
+
+    // Sort By
+    mkRow('SORT BY', onlineSortBy === 'distance' ? 'DISTANCE' : 'ALPHABETICAL', 'ol-sort');
+
+    // Toggles row
+    const togRow = document.createElement('div');
+    togRow.className = 'menu-item';
+    togRow.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);gap:14px;';
+    togRow.innerHTML = `
+      <span class="item-name" style="font-size:10px;color:rgba(180,180,180,0.6);letter-spacing:1px">FREEZE LIST</span>
+      <div class="tog${onlineFreezeList ? ' on' : ''}" id="ol-freeze" style="transform:scale(0.85)"></div>
+      <span class="item-name" style="font-size:10px;color:rgba(180,180,180,0.6);letter-spacing:1px;margin-left:8px">LINE TO SEL</span>
+      <div class="tog${onlineLineToSel ? ' on' : ''}" id="ol-line" style="transform:scale(0.85)"></div>
+    `;
+    itemsList.appendChild(togRow);
+
+    // Séparateur
+    const sep = document.createElement('div');
+    sep.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:2px 0;opacity:0.5;';
+    itemsList.appendChild(sep);
+
+    // Selection count
     const selCount = Object.keys(selectedPlayers).length;
     if (selCount > 0) {
       const hd = document.createElement('div');
@@ -994,16 +1031,22 @@ function renderOnline(cat) {
       hd.textContent = '● ' + selCount + ' sélectionné(s)';
       itemsList.appendChild(hd);
     }
+
+    // Player list
     if (nearbyPlayers.length === 0) {
       const el = document.createElement('div');
       el.className = 'menu-item';
       el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun joueur à proximité</span>';
       itemsList.appendChild(el);
     } else {
-      // Compute scroll window so selected item stays visible
+      // Sort
+      let sorted = [...nearbyPlayers];
+      if (onlineSortBy === 'alpha') sorted.sort((a, b) => a.name.localeCompare(b.name));
+      // else already sorted by distance from Lua
+
       let pScrollStart = 0;
       if (playerSel >= MAX_VIS) pScrollStart = playerSel - MAX_VIS + 1;
-      nearbyPlayers.slice(pScrollStart, pScrollStart + MAX_VIS).forEach((p, i) => {
+      sorted.slice(pScrollStart, pScrollStart + MAX_VIS).forEach((p, i) => {
         const absIdx = i + pScrollStart;
         const isOn = selectedPlayers[p.serverId] === true;
         const el = document.createElement('div');
@@ -1015,7 +1058,7 @@ function renderOnline(cat) {
       });
     }
   } else {
-    // Troll actions
+    // Troll actions (inchangé, Teleport retiré côté Lua)
     const selCount = Object.keys(selectedPlayers).length;
     const hd = document.createElement('div');
     hd.style.cssText = 'padding:2px 14px;font-size:10px;font-family:"Share Tech Mono",monospace;';
@@ -1273,6 +1316,7 @@ window.addEventListener('message', function(e) {
   if (d.type === 'sync') {
     updatePlayerPanel(d.focusedPlayer || null);
 
+
     if (d.toggles) {
       Object.assign(toggleStates, d.toggles);
       if ('Settings_4' in d.toggles) {
@@ -1304,6 +1348,11 @@ window.addEventListener('message', function(e) {
     // Indices
     if (d.selIdx      !== undefined) { if (curCatIdx !== null) itemSelIdx   = d.selIdx;    else selIdx    = d.selIdx; }
     if (d.scrollOff   !== undefined) { if (curCatIdx !== null) itemScrollOff= d.scrollOff; else scrollOff = d.scrollOff; }
+
+    if (d.onlineTPMethod   !== undefined) onlineTPMethod   = d.onlineTPMethod;
+    if (d.onlineSortBy     !== undefined) onlineSortBy     = d.onlineSortBy;
+    if (d.onlineFreezeList !== undefined) onlineFreezeList = d.onlineFreezeList;
+    if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
 
     // Sub-tab from Lua (for categories where Lua drives Q/E)
     if (d.subTabIdx !== undefined) subTabIdx = d.subTabIdx;
