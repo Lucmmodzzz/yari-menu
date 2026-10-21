@@ -370,6 +370,20 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 .menu-item.sel .item-ind { opacity: 1; }
 .menu-item:not(.sel) .item-ind { opacity: 0.65; }
 
+.item-chev {
+  width: 20px; height: 20px; margin-left: 6px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+  opacity: 0.85;
+  transition: transform .12s, opacity .12s;
+}
+.item-chev svg {
+  width: 20px; height: 20px;
+  filter: drop-shadow(0 0 4px var(--accent-glow));
+}
+.menu-item.sel .item-chev { opacity: 1; transform: translateX(3px); }
+#app.twotone .item-chev { color: #B266FF; }
+
 #app.twotone .menu-item.sel .bar { background: linear-gradient(180deg, var(--accent-l), var(--accent-r)); box-shadow: 0 0 6px var(--accent-l); }
 #app.twotone .menu-item.sel .item-name { color: #fff; }
 #app.twotone .item-ind { color: var(--accent-r); }
@@ -1110,6 +1124,11 @@ function makeItem(name, selected, ind, togState) {
     const t = document.createElement('div');
     t.className = 'tog' + (togState ? ' on' : '');
     el.appendChild(t);
+  } else if (ind === '›') {
+    const s = document.createElement('span');
+    s.className = 'item-chev';
+    s.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 5 16 12 9 19"/></svg>';
+    el.appendChild(s);
   } else if (ind) {
     const s = document.createElement('span');
     s.className = 'item-ind';
