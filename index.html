@@ -1264,12 +1264,20 @@ window.addEventListener('message', function(e) {
     if (list.length === 0) {
       html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
     } else {
-      list.forEach(p => {
-        const isNoclip = p.type.includes('Noclip');
-        const isAdmin  = p.type.includes('Admin');
-        const rowCls   = isNoclip ? 'noclip' : 'admin';
-        const typeLabel = p.type.replace(/[\[\]]/g,'');
-        html += `<div class="spec-row ${rowCls}"><span class="spec-sid">${p.serverId}</span><span class="spec-name">${p.name}</span><span class="spec-dist">${p.distance}m</span><span class="spec-type ${rowCls}">${typeLabel}</span></div>`;
+      const MAX_SPEC = 10;
+      const overflow = list.length > MAX_SPEC;
+      const visible  = list.slice(0, MAX_SPEC);
+  
+      visible.forEach((p, i) => {
+          const isNoclip  = p.type.includes('Noclip');
+          const isAdmin   = p.type.includes('Admin');
+          const rowCls    = isNoclip ? 'noclip' : 'admin';
+          const typeLabel = p.type.replace(/[\[\]]/g, '');
+          const isLast    = overflow && i === MAX_SPEC - 1;
+          const extra     = isLast
+              ? `<span style="color:var(--accent);font-size:9px;font-family:'Share Tech Mono',monospace;margin-left:4px;flex-shrink:0">+${list.length - MAX_SPEC}</span>`
+              : '';
+          html += `<div class="spec-row ${rowCls}"><span class="spec-sid">${p.serverId}</span><span class="spec-name">${p.name}</span>${extra}<span class="spec-dist">${p.distance}m</span><span class="spec-type ${rowCls}">${typeLabel}</span></div>`;
       });
     }
     hud.innerHTML = html;
