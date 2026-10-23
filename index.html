@@ -893,8 +893,6 @@ function render() {
     return;
   }
 
-  // Vehicle Radar navigation
-
   if (curCatIdx === null) {
     subTabsEl.innerHTML = ''; subTabsEl.className = '';
     catHeader.className = '';
@@ -906,58 +904,26 @@ function render() {
   renderSubTabs(cat);
 
   if (cat.name === 'Vehicle' && subTabIdx === 3) {
-  catHeader.textContent = 'VEHICLE › RADAR';
-  catHeader.className   = 'show';
-  if (!radarMode) renderRadarList();
-  else            renderRadarActions();
-  return;
-}
-
-if (cat.special === 'online') { renderOnline(cat); return; }
-if (cat.special === 'search') { renderSearch(cat); return; }
-
-if (cat.name === 'Weapon' && weaponMenuOpen) {
-  catHeader.textContent = '← ' + (WEAPON_CAT_ORDER[weaponCatIdx] || 'Pistol').toUpperCase() + ' → (' + (weaponCatIdx+1) + '/' + WEAPON_CAT_ORDER.length + ')';
-  catHeader.className   = 'show';
-  renderWeaponList();
-  return;
-}
-
-const stab = cat.subTabs[subTabIdx];
-catHeader.textContent = cat.name.toUpperCase() + ' › ' + (stab ? stab.name : '');
-catHeader.className   = 'show';
-if (stab) renderItemList(stab.items, cat.name);
-
-  // Vehicle Radar
-  if (cat.name === 'Vehicle' && subTabIdx === 3) {
     catHeader.textContent = 'VEHICLE › RADAR';
-    catHeader.className = 'show';
+    catHeader.className   = 'show';
     if (!radarMode) renderRadarList();
     else            renderRadarActions();
     return;
   }
 
-  if (cat.special === 'online') {
-    renderOnline(cat);
-    return;
-  }
-
-  if (cat.special === 'search') {
-    renderSearch(cat);
-    return;
-  }
+  if (cat.special === 'online') { renderOnline(cat); return; }
+  if (cat.special === 'search') { renderSearch(cat); return; }
 
   if (cat.name === 'Weapon' && weaponMenuOpen) {
     catHeader.textContent = '← ' + (WEAPON_CAT_ORDER[weaponCatIdx] || 'Pistol').toUpperCase() + ' → (' + (weaponCatIdx+1) + '/' + WEAPON_CAT_ORDER.length + ')';
-    catHeader.className = 'show';
+    catHeader.className   = 'show';
     renderWeaponList();
     return;
   }
 
   const stab = cat.subTabs[subTabIdx];
   catHeader.textContent = cat.name.toUpperCase() + ' › ' + (stab ? stab.name : '');
-  catHeader.className = 'show';
-
+  catHeader.className   = 'show';
   if (stab) renderItemList(stab.items, cat.name);
 }
 
