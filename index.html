@@ -1496,7 +1496,7 @@ function renderRadarList() {
   if (radarVehicles.length === 0) {
     const el = document.createElement('div');
     el.className = 'menu-item';
-    el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun véhicule à proximité (rayon 150m)</span>';
+    el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun véhicule à proximité (rayon 500m)</span>';
     itemsList.appendChild(el);
     return;
   }
