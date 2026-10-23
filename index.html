@@ -1027,7 +1027,7 @@ function renderOnline(cat) {
   catHeader.className = 'show';
 
   if (subTabIdx === 0) {
-    const HEADER_ROWS = 4;
+    const HEADER_ROWS = 5;
 
     // row 0 — TP METHOD
     const r0 = document.createElement('div');
@@ -1056,7 +1056,7 @@ function renderOnline(cat) {
       <div class="tog${onlineFreezeList ? ' on' : ''}" style="transform:scale(0.85)"></div>`;
     itemsList.appendChild(r2);
 
-    // row 3 — LINE TO SEL
+    // row 3 — LINE TO SEL  ← EXISTANT, inchangé
     const r3 = document.createElement('div');
     r3.className = 'menu-item' + (playerSel === 3 ? ' sel' : '');
     r3.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
@@ -1065,7 +1065,16 @@ function renderOnline(cat) {
       <div class="tog${onlineLineToSel ? ' on' : ''}" style="transform:scale(0.85)"></div>`;
     itemsList.appendChild(r3);
 
-    // séparateur
+    // row 4 — UNSELECT ALL  ← NOUVEAU
+    const selCountUA = Object.keys(selectedPlayers).length;
+    const r4 = document.createElement('div');
+    r4.className = 'menu-item' + (playerSel === 4 ? ' sel' : '');
+    r4.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
+    r4.innerHTML = `<div class="bar"></div>
+      <span class="item-name" style="font-size:11px;letter-spacing:1px;color:${selCountUA > 0 ? '#dc821e' : 'rgba(180,180,180,0.35)'}">${selCountUA > 0 ? '✕ UNSELECT ALL (' + selCountUA + ')' : '✕ UNSELECT ALL'}</span>`;
+    itemsList.appendChild(r4);
+
+    // séparateur  ← EXISTANT, inchangé
     const sep = document.createElement('div');
     sep.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:2px 0;opacity:0.5;';
     itemsList.appendChild(sep);
