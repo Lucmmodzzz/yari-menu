@@ -894,56 +894,6 @@ function render() {
   }
 
   // Vehicle Radar navigation
-if (curCatIdx !== null && CAT_STRUCTURE[curCatIdx].name === 'Vehicle' && subTabIdx === 3) {
-  if (!radarMode) {
-    // Vehicle list navigation
-    if (key === 'ArrowUp') {
-      radarSelectedIdx = (radarSelectedIdx - 1 + radarVehicles.length) % radarVehicles.length;
-      itemScrollOff = 0;
-      render();
-      return;
-    }
-    if (key === 'ArrowDown') {
-      radarSelectedIdx = (radarSelectedIdx + 1) % radarVehicles.length;
-      itemScrollOff = 0;
-      render();
-      return;
-    }
-    if (key === 'Enter') {
-      radarMode = true;
-      radarActionIdx = 0;
-      render();
-      return;
-    }
-  } else {
-    // Actions menu navigation
-    const maxActions = radarActions.length + 1; // +1 for "Back"
-    if (key === 'ArrowUp') {
-      radarActionIdx = (radarActionIdx - 1 + maxActions) % maxActions;
-      render();
-      return;
-    }
-    if (key === 'ArrowDown') {
-      radarActionIdx = (radarActionIdx + 1) % maxActions;
-      render();
-      return;
-    }
-    if (key === 'Enter') {
-      if (radarActionIdx === radarActions.length) {
-        // Back
-        radarMode = false;
-        render();
-      } else {
-        // Execute action
-        executeRadarAction(radarActionIdx);
-        // Return to list
-        radarMode = false;
-        render();
-      }
-      return;
-    }
-  }
-}
 
   if (curCatIdx === null) {
     subTabsEl.innerHTML = ''; subTabsEl.className = '';
@@ -954,6 +904,29 @@ if (curCatIdx !== null && CAT_STRUCTURE[curCatIdx].name === 'Vehicle' && subTabI
 
   const cat = CAT_STRUCTURE[curCatIdx];
   renderSubTabs(cat);
+
+  if (cat.name === 'Vehicle' && subTabIdx === 3) {
+  catHeader.textContent = 'VEHICLE › RADAR';
+  catHeader.className   = 'show';
+  if (!radarMode) renderRadarList();
+  else            renderRadarActions();
+  return;
+}
+
+if (cat.special === 'online') { renderOnline(cat); return; }
+if (cat.special === 'search') { renderSearch(cat); return; }
+
+if (cat.name === 'Weapon' && weaponMenuOpen) {
+  catHeader.textContent = '← ' + (WEAPON_CAT_ORDER[weaponCatIdx] || 'Pistol').toUpperCase() + ' → (' + (weaponCatIdx+1) + '/' + WEAPON_CAT_ORDER.length + ')';
+  catHeader.className   = 'show';
+  renderWeaponList();
+  return;
+}
+
+const stab = cat.subTabs[subTabIdx];
+catHeader.textContent = cat.name.toUpperCase() + ' › ' + (stab ? stab.name : '');
+catHeader.className   = 'show';
+if (stab) renderItemList(stab.items, cat.name);
 
   // Vehicle Radar
   if (cat.name === 'Vehicle' && subTabIdx === 3) {
@@ -1502,6 +1475,14 @@ window.addEventListener('message', function(e) {
 
     // Sub-tab from Lua (for categories where Lua drives Q/E)
     if (d.subTabIdx !== undefined) subTabIdx = d.subTabIdx;
+
+    if (curCatIdx !== null && CAT_STRUCTURE[curCatIdx] && CAT_STRUCTURE[curCatIdx].name === 'Vehicle') {
+      if (subTabIdx === 3 && !radarActive) {
+        onRadarTabOpen();
+      } else if (subTabIdx !== 3 && radarActive) {
+        onRadarTabClose();
+      }
+    }
 
     // Online
     if (d.nearbyPlayers   !== undefined) nearbyPlayers   = d.nearbyPlayers;
