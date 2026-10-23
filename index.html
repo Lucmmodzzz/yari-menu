@@ -1457,18 +1457,6 @@ window.addEventListener('message', function(e) {
     }
 
     // Handle sub-tab changes (for Radar)
-    if (d.subTabIdx !== undefined) {
-      subTabIdx = d.subTabIdx;
- 
-      // Close/open radar based on tab
-      if (curCatIdx !== null && CAT_STRUCTURE[curCatIdx].name === 'Vehicle') {
-        if (d.subTabIdx === 3 && !radarActive) {
-          onRadarTabOpen();
-        } else if (d.subTabIdx !== 3 && radarActive) {
-          onRadarTabClose();
-        }
-      }
-    }
 
     // Category cursor
     // curCatName absent from JSON means Lua sent nil → clear category
