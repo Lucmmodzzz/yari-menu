@@ -957,11 +957,10 @@ if (curCatIdx !== null && CAT_STRUCTURE[curCatIdx].name === 'Vehicle' && subTabI
 
   // Vehicle Radar
   if (cat.name === 'Vehicle' && subTabIdx === 3) {
-    if (!radarMode) {
-      renderRadarList();
-    } else {
-      renderRadarActions();
-    }
+    catHeader.textContent = 'VEHICLE › RADAR';
+    catHeader.className = 'show';
+    if (!radarMode) renderRadarList();
+    else            renderRadarActions();
     return;
   }
 
@@ -1507,6 +1506,12 @@ window.addEventListener('message', function(e) {
     if (d.onlineFreezeList !== undefined) onlineFreezeList = d.onlineFreezeList;
     if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
 
+    if (d.radarVehicles  !== undefined) radarVehicles    = d.radarVehicles;
+  if (d.radarSelIdx    !== undefined) radarSelectedIdx = d.radarSelIdx;
+  if (d.radarActionIdx !== undefined) radarActionIdx   = d.radarActionIdx;
+  if (d.radarMode      !== undefined) radarMode        = d.radarMode;
+  if (d.radarActive    !== undefined) radarActive      = d.radarActive;
+
     // Sub-tab from Lua (for categories where Lua drives Q/E)
     if (d.subTabIdx !== undefined) subTabIdx = d.subTabIdx;
 
@@ -1532,12 +1537,12 @@ window.addEventListener('message', function(e) {
   }
 });
 
-let radarMode = false;           // false = vehicle list, true = vehicle actions
-let radarVehicles = [];          // List of nearby vehicles
-let radarSelectedIdx = 0;        // Selected vehicle in list
-let radarActionIdx = 0;          // Selected action
-let radarActive = false;         // Is radar currently active
- 
+let radarMode        = false;
+let radarVehicles    = [];
+let radarSelectedIdx = 0;
+let radarActionIdx   = 0;
+let radarActive      = false;
+
 const radarActions = [
   "TP Into Vehicle",
   "Bring Vehicle",
@@ -1545,135 +1550,56 @@ const radarActions = [
   "Explode Vehicle",
   "TP To Vehicle"
 ];
- 
-// Called when RADAR subtab opens
-function onRadarTabOpen() {
-  radarActive = true;
-  radarMode = false;
-  radarSelectedIdx = 0;
-  radarActionIdx = 0;
-  radarVehicles = [];
- 
-  // Tell Lua to activate radar
-  sendToLua({ type: 'radarActivate' });
- 
-  // Start polling for vehicle updates
-  if (!window._radarPollInterval) {
-    window._radarPollInterval = setInterval(() => {
-      if (radarActive && curCatIdx !== null) {
-        const cat = CAT_STRUCTURE[curCatIdx];
-        if (cat && cat.name === 'Vehicle' && subTabIdx === 3) { // 3 = RADAR tab
-          requestRadarUpdate();
-        }
-      }
-    }, 250);
-  }
-}
- 
-// Called when leaving RADAR subtab
-function onRadarTabClose() {
-  radarActive = false;
-  if (window._radarPollInterval) {
-    clearInterval(window._radarPollInterval);
-    window._radarPollInterval = null;
-  }
-  sendToLua({ type: 'radarDeactivate' });
-}
- 
-// Request vehicle list update from Lua
-function requestRadarUpdate() {
-  sendToLua({ type: 'radarUpdate' });
-}
- 
-// Handle radar vehicle list message from Lua
-function handleRadarUpdate(vehicles) {
-  radarVehicles = vehicles || [];
- 
-  // Keep selection in bounds
-  if (radarSelectedIdx >= radarVehicles.length) {
-    radarSelectedIdx = Math.max(0, radarVehicles.length - 1);
-  }
- 
-  render();
-}
- 
-// Render RADAR vehicle list
+
+function onRadarTabOpen()  { radarActive = true;  radarMode = false; radarSelectedIdx = 0; radarActionIdx = 0; radarVehicles = []; }
+function onRadarTabClose() { radarActive = false; }
+
 function renderRadarList() {
   catHeader.textContent = 'VEHICLES › NEARBY (' + radarVehicles.length + ')';
   catHeader.className = 'show';
- 
+
   if (radarVehicles.length === 0) {
     const el = document.createElement('div');
     el.className = 'menu-item';
-    el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun véhicule à proximité</span>';
+    el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun véhicule à proximité (rayon 150m)</span>';
     itemsList.appendChild(el);
     return;
   }
- 
+
+  const start = Math.max(0, radarSelectedIdx - MAX_VIS + 1 < 0 ? 0 : radarSelectedIdx - MAX_VIS + 1);
   for (let i = 0; i < MAX_VIS; i++) {
-    const idx = i + itemScrollOff;
+    const idx = i + start;
     if (idx >= radarVehicles.length) break;
- 
-    const veh = radarVehicles[idx];
+    const veh  = radarVehicles[idx];
     const isSel = idx === radarSelectedIdx;
-    const distance = veh.dist ? veh.dist.toFixed(1) : '—';
-    const name = veh.name ? veh.name.substring(0, 24) : 'Unknown';
- 
+    const dist  = typeof veh.dist === 'number' ? veh.dist.toFixed(0) : '—';
+    const name  = (veh.name || 'Unknown').substring(0, 22);
     const el = document.createElement('div');
     el.className = 'menu-item' + (isSel ? ' sel' : '');
     el.innerHTML = `<div class="bar"></div>
       <span class="item-name">${name}</span>
-      <span class="item-ind">${distance}m</span>
-      <div class="item-chev">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 5 16 12 9 19"/></svg>
-      </div>`;
+      <span style="font-size:10px;color:var(--dimmed);font-family:'Share Tech Mono',monospace;margin-right:6px">${dist}m</span>
+      <div class="item-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 5 16 12 9 19"/></svg></div>`;
     itemsList.appendChild(el);
   }
 }
- 
-// Render RADAR actions menu for selected vehicle
+
 function renderRadarActions() {
-  if (radarSelectedIdx >= radarVehicles.length) {
-    radarSelectedIdx = 0;
-  }
- 
-  const veh = radarVehicles[radarSelectedIdx];
-  const distance = veh.dist ? veh.dist.toFixed(1) : '—';
-  const name = veh.name ? veh.name.substring(0, 20) : 'Unknown';
- 
-  catHeader.textContent = name + ' (' + distance + 'm)';
+  const veh  = radarVehicles[radarSelectedIdx];
+  const name = veh ? (veh.name || 'Unknown') : '?';
+  const dist = veh ? (typeof veh.dist === 'number' ? veh.dist.toFixed(0) + 'm' : '—') : '—';
+  catHeader.textContent = name + ' — ' + dist;
   catHeader.className = 'show';
- 
-  for (let i = 0; i < radarActions.length; i++) {
+
+  const allActions = [...radarActions, '← Retour'];
+  allActions.forEach((label, i) => {
     const isSel = i === radarActionIdx;
     const el = document.createElement('div');
     el.className = 'menu-item' + (isSel ? ' sel' : '');
     el.innerHTML = `<div class="bar"></div>
-      <span class="item-name">${radarActions[i]}</span>
-      <span class="item-ind">▶</span>`;
+      <span class="item-name">${label}</span>
+      ${i < radarActions.length ? '<span class="item-ind">▶</span>' : ''}`;
     itemsList.appendChild(el);
-  }
- 
-  // Add "Back" option
-  const backSel = radarActionIdx === radarActions.length;
-  const backEl = document.createElement('div');
-  backEl.className = 'menu-item' + (backSel ? ' sel' : '');
-  backEl.innerHTML = `<div class="bar"></div>
-    <span class="item-name">← Retour à la liste</span>`;
-  itemsList.appendChild(backEl);
-}
- 
-// Execute radar action
-function executeRadarAction(actionIdx) {
-  if (radarSelectedIdx >= radarVehicles.length) return;
- 
-  const action = radarActions[actionIdx];
-  const vehicleIndex = radarSelectedIdx + 1; // 1-based for Lua
- 
-  sendToLua({
-    type: 'radarAction',
-    action: action,
-    vehicleIndex: vehicleIndex
   });
 }
 
