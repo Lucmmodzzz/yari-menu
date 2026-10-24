@@ -276,28 +276,7 @@
   z-index: 9999; pointer-events: none;
 }
 #kb-hud.visible { display: block; }
-<div id="freecam-hud">
-  <div class="fc-header">
-    <div class="fc-title-row">
-      <div class="fc-dot"></div>
-      <span>FREE CAM</span>
-    </div>
-    <div class="fc-aimed-row" id="fc-aimed">— aucun joueur visé —</div>
-  </div>
-  <div class="fc-list" id="fc-list">
-    <!-- items rendered by JS -->
-  </div>
-  <div class="fc-footer">
-    <div><span>MOLETTE</span> Défiler</div>
-    <div><span>F</span> Exécuter</div>
-    <div><span>F9</span> Quitter</div>
-  </div>
-</div>
 
-<div id="fc-center-hud">
-  <div id="fc-center-aimed"></div>
-  <div id="fc-center-action"></div>
-</div>
 
 .kb-title {
   display: flex; align-items: center; gap: 8px; padding: 6px 12px;
@@ -501,6 +480,30 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 </style>
 </head>
 <body>
+
+<div id="freecam-hud">
+  <div class="fc-header">
+    <div class="fc-title-row">
+      <div class="fc-dot"></div>
+      <span>FREE CAM</span>
+    </div>
+    <div class="fc-aimed-row" id="fc-aimed">— aucun joueur visé —</div>
+  </div>
+  <div class="fc-list" id="fc-list">
+    <!-- items rendered by JS -->
+  </div>
+  <div class="fc-footer">
+    <div><span>MOLETTE</span> Défiler</div>
+    <div><span>F</span> Exécuter</div>
+    <div><span>F9</span> Quitter</div>
+  </div>
+</div>
+
+<div id="fc-center-hud">
+  <div id="fc-center-aimed"></div>
+  <div id="fc-center-action"></div>
+</div>
+  
 <div id="app" class="theme-red">
   <div id="top-border"></div>
   <div id="banner">
