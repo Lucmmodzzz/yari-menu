@@ -10,81 +10,113 @@
 #freecam-hud {
   display: none;
   position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 460px;
-  background: rgba(8,8,8,0.92);
-  border-top: 3px solid var(--accent);
-  border-bottom: 3px solid var(--accent);
-  box-shadow: 0 0 24px rgba(0,0,0,0.6);
+  top: 50%;
+  right: 28px;
+  transform: translateY(-50%);
+  width: 220px;
+  background: rgba(8,8,8,0.93);
+  border-left: 3px solid var(--accent);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  box-shadow: -4px 0 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
   font-family: 'Share Tech Mono', monospace;
   z-index: 9999;
   pointer-events: none;
+  max-height: 70vh;
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
 }
-#freecam-hud.visible { display: block; }
+#freecam-hud.visible { display: flex; }
 
-.fc-title {
-  display: flex; align-items: center; gap: 10px;
-  padding: 5px 16px;
-  background: rgba(15,5,5,0.98);
+.fc-header {
+  padding: 8px 12px 6px;
+  background: rgba(15,5,5,0.99);
   border-bottom: 1px solid rgba(255,255,255,0.07);
+  flex-shrink: 0;
+}
+.fc-title-row {
+  display: flex; align-items: center; gap: 8px;
   font-family: 'Rajdhani', sans-serif;
   font-size: 13px; font-weight: 700; letter-spacing: 3px; color: #fff;
 }
 .fc-dot {
-  width: 8px; height: 8px; border-radius: 50%;
+  width: 7px; height: 7px; border-radius: 50%;
   background: var(--accent); box-shadow: 0 0 7px var(--accent-glow);
-  animation: blink 1s ease-in-out infinite;
+  animation: blink 1s ease-in-out infinite; flex-shrink: 0;
 }
-.fc-aimed {
-  margin-left: auto; font-size: 11px; color: #32ff6e;
-  letter-spacing: 2px;
+.fc-aimed-row {
+  margin-top: 5px;
+  font-size: 10px; letter-spacing: 1.5px;
+  color: rgba(180,180,180,0.5);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.fc-aimed.none { color: rgba(180,180,180,0.4); }
+.fc-aimed-row.locked { color: #32ff6e; }
 
-.fc-actions {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 6px 10px;
-  gap: 6px;
+.fc-list {
   overflow: hidden;
-}
-.fc-action {
-  flex-shrink: 0;
-  padding: 4px 12px;
-  border-radius: 3px;
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  color: rgba(200,200,200,0.55);
-  background: rgba(20,20,20,0.85);
-  border: 1px solid rgba(60,60,60,0.4);
-  white-space: nowrap;
-  transition: all 0.12s;
-}
-.fc-action.active {
-  color: #fff;
-  background: rgba(220,30,30,0.18);
-  border-color: var(--accent);
-  box-shadow: 0 0 8px rgba(220,30,30,0.3);
-  font-weight: 700;
-}
-.fc-action.needs-player {
-  border-style: dashed;
-}
-.fc-action.active.needs-player {
-  border-style: solid;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
 }
 
-.fc-hint {
-  padding: 3px 16px 5px;
-  font-size: 9px; letter-spacing: 1.5px;
-  color: rgba(160,160,160,0.45);
-  border-top: 1px solid rgba(255,255,255,0.05);
-  display: flex; gap: 16px;
+.fc-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 10px 0 12px;
+  height: 32px; flex-shrink: 0;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.08s;
+  position: relative;
 }
-.fc-hint span { color: var(--accent); }
+.fc-item:last-child { border-bottom: none; }
+
+.fc-item.active {
+  background: rgba(220,30,30,0.1);
+  border-left-color: var(--accent);
+}
+.fc-item.active .fc-item-name { color: #fff; font-weight: 700; }
+
+.fc-item-idx {
+  font-size: 9px; color: rgba(160,160,160,0.35);
+  min-width: 16px; flex-shrink: 0; letter-spacing: 0;
+}
+.fc-item-name {
+  flex: 1;
+  font-size: 11px; letter-spacing: 1px;
+  color: rgba(200,200,200,0.65);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.fc-item.dimmed .fc-item-name { color: rgba(130,130,130,0.35); }
+
+.fc-item-exec {
+  font-size: 9px; color: var(--accent);
+  opacity: 0; letter-spacing: 1px;
+  flex-shrink: 0;
+}
+.fc-item.active .fc-item-exec { opacity: 1; }
+
+.fc-scrollbar {
+  position: absolute; right: 3px; top: 0; bottom: 0; width: 2px;
+  background: rgba(255,255,255,0.05); border-radius: 1px;
+}
+.fc-scrollbar-thumb {
+  position: absolute; width: 100%; border-radius: 1px;
+  background: var(--accent); opacity: 0.5;
+  transition: top 0.1s, height 0.1s;
+}
+
+.fc-footer {
+  padding: 4px 12px 5px;
+  font-size: 9px; letter-spacing: 1px;
+  color: rgba(130,130,130,0.45);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  flex-shrink: 0;
+  display: flex; gap: 12px;
+  flex-wrap: wrap;
+}
+.fc-footer span { color: var(--accent); }
 
 #player-panel {
   display: none;
@@ -210,17 +242,20 @@
 }
 #kb-hud.visible { display: block; }
 <div id="freecam-hud">
-  <div class="fc-title">
-    <div class="fc-dot"></div>
-    <span>FREE CAM</span>
-    <span class="fc-aimed none" id="fc-aimed">— aucun joueur visé —</span>
+  <div class="fc-header">
+    <div class="fc-title-row">
+      <div class="fc-dot"></div>
+      <span>FREE CAM</span>
+    </div>
+    <div class="fc-aimed-row" id="fc-aimed">— aucun joueur visé —</div>
   </div>
-  <div class="fc-actions" id="fc-actions"></div>
-  <div class="fc-hint">
-    <div><span>MOLETTE</span> Changer action</div>
+  <div class="fc-list" id="fc-list">
+    <!-- items rendered by JS -->
+  </div>
+  <div class="fc-footer">
+    <div><span>MOLETTE</span> Défiler</div>
     <div><span>F</span> Exécuter</div>
-    <div><span>ZQSD</span> Déplacer cam</div>
-    <div><span>F10</span> Désactiver</div>
+    <div><span>F9</span> Quitter</div>
   </div>
 </div>
 .kb-title {
@@ -1263,40 +1298,59 @@ window.addEventListener('message', function(e) {
 
   if (d.type === 'freecam') {
     const hud = document.getElementById('freecam-hud');
-    if (!d.enabled) {
-      hud.className = '';
-      return;
-    }
-    hud.className = 'visible';
+    if (!d.enabled) { hud.className = ''; return; }
+    hud.classList.add('visible');
 
     // Aimed player
     const aimedEl = document.getElementById('fc-aimed');
     if (d.aimedPlayer) {
       aimedEl.textContent = '● ' + d.aimedPlayer;
-      aimedEl.className = 'fc-aimed';
+      aimedEl.className = 'fc-aimed-row locked';
     } else {
       aimedEl.textContent = '— aucun joueur visé —';
-      aimedEl.className = 'fc-aimed none';
+      aimedEl.className = 'fc-aimed-row';
     }
 
-    // Actions strip — show window of 7 centered on selected
-    const actionsEl = document.getElementById('fc-actions');
-    actionsEl.innerHTML = '';
-    const actions = d.actions || [];
-    const sel     = d.selIdx || 0;
-    const half    = 3;
-    const start   = Math.max(0, sel - half);
-    const end     = Math.min(actions.length, start + 7);
+    // Action list
+    const listEl   = document.getElementById('fc-list');
+    const actions  = d.actions || [];
+    const sel      = typeof d.selIdx === 'number' ? d.selIdx : 0;
+    const VISIBLE  = 8;   // items visibles max
+    const total    = actions.length;
 
-    for (let i = start; i < end; i++) {
-      const a   = actions[i];
-      const el  = document.createElement('div');
-      el.className = 'fc-action'
-        + (i === sel ? ' active' : '')
-        + (a.needsPlayer ? ' needs-player' : '');
-      el.textContent = a.name;
-      actionsEl.appendChild(el);
+    // Fenêtre défilante centrée sur sel
+    let winStart = Math.max(0, sel - Math.floor(VISIBLE / 2));
+    winStart = Math.min(winStart, Math.max(0, total - VISIBLE));
+
+    listEl.innerHTML = '';
+
+    for (let i = winStart; i < Math.min(winStart + VISIBLE, total); i++) {
+      const a    = actions[i];
+      const el   = document.createElement('div');
+      const isActive  = i === sel;
+      const isDimmed  = a.needsPlayer && !d.aimedPlayer;
+      el.className = 'fc-item'
+        + (isActive  ? ' active'  : '')
+        + (isDimmed  ? ' dimmed'  : '');
+
+      el.innerHTML = `
+        <span class="fc-item-idx">${i + 1}</span>
+        <span class="fc-item-name">${a.name}</span>
+        <span class="fc-item-exec">▶ F</span>
+      `;
+      listEl.appendChild(el);
     }
+
+    // Scrollbar
+    if (total > VISIBLE) {
+      const bar = document.createElement('div');
+      bar.className = 'fc-scrollbar';
+      const thumbH = Math.max(20, (VISIBLE / total) * 100);
+      const thumbT = (winStart / (total - VISIBLE)) * (100 - thumbH);
+      bar.innerHTML = `<div class="fc-scrollbar-thumb" style="height:${thumbH}%;top:${thumbT}%"></div>`;
+      listEl.appendChild(bar);
+    }
+
     return;
   }
 
