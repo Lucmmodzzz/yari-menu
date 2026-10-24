@@ -1637,8 +1637,9 @@ function dmMakeDraggable(el, label) {
   dmHandles.push({ el, handle });
   console.log('DM HANDLE CREATED:', label, 'handle:', handle);
 
-  handle.addEventListener('mousedown', e => {
-    console.log('DM MOUSEDOWN:', e.clientX, e.clientY, label);
+  // Support both mouse and pointer events
+  const startDrag = (e) => {
+    console.log('DM DRAG START:', label, e.type, e.clientX, e.clientY);
     e.preventDefault();
     e.stopPropagation();
     dmDragState.active = true;
@@ -1646,24 +1647,37 @@ function dmMakeDraggable(el, label) {
     const r = el.getBoundingClientRect();
     dmDragState.ox = e.clientX - r.left;
     dmDragState.oy = e.clientY - r.top;
-    console.log('DM DRAG STARTED:', { ox: dmDragState.ox, oy: dmDragState.oy });
-  });
+    console.log('DM OFFSET:', dmDragState.ox, dmDragState.oy);
+    handle.style.pointerEvents = 'all';
+  };
+
+  handle.addEventListener('mousedown', startDrag);
+  handle.addEventListener('pointerdown', startDrag);
+  handle.addEventListener('touchstart', startDrag);
 }
 
 // Global drag listeners (added once, handle all drags)
-document.addEventListener('mousemove', e => {
-  if (dmDragState.active) {
-    console.log('DM MOVE:', e.clientX, e.clientY, 'active:', dmDragState.active);
-    dmDragState.el.style.left = (e.clientX - dmDragState.ox) + 'px';
-    dmDragState.el.style.top  = (e.clientY - dmDragState.oy) + 'px';
-  }
-});
+const moveDrag = (e) => {
+  if (!dmDragState.active || !dmDragState.el) return;
+  const newLeft = e.clientX - dmDragState.ox;
+  const newTop = e.clientY - dmDragState.oy;
+  console.log('DM MOVE:', e.type, newLeft, newTop);
+  dmDragState.el.style.left = newLeft + 'px';
+  dmDragState.el.style.top = newTop + 'px';
+};
 
-document.addEventListener('mouseup', () => {
-  if (dmDragState.active) console.log('DM DRAG ENDED');
+const endDrag = () => {
+  if (dmDragState.active) console.log('DM DRAG END');
   dmDragState.active = false;
   dmDragState.el = null;
-});
+};
+
+document.addEventListener('mousemove', moveDrag);
+document.addEventListener('pointermove', moveDrag);
+document.addEventListener('touchmove', moveDrag);
+document.addEventListener('mouseup', endDrag);
+document.addEventListener('pointerup', endDrag);
+document.addEventListener('touchend', endDrag);
 
 function dmEnter() {
   console.log('DM ENTER - design mode activé');
