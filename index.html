@@ -8,8 +8,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
 /* ── DESIGN MODE ── */
-.design-mode-active { cursor: move !important; }
-.design-mode-active * { cursor: move !important; }
+.design-mode-active { cursor: default !important; }
+.design-mode-active * { cursor: default !important; }
+.dm-handle { cursor: grab !important; }
+.dm-handle:active { cursor: grabbing !important; }
 .dm-handle {
   position: absolute; top: 0; left: 0; right: 0; bottom: 0;
   z-index: 99999; cursor: move;
@@ -1649,6 +1651,31 @@ function dmMakeDraggable(el, label) {
 function dmEnter() {
   dmActive = true;
   dmOverlay.classList.add('active');
+  
+  // Curseur custom visible dans le CEF
+  if (!document.getElementById('dm-cursor')) {
+    const cur = document.createElement('div');
+    cur.id = 'dm-cursor';
+    cur.style.cssText = `
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border: 2px solid #fff;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 999999;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 6px rgba(220,30,30,0.6);
+      transition: transform 0.05s;
+    `;
+    document.body.appendChild(cur);
+    document._dmMouseMove = e => {
+      cur.style.left = e.clientX + 'px';
+      cur.style.top  = e.clientY + 'px';
+    };
+    document.addEventListener('mousemove', document._dmMouseMove);
+  }
+  
   DM_PANELS.forEach(p => {
     const el = document.getElementById(p.id);
     if (el) dmMakeDraggable(el, p.label);
@@ -1658,7 +1685,14 @@ function dmEnter() {
 function dmExit() {
   dmActive = false;
   dmOverlay.classList.remove('active');
-  // Remove all handles
+  
+  const cur = document.getElementById('dm-cursor');
+  if (cur) {
+    cur.remove();
+    document.removeEventListener('mousemove', document._dmMouseMove);
+    delete document._dmMouseMove;
+  }
+  
   dmHandles.forEach(({ el, handle }) => {
     if (handle.parentNode === el) el.removeChild(handle);
     // Restore original anchoring
@@ -1672,6 +1706,8 @@ function dmExit() {
     }
   });
   dmHandles.length = 0;
+  document.body.style.cursor = '';
+  document.documentElement.style.removeProperty('--cursor-visible');
   // Tell Lua to turn off the toggle
   sendToLua({ type: 'designModeOff' });
 }
