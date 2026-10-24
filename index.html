@@ -1754,18 +1754,64 @@ function dmExit() {
 
 // Receive from Lua
 const _origMsgHandler = window.onmessage;
+
+let dmMouseState = { x: 0, y: 0, leftDown: false, lastLeftDown: false };
+
 window.addEventListener('message', e => {
   let d = e.data;
   if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
-  if (!d || d.type !== 'designMode') return;
+  if (!d || !d.type) return;
 
-  // Visual confirmation
-  const msg = document.getElementById('dm-hint');
-  if (msg) {
-    msg.textContent = d.enabled ? '✓ DESIGN MODE REÇU' : '✗ DESIGN MODE OFF';
+  if (d.type === 'designMode') {
+    const msg = document.getElementById('dm-hint');
+    if (msg) {
+      msg.textContent = d.enabled ? '✓ DESIGN MODE REÇU' : '✗ DESIGN MODE OFF';
+    }
+    if (d.enabled) dmEnter(); else dmExit();
+    return;
   }
 
-  if (d.enabled) dmEnter(); else dmExit();
+  if (d.type === 'mouseUpdate') {
+    dmMouseState.x = d.x;
+    dmMouseState.y = d.y;
+    dmMouseState.lastLeftDown = dmMouseState.leftDown;
+    dmMouseState.leftDown = d.leftDown;
+
+    // Detect mousedown (transition from not pressed to pressed)
+    if (dmMouseState.leftDown && !dmMouseState.lastLeftDown) {
+      const elem = document.elementFromPoint(dmMouseState.x * window.innerWidth, dmMouseState.y * window.innerHeight);
+      if (elem && elem.classList && elem.classList.contains('dm-handle')) {
+        const handle = elem;
+        const el = handle.parentElement;
+        if (el) {
+          dmDragState.active = true;
+          dmDragState.el = el;
+          const r = el.getBoundingClientRect();
+          dmDragState.ox = (dmMouseState.x * window.innerWidth) - r.left;
+          dmDragState.oy = (dmMouseState.y * window.innerHeight) - r.top;
+          const msg = document.getElementById('dm-hint');
+          if (msg) msg.textContent = '⚙ DRAGGING';
+        }
+      }
+    }
+
+    // Detect mouseup (transition from pressed to not pressed)
+    if (!dmMouseState.leftDown && dmMouseState.lastLeftDown) {
+      if (dmDragState.active) {
+        const msg = document.getElementById('dm-hint');
+        if (msg) msg.textContent = '✓ DESIGN MODE ACTIF';
+      }
+      dmDragState.active = false;
+      dmDragState.el = null;
+    }
+
+    // Update drag during move
+    if (dmDragState.active && dmDragState.el) {
+      dmDragState.el.style.left = (dmMouseState.x * window.innerWidth - dmDragState.ox) + 'px';
+      dmDragState.el.style.top = (dmMouseState.y * window.innerHeight - dmDragState.oy) + 'px';
+    }
+    return;
+  }
 });
 
 // ESC key to exit design mode
