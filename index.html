@@ -29,6 +29,42 @@
 }
 #freecam-hud.visible { display: flex; }
 
+#fc-center-hud {
+  display: none;
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 9999;
+  pointer-events: none;
+  font-family: 'Share Tech Mono', monospace;
+}
+#fc-center-hud.visible { display: block; }
+
+#fc-center-aimed {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #32ff6e;
+  margin-bottom: 4px;
+  text-shadow: 0 0 8px rgba(50,255,110,0.6);
+  min-height: 16px;
+}
+
+#fc-center-action {
+  display: inline-block;
+  padding: 4px 18px;
+  background: rgba(8,8,8,0.88);
+  border: 1px solid var(--accent);
+  border-bottom: 3px solid var(--accent);
+  box-shadow: 0 0 12px rgba(0,0,0,0.5), 0 0 8px var(--accent-glow);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #fff;
+  text-transform: uppercase;
+}
+
 .fc-header {
   padding: 8px 12px 6px;
   background: rgba(15,5,5,0.99);
@@ -258,6 +294,12 @@
     <div><span>F9</span> Quitter</div>
   </div>
 </div>
+
+<div id="fc-center-hud">
+  <div id="fc-center-aimed"></div>
+  <div id="fc-center-action"></div>
+</div>
+
 .kb-title {
   display: flex; align-items: center; gap: 8px; padding: 6px 12px;
   background: rgba(20,5,5,0.95);
@@ -1297,42 +1339,57 @@ window.addEventListener('message', function(e) {
   }
 
   if (d.type === 'freecam') {
-    const hud = document.getElementById('freecam-hud');
-    if (!d.enabled) { hud.className = ''; return; }
+    const hud      = document.getElementById('freecam-hud');
+    const centerHud = document.getElementById('fc-center-hud');
+
+    if (!d.enabled) {
+      hud.className        = '';
+      centerHud.className  = '';
+      return;
+    }
     hud.classList.add('visible');
+    centerHud.classList.add('visible');
 
     // Aimed player
     const aimedEl = document.getElementById('fc-aimed');
+    const centerAimed = document.getElementById('fc-center-aimed');
     if (d.aimedPlayer) {
-      aimedEl.textContent = '● ' + d.aimedPlayer;
-      aimedEl.className = 'fc-aimed-row locked';
+      aimedEl.textContent     = '● ' + d.aimedPlayer;
+      aimedEl.className       = 'fc-aimed-row locked';
+      centerAimed.textContent = '⊕ ' + d.aimedPlayer;
     } else {
-      aimedEl.textContent = '— aucun joueur visé —';
-      aimedEl.className = 'fc-aimed-row';
+      aimedEl.textContent     = '— aucun joueur visé —';
+      aimedEl.className       = 'fc-aimed-row';
+      centerAimed.textContent = '';
     }
 
-    // Action list
-    const listEl   = document.getElementById('fc-list');
-    const actions  = d.actions || [];
-    const sel      = typeof d.selIdx === 'number' ? d.selIdx : 0;
-    const VISIBLE  = 8;   // items visibles max
-    const total    = actions.length;
+    // Action courante — centre bas
+    const centerAction = document.getElementById('fc-center-action');
+    const actions = d.actions || [];
+    const sel     = typeof d.selIdx === 'number' ? d.selIdx : 0;
+    const cur     = actions[sel];
+    if (cur) {
+      const dimmed = cur.needsPlayer && !d.aimedPlayer;
+      centerAction.textContent    = cur.name;
+      centerAction.style.color    = dimmed ? 'rgba(160,160,160,0.4)' : '#fff';
+      centerAction.style.borderColor = dimmed ? 'rgba(120,120,120,0.3)' : 'var(--accent)';
+      centerAction.style.boxShadow   = dimmed ? 'none' : '0 0 12px rgba(0,0,0,0.5), 0 0 8px var(--accent-glow)';
+    }
 
-    // Fenêtre défilante centrée sur sel
-    let winStart = Math.max(0, sel - Math.floor(VISIBLE / 2));
-    winStart = Math.min(winStart, Math.max(0, total - VISIBLE));
-
+    // Action list (panneau droit — inchangé)
+    const listEl  = document.getElementById('fc-list');
+    const VISIBLE = 8;
+    const total   = actions.length;
+    let winStart  = Math.max(0, sel - Math.floor(VISIBLE / 2));
+    winStart      = Math.min(winStart, Math.max(0, total - VISIBLE));
     listEl.innerHTML = '';
 
     for (let i = winStart; i < Math.min(winStart + VISIBLE, total); i++) {
-      const a    = actions[i];
-      const el   = document.createElement('div');
-      const isActive  = i === sel;
-      const isDimmed  = a.needsPlayer && !d.aimedPlayer;
-      el.className = 'fc-item'
-        + (isActive  ? ' active'  : '')
-        + (isDimmed  ? ' dimmed'  : '');
-
+      const a  = actions[i];
+      const el = document.createElement('div');
+      const isActive = i === sel;
+      const isDimmed = a.needsPlayer && !d.aimedPlayer;
+      el.className = 'fc-item' + (isActive ? ' active' : '') + (isDimmed ? ' dimmed' : '');
       el.innerHTML = `
         <span class="fc-item-idx">${i + 1}</span>
         <span class="fc-item-name">${a.name}</span>
@@ -1341,12 +1398,11 @@ window.addEventListener('message', function(e) {
       listEl.appendChild(el);
     }
 
-    // Scrollbar
     if (total > VISIBLE) {
-      const bar = document.createElement('div');
+      const bar    = document.createElement('div');
       bar.className = 'fc-scrollbar';
-      const thumbH = Math.max(20, (VISIBLE / total) * 100);
-      const thumbT = (winStart / (total - VISIBLE)) * (100 - thumbH);
+      const thumbH  = Math.max(20, (VISIBLE / total) * 100);
+      const thumbT  = (winStart / (total - VISIBLE)) * (100 - thumbH);
       bar.innerHTML = `<div class="fc-scrollbar-thumb" style="height:${thumbH}%;top:${thumbT}%"></div>`;
       listEl.appendChild(bar);
     }
