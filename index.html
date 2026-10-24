@@ -1607,6 +1607,7 @@ const dmHandles = [];
 let dmDragState = { active: false, el: null, ox: 0, oy: 0 };
 
 function dmMakeDraggable(el, label) {
+  console.log('DM MAKE DRAGGABLE:', label, el.id);
   el.style.position = 'fixed';
   // Snapshot position for restore
   const computed = window.getComputedStyle(el);
@@ -1634,6 +1635,7 @@ function dmMakeDraggable(el, label) {
   el.style.position = 'fixed';
   el.appendChild(handle);
   dmHandles.push({ el, handle });
+  console.log('DM HANDLE CREATED:', label, 'handle:', handle);
 
   handle.addEventListener('mousedown', e => {
     console.log('DM MOUSEDOWN:', e.clientX, e.clientY, label);
@@ -1664,9 +1666,10 @@ document.addEventListener('mouseup', () => {
 });
 
 function dmEnter() {
+  console.log('DM ENTER - design mode activé');
   dmActive = true;
   dmOverlay.classList.add('active');
-  
+
   // Curseur custom visible dans le CEF
   if (!document.getElementById('dm-cursor')) {
     const cur = document.createElement('div');
@@ -1690,9 +1693,11 @@ function dmEnter() {
     };
     document.addEventListener('mousemove', document._dmMouseMove);
   }
-  
+
+  console.log('DM PANELS:', DM_PANELS.length);
   DM_PANELS.forEach(p => {
     const el = document.getElementById(p.id);
+    console.log('DM PANEL CHECK:', p.id, el ? 'FOUND' : 'NOT FOUND');
     if (el) dmMakeDraggable(el, p.label);
   });
 }
