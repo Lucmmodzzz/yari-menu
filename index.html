@@ -7,6 +7,41 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
+/* ── DESIGN MODE ── */
+.design-mode-active { cursor: move !important; }
+.design-mode-active * { cursor: move !important; }
+.dm-handle {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 99999; cursor: move;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(220,30,30,0.06) 0px, rgba(220,30,30,0.06) 4px,
+    transparent 4px, transparent 12px
+  );
+  pointer-events: all;
+}
+.dm-label {
+  position: absolute; top: -20px; left: 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; letter-spacing: 2px; color: var(--accent);
+  background: rgba(0,0,0,0.85); padding: 2px 6px; border-radius: 2px;
+  pointer-events: none; white-space: nowrap;
+}
+#dm-overlay {
+  display: none; position: fixed; inset: 0; z-index: 88888;
+  background: rgba(0,0,0,0.35);
+  font-family: 'Share Tech Mono', monospace;
+}
+#dm-overlay.active { display: block; }
+#dm-hint {
+  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+  background: rgba(10,10,10,0.92);
+  border-top: 2px solid var(--accent); border-bottom: 2px solid var(--accent);
+  padding: 6px 20px; font-size: 10px; letter-spacing: 2px;
+  color: rgba(200,200,200,0.7); white-space: nowrap; pointer-events: none;
+}
+#dm-hint span { color: var(--accent); }
+
 #freecam-hud {
   display: none;
   position: fixed;
@@ -1546,6 +1581,114 @@ function renderRadarActions() {
     itemsList.appendChild(el);
   });
 }
+
+const DM_PANELS = [
+  { id: 'app',           label: 'MAIN MENU' },
+  { id: 'player-panel',  label: 'PLAYER PANEL' },
+  { id: 'spec-hud',      label: 'SPECTATOR LIST' },
+  { id: 'kb-hud',        label: 'KEYBIND HUD' },
+  { id: 'freecam-hud',   label: 'FREECAM HUD' },
+];
+
+let dmActive = false;
+const dmOverlay = document.createElement('div');
+dmOverlay.id = 'dm-overlay';
+dmOverlay.innerHTML = '<div id="dm-hint">🖱 <span>DRAG</span> panels to reposition  —  <span>F9</span> or <span>ESC</span> to exit Design Mode</div>';
+document.body.appendChild(dmOverlay);
+
+// Store original positions to restore them
+const dmOrigPositions = {};
+// Store handles so we can remove them
+const dmHandles = [];
+
+function dmMakeDraggable(el, label) {
+  el.style.position = 'fixed';
+  // Snapshot position for restore
+  const computed = window.getComputedStyle(el);
+  dmOrigPositions[el.id] = {
+    top:  computed.top,
+    left: computed.left,
+    right: computed.right,
+    bottom: computed.bottom,
+    transform: computed.transform,
+  };
+  // If element uses right/bottom anchoring, convert to left/top
+  const rect = el.getBoundingClientRect();
+  el.style.left   = rect.left + 'px';
+  el.style.top    = rect.top  + 'px';
+  el.style.right  = 'auto';
+  el.style.bottom = 'auto';
+  el.style.transform = 'none';
+
+  const handle = document.createElement('div');
+  handle.className = 'dm-handle';
+  const lbl = document.createElement('div');
+  lbl.className = 'dm-label';
+  lbl.textContent = label;
+  handle.appendChild(lbl);
+  el.style.position = 'fixed';
+  el.appendChild(handle);
+  dmHandles.push({ el, handle });
+
+  let dragging = false, ox = 0, oy = 0;
+  handle.addEventListener('mousedown', e => {
+    e.preventDefault();
+    dragging = true;
+    const r = el.getBoundingClientRect();
+    ox = e.clientX - r.left;
+    oy = e.clientY - r.top;
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    el.style.left = (e.clientX - ox) + 'px';
+    el.style.top  = (e.clientY - oy) + 'px';
+  });
+  document.addEventListener('mouseup', () => { dragging = false; });
+}
+
+function dmEnter() {
+  dmActive = true;
+  dmOverlay.classList.add('active');
+  DM_PANELS.forEach(p => {
+    const el = document.getElementById(p.id);
+    if (el) dmMakeDraggable(el, p.label);
+  });
+}
+
+function dmExit() {
+  dmActive = false;
+  dmOverlay.classList.remove('active');
+  // Remove all handles
+  dmHandles.forEach(({ el, handle }) => {
+    if (handle.parentNode === el) el.removeChild(handle);
+    // Restore original anchoring
+    const orig = dmOrigPositions[el.id];
+    if (orig) {
+      el.style.top       = orig.top;
+      el.style.left      = orig.left;
+      el.style.right     = orig.right;
+      el.style.bottom    = orig.bottom;
+      el.style.transform = orig.transform !== 'none' ? orig.transform : '';
+    }
+  });
+  dmHandles.length = 0;
+  // Tell Lua to turn off the toggle
+  sendToLua({ type: 'designModeOff' });
+}
+
+// Receive from Lua
+const _origMsgHandler = window.onmessage;
+window.addEventListener('message', e => {
+  let d = e.data;
+  if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
+  if (!d || d.type !== 'designMode') return;
+  if (d.enabled) dmEnter(); else dmExit();
+});
+
+// ESC key to exit design mode
+document.addEventListener('keydown', e => {
+  if (dmActive && (e.key === 'Escape' || e.key === 'F9')) dmExit();
+});
 
 render();
 </script>
