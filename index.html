@@ -1639,7 +1639,6 @@ function dmMakeDraggable(el, label) {
 
   // Support both mouse and pointer events
   const startDrag = (e) => {
-    console.log('DM DRAG START:', label, e.type, e.clientX, e.clientY);
     e.preventDefault();
     e.stopPropagation();
     dmDragState.active = true;
@@ -1647,8 +1646,11 @@ function dmMakeDraggable(el, label) {
     const r = el.getBoundingClientRect();
     dmDragState.ox = e.clientX - r.left;
     dmDragState.oy = e.clientY - r.top;
-    console.log('DM OFFSET:', dmDragState.ox, dmDragState.oy);
     handle.style.pointerEvents = 'all';
+
+    // Visual feedback
+    const msg = document.getElementById('dm-hint');
+    if (msg) msg.textContent = '⚙ DRAG: ' + label;
   };
 
   handle.addEventListener('mousedown', startDrag);
@@ -1756,6 +1758,13 @@ window.addEventListener('message', e => {
   let d = e.data;
   if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
   if (!d || d.type !== 'designMode') return;
+
+  // Visual confirmation
+  const msg = document.getElementById('dm-hint');
+  if (msg) {
+    msg.textContent = d.enabled ? '✓ DESIGN MODE REÇU' : '✗ DESIGN MODE OFF';
+  }
+
   if (d.enabled) dmEnter(); else dmExit();
 });
 
