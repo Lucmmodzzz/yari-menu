@@ -1,1553 +1,575 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YARI MENU</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freecam Menu</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
-#freecam-hud {
-  display: none;
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 460px;
-  background: rgba(8,8,8,0.92);
-  border-top: 3px solid var(--accent);
-  border-bottom: 3px solid var(--accent);
-  box-shadow: 0 0 24px rgba(0,0,0,0.6);
-  font-family: 'Share Tech Mono', monospace;
-  z-index: 9999;
-  pointer-events: none;
-}
-#freecam-hud.visible { display: block; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-.fc-title {
-  display: flex; align-items: center; gap: 10px;
-  padding: 5px 16px;
-  background: rgba(15,5,5,0.98);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 13px; font-weight: 700; letter-spacing: 3px; color: #fff;
-}
-.fc-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--accent); box-shadow: 0 0 7px var(--accent-glow);
-  animation: blink 1s ease-in-out infinite;
-}
-.fc-aimed {
-  margin-left: auto; font-size: 11px; color: #32ff6e;
-  letter-spacing: 2px;
-}
-.fc-aimed.none { color: rgba(180,180,180,0.4); }
+        :root {
+            --accent: #DC1E1E;
+            --accent-glow: #FF3232;
+            --accent-dark: #8C0A0A;
+            --bg: #0A0A0A;
+            --bg-light: #1A1A1A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B0B0;
+            --sep: rgba(50, 15, 15, 0.9);
+        }
 
-.fc-actions {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 6px 10px;
-  gap: 6px;
-  overflow: hidden;
-}
-.fc-action {
-  flex-shrink: 0;
-  padding: 4px 12px;
-  border-radius: 3px;
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  color: rgba(200,200,200,0.55);
-  background: rgba(20,20,20,0.85);
-  border: 1px solid rgba(60,60,60,0.4);
-  white-space: nowrap;
-  transition: all 0.12s;
-}
-.fc-action.active {
-  color: #fff;
-  background: rgba(220,30,30,0.18);
-  border-color: var(--accent);
-  box-shadow: 0 0 8px rgba(220,30,30,0.3);
-  font-weight: 700;
-}
-.fc-action.needs-player {
-  border-style: dashed;
-}
-.fc-action.active.needs-player {
-  border-style: solid;
-}
+        body {
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #0A0A0A 0%, #1A0A0A 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden;
+            color: var(--text-primary);
+        }
 
-.fc-hint {
-  padding: 3px 16px 5px;
-  font-size: 9px; letter-spacing: 1.5px;
-  color: rgba(160,160,160,0.45);
-  border-top: 1px solid rgba(255,255,255,0.05);
-  display: flex; gap: 16px;
-}
-.fc-hint span { color: var(--accent); }
+        .container {
+            width: 600px;
+            height: 580px;
+            background: var(--bg);
+            border: 3px solid var(--accent);
+            border-radius: 2px;
+            box-shadow: 0 0 30px rgba(220, 30, 30, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
 
-#player-panel {
-  display: none;
-  position: fixed;
-  top: 150px;
-  left: 560px;
-  width: 260px;
-  border-top: 3px solid var(--accent);
-  border-bottom: 3px solid var(--accent);
-  border-left: 1px solid rgba(255,255,255,0.06);
-  background: var(--bg);
-  box-shadow: 0 0 22px rgba(0,0,0,0.55);
-  font-family: 'Share Tech Mono', monospace;
-  z-index: 9998;
-  pointer-events: none;
-}
-#player-panel.visible { display: block; }
+        /* ── HEADER ── */
+        .header {
+            background: linear-gradient(180deg, rgba(30, 5, 5, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%);
+            border-bottom: 2px solid var(--accent);
+            padding: 20px;
+            text-align: center;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
 
-/* Header : le slot avatar est TRANSPARENT, le jeu dessine le headshot derrière */
-.pp-header {
-  position: relative; overflow: hidden;
-  display: flex; align-items: center; gap: 12px;
-  height: 84px;
-  background: transparent;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-}
-.pp-avatar {
-  flex-shrink: 0;
-  width: 64px; height: 64px; margin-left: 10px;
-  box-sizing: border-box;
-  border: 2px solid var(--accent);
-  border-radius: 6px;
-  background: transparent;
-  box-shadow: 0 0 0 300px var(--bg), 0 0 12px var(--accent-glow);
-}
-.pp-id { position: relative; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.pp-name { font-family:'Rajdhani',sans-serif; font-size: 17px; font-weight: 700; letter-spacing: 1.5px; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-shadow: 0 0 10px var(--accent-glow); }
-.pp-sid  { font-size: 10px; letter-spacing: 2px; color: var(--accent); }
+        .header::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+            animation: pulse 2s ease-in-out infinite;
+        }
 
-/* Barres */
-.pp-bar-wrap { padding: 8px 12px 6px; }
-.pp-bar-row  { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
-.pp-bar-ico  { width: 14px; height: 14px; flex-shrink: 0; color: var(--accent); }
-.pp-bar-track { flex: 1; height: 7px; background: rgba(255,255,255,0.07); border-radius: 4px; overflow: hidden; }
-.pp-bar-fill  { height: 100%; border-radius: 4px; transition: width .3s ease; }
-.pp-bar-fill.health { background: linear-gradient(90deg,#1edc4a,#32ff6e); box-shadow: 0 0 8px rgba(50,255,110,.45); }
-.pp-bar-fill.health.mid { background: linear-gradient(90deg,#dc8c1e,#ffaa32); box-shadow: 0 0 8px rgba(255,170,50,.45); }
-.pp-bar-fill.health.low { background: linear-gradient(90deg,#dc1e1e,#ff3232); box-shadow: 0 0 8px rgba(255,50,50,.5); }
-.pp-bar-fill.armor  { background: linear-gradient(90deg,#1e5adc,#3278ff); box-shadow: 0 0 8px rgba(50,120,255,.45); }
-.pp-bar-pct { font-size: 10px; color:#e8e8e8; min-width: 34px; text-align: right; }
+        .header::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+            animation: pulse 2s ease-in-out infinite;
+        }
 
-/* Lignes d'infos */
-.pp-section { padding: 4px 0; border-top: 1px solid rgba(255,255,255,0.05); }
-.pp-row { display: flex; align-items: center; gap: 9px; padding: 4px 12px; min-height: 26px; }
-.pp-icon {
-  width: 22px; height: 22px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 5px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.06);
-  color: var(--accent);
-}
-.pp-icon svg { width: 13px; height: 13px; }
-.pp-label { font-size: 10px; letter-spacing: 1.5px; color: rgba(180,180,180,0.6); min-width: 64px; }
-.pp-value { flex: 1; font-size: 11px; color: #e8e8e8; text-align: right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-transform: uppercase; }
-.pp-value.danger { color:#ff4444; }
-.pp-value.warn   { color:#ff9900; }
-.pp-value.ok     { color:#32ff6e; }
-.pp-coords { padding: 6px 12px 8px; font-size: 9px; letter-spacing: 1px; color: rgba(160,160,160,0.65); border-top: 1px solid rgba(255,255,255,0.05); text-align: center; }
-.pp-name { flex: 1; font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pp-sid  { font-size: 10px; color: var(--accent); letter-spacing: 1px; }
-.pp-section { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.pp-section:last-child { border-bottom: none; }
-.pp-row { display: flex; align-items: center; padding: 3px 10px; gap: 6px; min-height: 22px; }
-.pp-icon { width: 14px; font-size: 11px; text-align: center; color: var(--accent); flex-shrink: 0; opacity: 0.85; }
-.pp-label { font-size: 10px; color: rgba(180,180,180,0.6); letter-spacing: 1px; min-width: 62px; flex-shrink: 0; }
-.pp-value { font-size: 10px; color: #e8e8e8; text-align: right; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pp-value.danger { color: #ff4444; }
-.pp-value.warn   { color: #ff9900; }
-.pp-value.ok     { color: #32ff6e; }
-.pp-bar-wrap { padding: 2px 10px 5px; }
-.pp-bar-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-.pp-bar-label { font-size: 9px; color: rgba(180,180,180,0.6); letter-spacing: 1px; min-width: 38px; }
-.pp-bar-pct { font-size: 9px; color: #e8e8e8; min-width: 32px; text-align: right; }
-.pp-bar-track { flex: 1; height: 5px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
-.pp-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
-.pp-bar-fill.health { background: linear-gradient(90deg, #1edc4a, #32ff6e); }
-.pp-bar-fill.armor  { background: linear-gradient(90deg, #1e5adc, #3278ff); }
-.pp-bar-fill.health.low { background: linear-gradient(90deg, #dc1e1e, #ff3232); }
-.pp-bar-fill.health.mid { background: linear-gradient(90deg, #dc8c1e, #ffaa32); }
-.pp-coords { font-size: 9px; color: rgba(160,160,160,0.7); padding: 3px 10px 5px; letter-spacing: 0.5px; font-family: 'Share Tech Mono', monospace; }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
 
-#spec-hud {
-  display: none; position: fixed; top: 40px; left: 18px; width: 260px;
-  font-family: 'Share Tech Mono', monospace; z-index: 9999; pointer-events: none;
-}
-#spec-hud.visible { display: block; }
-.spec-header { display: flex; align-items: center; gap: 8px; padding: 3px 10px; background: rgba(0,0,0,0.82); border-left: 3px solid var(--accent); border-bottom: 1px solid rgba(255,255,255,0.06); }
-.spec-header .spec-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); animation: blink 1.2s ease-in-out infinite; }
-.spec-header .spec-count { font-size: 11px; color: var(--accent); letter-spacing: 1px; font-weight: 700; }
-.spec-header .spec-label { font-size: 10px; color: rgba(200,200,200,0.55); letter-spacing: 2px; margin-left: auto; }
-@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
-.spec-row { display: flex; align-items: baseline; gap: 6px; padding: 3px 10px 3px 13px; background: rgba(0,0,0,0.72); border-left: 3px solid transparent; border-bottom: 1px solid rgba(255,255,255,0.04); }
-.spec-row.noclip { border-left-color: var(--accent); }
-.spec-row.admin  { border-left-color: #dcaa1e; }
-.spec-sid  { font-size: 10px; color: var(--accent); min-width: 26px; }
-.spec-name { font-size: 11px; color: #e8e8e8; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.spec-dist { font-size: 10px; color: rgba(180,180,180,0.6); white-space: nowrap; }
-.spec-type { font-size: 9px; letter-spacing: 1px; padding: 1px 4px; border-radius: 2px; white-space: nowrap; }
-.spec-type.noclip { color: var(--accent); background: rgba(220,30,30,0.15); }
-.spec-type.admin  { color: #dcaa1e; background: rgba(220,170,30,0.12); }
-.spec-type.both   { color: #ff9900; background: rgba(255,153,0,0.13); }
-.spec-empty { padding: 5px 13px; font-size: 10px; color: rgba(180,180,180,0.4); background: rgba(0,0,0,0.72); border-left: 3px solid transparent; letter-spacing: 1px; }
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px var(--accent-glow);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
 
-#kb-hud {
-  display: none; position: fixed; bottom: 24px; right: 24px; width: 250px;
-  background: var(--bg);
-  border-top: 3px solid var(--accent);
-  border-bottom: 3px solid var(--accent);
-  box-shadow: 0 0 20px rgba(0,0,0,0.45);
-  font-family: 'Share Tech Mono', monospace;
-  z-index: 9999; pointer-events: none;
-}
-#kb-hud.visible { display: block; }
-<div id="freecam-hud">
-  <div class="fc-title">
-    <div class="fc-dot"></div>
-    <span>FREE CAM</span>
-    <span class="fc-aimed none" id="fc-aimed">— aucun joueur visé —</span>
-  </div>
-  <div class="fc-actions" id="fc-actions"></div>
-  <div class="fc-hint">
-    <div><span>MOLETTE</span> Changer action</div>
-    <div><span>F</span> Exécuter</div>
-    <div><span>ZQSD</span> Déplacer cam</div>
-    <div><span>F10</span> Désactiver</div>
-  </div>
-</div>
-.kb-title {
-  display: flex; align-items: center; gap: 8px; padding: 6px 12px;
-  background: rgba(20,5,5,0.95);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700;
-  letter-spacing: 3px; color: #fff;
-}
-.kb-title .kb-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
-.kb-row { display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-bottom: 1px solid var(--sep); }
-.kb-row:last-child { border-bottom: none; }
-.kb-name { flex: 1; font-size: 11px; color: rgba(255,255,255,0.85); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.kb-sep  { color: rgba(180,180,180,0.4); font-size: 11px; }
-.kb-key  { font-size: 11px; font-weight: 700; color: var(--accent); white-space: nowrap; }
-.kb-ind  { width: 10px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.12); flex-shrink: 0; }
-.kb-ind.on  { background: #32ff6e; box-shadow: 0 0 5px #32ff6e; }
-.kb-ind.off { background: #ff3232; box-shadow: 0 0 5px #ff3232; }
-.kb-empty { padding: 8px 12px; font-size: 10px; letter-spacing: 1px; color: rgba(180,180,180,0.4); }
-  
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        .header-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px var(--accent-glow);
+            animation: blink 1s ease-in-out infinite;
+        }
 
-:root {
-  --accent:      #DC1E1E;
-  --accent-glow: #FF3232;
-  --accent-dark: #8C0A0A;
-  --accent-l:    #DC1E1E;
-  --accent-r:    #8B1FDC;
-  --bg:          #0A0A0A;
-  --dimmed:      #B0B0B0;
-  --sep:         rgba(50,15,15,0.9);
-}
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
 
-.theme-red    { --accent:#DC1E1E; --accent-glow:#FF3232; --accent-dark:#8C0A0A; --sep:rgba(50,15,15,0.9); }
-.theme-purple { --accent:#8B1FDC; --accent-glow:#AA44FF; --accent-dark:#4A0A8C; --sep:rgba(35,10,50,0.9); }
-.theme-blue   { --accent:#1E5ADC; --accent-glow:#3278FF; --accent-dark:#0A2A8C; --sep:rgba(10,20,50,0.9); }
-.theme-green  { --accent:#1EDC4A; --accent-glow:#32FF6E; --accent-dark:#0A8C26; --sep:rgba(10,40,20,0.9); }
+        .header-status {
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+            font-family: 'Share Tech Mono', monospace;
+        }
 
-html, body { width: 100%; height: 100%; background: transparent; overflow: hidden; font-family: 'Rajdhani', sans-serif; }
+        /* ── SILHOUETTE ── */
+        .silhouette-area {
+            flex: 0 0 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid var(--sep);
+            position: relative;
+            overflow: hidden;
+        }
 
-#app {
-  position: fixed; top: 150px; left: 200px; width: 350px;
-  display: none; flex-direction: column;
-  background: var(--bg);
-  border-top: 3px solid var(--accent);
-  border-bottom: 3px solid var(--accent);
-  box-shadow: 0 0 20px rgba(0,0,0,0.45), 0 0 6px rgba(0,0,0,0.3) inset;
-  user-select: none;
-  transition: border-color 0.25s;
-}
+        .silhouette {
+            width: 60px;
+            height: 100px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            border-radius: 50% 50% 0 0;
+            position: relative;
+            opacity: 0.4;
+            filter: drop-shadow(0 0 10px var(--accent-glow));
+        }
 
-#app.twotone { border-top: none; border-bottom: none; }
-#top-border, #bot-border {
-  display: none; height: 3px; flex-shrink: 0; width: 100%;
-  background: linear-gradient(90deg, var(--accent-l) 0%, var(--accent-l) 38%, var(--accent-r) 62%, var(--accent-r) 100%);
-}
-#app.twotone #top-border,
-#app.twotone #bot-border { display: block; }
+        .silhouette::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.3;
+        }
 
-#banner {
-  position: relative; height: 90px; flex-shrink: 0;
-  background: linear-gradient(180deg,rgba(40,5,5,0.95) 0%,rgba(10,10,10,1) 100%);
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 5px; overflow: hidden;
-}
-#banner::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg,var(--accent-l),var(--accent-dark)); transition:background 0.25s; }
-#banner::after  { content:''; position:absolute; right:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg,var(--accent-r),var(--accent-dark)); opacity:0.7; transition:background 0.25s; }
-#app:not(.twotone) #banner::before { background:linear-gradient(180deg,var(--accent),var(--accent-dark)); }
-#app:not(.twotone) #banner::after  { background:linear-gradient(180deg,var(--accent),var(--accent-dark)); opacity:0.7; }
+        .silhouette::after {
+            content: '';
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(180deg, var(--accent) 0%, transparent 100%);
+        }
 
-.banner-main { font-size: 30px; font-weight: 700; letter-spacing: 6px; color: #fff; text-shadow: 0 0 14px var(--accent-glow),0 0 30px rgba(220,30,30,0.45),2px 2px 0 rgba(140,10,10,0.5); }
-.banner-sub  { font-size: 10px; letter-spacing: 3px; color: var(--dimmed); font-family: 'Share Tech Mono', monospace; }
+        /* ── MENU LIST ── */
+        .menu-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: rgba(10, 10, 10, 0.8);
+        }
 
-#subbanner {
-  height: 18px; flex-shrink: 0; background: rgba(5,5,5,0.98);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 9px; letter-spacing: 3px; color: rgba(200,200,200,0.6);
-  font-family: 'Share Tech Mono', monospace;
-  border-top: 1px solid rgba(30,5,5,0.7);
-}
+        .menu-header {
+            padding: 12px 20px;
+            background: rgba(20, 5, 5, 0.8);
+            border-bottom: 1px solid var(--sep);
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+            font-family: 'Share Tech Mono', monospace;
+            flex-shrink: 0;
+        }
 
-/* ── MAIN TABS (top-level: MAIN / CONFIG) ── */
-#tabs {
-  height: 28px; flex-shrink: 0; display: flex;
-  border-bottom: 2px solid var(--accent); transition: border-color 0.25s;
-}
-#app.twotone #tabs { border-bottom: none; position: relative; }
-#app.twotone #tabs::after {
-  content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
-  background: linear-gradient(90deg, var(--accent-l) 0%, var(--accent-l) 38%, var(--accent-r) 62%, var(--accent-r) 100%);
-}
+        .menu-list {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            padding: 8px 0;
+        }
 
-/* ── SUB-TABS (inside a category: e.g. SELF / MOVEMENT) ── */
-#sub-tabs {
-  display: none;
-  height: 24px; flex-shrink: 0;
-  background: rgba(8,8,8,0.98);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  flex-direction: row;
-}
-#sub-tabs.show { display: flex; }
+        /* Scrollbar styling */
+        .menu-list::-webkit-scrollbar {
+            width: 6px;
+        }
 
-.sub-tab {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 600; letter-spacing: 2px; color: rgba(180,180,180,0.5);
-  background: rgba(12,12,12,0.98); border-right: 1px solid rgba(60,60,60,0.3);
-  font-family: 'Share Tech Mono', monospace;
-}
-.sub-tab:last-child { border-right: none; }
-.sub-tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
-#app.twotone .sub-tab.active { color: var(--accent-l); border-bottom-color: var(--accent-l); }
+        .menu-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
 
-.tab {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--dimmed);
-  background: rgba(12,12,12,0.98); border-right: 1px solid rgba(60,60,60,0.35); cursor: pointer;
-  transition: background 0.2s;
-}
-.tab:last-child { border-right: none; }
-.tab.active { background: var(--accent); color: #fff; }
-#app.twotone .tab.active { background: var(--accent-l); }
+        .menu-list::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+            box-shadow: 0 0 5px var(--accent-glow);
+        }
 
-#cat-header {
-  padding: 4px 14px; font-size: 10px; letter-spacing: 2px; color: var(--dimmed);
-  font-family: 'Share Tech Mono', monospace; background: rgba(10,10,10,0.95);
-  border-bottom: 1px solid rgba(60,20,20,0.5); flex-shrink: 0; display: none;
-}
-#cat-header.show { display: block; }
+        .menu-list::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-glow);
+        }
 
-#items-list { flex-shrink: 0; }
+        /* ── MENU ITEMS ── */
+        .menu-item {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+            transition: all 0.12s ease;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
 
-.menu-item {
-  height: 30px; display: flex; align-items: center;
-  padding: 0 16px 0 28px; position: relative;
-  border-bottom: 1px solid var(--sep);
-}
-.menu-item .bar {
-  position: absolute; left: 0; top: 3px; bottom: 3px; width: 3px;
-  background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); display: none;
-  transition: background 0.2s;
-}
-.menu-item.sel { background: rgba(220,30,30,0.07); }
-.menu-item.sel .bar { display: block; }
-.item-name { flex: 1; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.85); letter-spacing: 0.4px; }
-.menu-item.sel .item-name { color: #fff; font-weight: 600; }
-.item-ind { font-size: 13px; font-weight: 700; color: var(--accent); margin-left: 6px; }
-.menu-item.sel .item-ind { opacity: 1; }
-.menu-item:not(.sel) .item-ind { opacity: 0.65; }
+        .menu-item:hover {
+            background: rgba(220, 30, 30, 0.04);
+        }
 
-.item-chev {
-  width: 15px; height: 15px; margin-left: 6px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--accent);
-  opacity: 0.85;
-  transition: transform .12s, opacity .12s;
-}
-.item-chev svg {
-  width: 15px; height: 15px;
-  filter: drop-shadow(0 0 3px var(--accent-glow));
-}
-.menu-item.sel .item-chev { opacity: 1; transform: translateX(3px); }
-#app.twotone .item-chev { color: #B266FF; }
+        .menu-item.active {
+            background: rgba(220, 30, 30, 0.12);
+            border-left-color: var(--accent);
+            color: var(--text-primary);
+        }
 
-#app.twotone .menu-item.sel .bar { background: linear-gradient(180deg, var(--accent-l), var(--accent-r)); box-shadow: 0 0 6px var(--accent-l); }
-#app.twotone .menu-item.sel .item-name { color: #fff; }
-#app.twotone .item-ind { color: var(--accent-r); }
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
 
-.tog {
-  width: 34px; height: 14px; border-radius: 7px;
-  background: #333; position: relative; flex-shrink: 0;
-  transition: background 0.15s;
-}
-.tog.on { background: var(--accent); box-shadow: 0 0 7px var(--accent-glow); }
-#app.twotone .tog.on { background: linear-gradient(90deg, var(--accent-l), var(--accent-r)); box-shadow: 0 0 7px var(--accent-l); }
-.tog::after { content:''; position:absolute; top:2px; left:2px; width:10px; height:10px; border-radius:50%; background:#fff; transition:left 0.12s; }
-.tog.on::after { left: calc(100% - 12px); }
+        .item-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--accent);
+            flex-shrink: 0;
+            font-size: 14px;
+        }
 
-#footer {
-  height: 36px; flex-shrink: 0; display: flex;
-  align-items: center; justify-content: center; gap: 16px;
-  background: rgba(8,8,8,0.99);
-  border-top: 1px solid rgba(40,10,10,0.6);
-}
-.kh { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--dimmed); font-family: 'Share Tech Mono', monospace; }
-.k {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 18px; height: 14px;
-  border: 1px solid rgba(220,30,30,0.5); border-radius: 2px;
-  font-size: 9px; color: var(--accent); font-weight: 700;
-  background: rgba(220,30,30,0.07);
-}
+        .item-name {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.8);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
-.color-dot {
-  width: 14px; height: 14px; border-radius: 50%; cursor: pointer;
-  border: 2px solid transparent; transition: border-color 0.15s, transform 0.1s; flex-shrink: 0;
-}
-.color-dot.active { border-color: #fff; transform: scale(1.25); }
-.color-dot.red    { background: #DC1E1E; }
-.color-dot.purple { background: #8B1FDC; }
-.color-dot.blue   { background: #1E5ADC; }
-.color-dot.green  { background: #1EDC4A; }
-</style>
+        .menu-item.active .item-name {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .item-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        .menu-item.needs-player .item-status {
+            background: rgba(255, 170, 0, 0.6);
+            box-shadow: 0 0 4px rgba(255, 170, 0, 0.8);
+        }
+
+        .menu-item.active .item-status {
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent-glow);
+        }
+
+        /* ── FOOTER ── */
+        .footer {
+            background: rgba(20, 5, 5, 0.95);
+            border-top: 1px solid var(--sep);
+            padding: 12px 20px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            flex-shrink: 0;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            color: var(--text-secondary);
+        }
+
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .key {
+            display: inline-block;
+            padding: 2px 6px;
+            border: 1px solid var(--accent);
+            border-radius: 2px;
+            background: rgba(220, 30, 30, 0.1);
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 9px;
+        }
+
+        /* ── INFO BOX ── */
+        .info-box {
+            position: absolute;
+            bottom: 60px;
+            right: 20px;
+            background: rgba(220, 30, 30, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 2px;
+            padding: 8px 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: var(--accent);
+            display: none;
+            z-index: 100;
+            letter-spacing: 1px;
+        }
+
+        .info-box.show {
+            display: block;
+        }
+
+        .info-box.warning {
+            background: rgba(255, 170, 0, 0.08);
+            border-color: rgba(255, 170, 0, 0.6);
+            color: rgba(255, 170, 0, 0.8);
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .container {
+            animation: slideIn 0.4s ease-out;
+        }
+    </style>
 </head>
 <body>
-<div id="app" class="theme-red">
-  <div id="top-border"></div>
-  <div id="banner">
-    <img src="yari_menu_banniere_rouge.png" alt="banner"
-         style="width:100%;height:90px;object-fit:cover;object-position:center;display:block;" />
-  </div>
-  <div id="subbanner">YARI MENU</div>
-  <div id="tabs">
-    <div class="tab active" id="tab-main">MAIN</div>
-    <div class="tab"        id="tab-cfg">CONFIG</div>
-  </div>
-  <!-- Sub-tabs rendered dynamically -->
-  <div id="sub-tabs"></div>
-  <div id="cat-header"></div>
-  <div id="items-list"></div>
-  <div id="bot-border"></div>
-  <div id="footer">
-    <div class="kh"><span class="k">↑</span><span class="k">↓</span> Nav</div>
-    <div class="kh"><span class="k">↵</span> OK</div>
-    <div class="kh"><span class="k">⌫</span> Back</div>
-    <div class="kh"><span class="k">Q</span><span class="k">E</span> Tab</div>
-  </div>
-</div>
-
-<div id="player-panel">
-  <div class="pp-header">
-    <div class="pp-avatar" id="pp-avatar"></div>
-    <div class="pp-id">
-      <span class="pp-name" id="pp-name">—</span>
-      <span class="pp-sid"  id="pp-sid">#—</span>
-    </div>
-  </div>
-
-  <div class="pp-bar-wrap">
-    <div class="pp-bar-row">
-      <svg class="pp-bar-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>
-      <div class="pp-bar-track"><div class="pp-bar-fill health" id="pp-hp-bar" style="width:100%"></div></div>
-      <span class="pp-bar-pct" id="pp-hp-pct">100%</span>
-    </div>
-    <div class="pp-bar-row">
-      <svg class="pp-bar-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <div class="pp-bar-track"><div class="pp-bar-fill armor" id="pp-arm-bar" style="width:0%"></div></div>
-      <span class="pp-bar-pct" id="pp-arm-pct">0%</span>
-    </div>
-  </div>
-
-  <div class="pp-section">
-    <div class="pp-row">
-      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg></span>
-      <span class="pp-label">DISTANCE</span><span class="pp-value" id="pp-dist">—</span>
-    </div>
-    <div class="pp-row">
-      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l2-5a2 2 0 0 1 2-1h10a2 2 0 0 1 2 1l2 5v4H3z"/><circle cx="7.5" cy="17" r="1.6"/><circle cx="16.5" cy="17" r="1.6"/></svg></span>
-      <span class="pp-label">VEHICLE</span><span class="pp-value" id="pp-veh">—</span>
-    </div>
-    <div class="pp-row">
-      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
-      <span class="pp-label">SPEED</span><span class="pp-value" id="pp-spd">—</span>
-    </div>
-    <div class="pp-row">
-      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h13l3-2h2v5h-6l-1 4h-3l-1-4H3z"/></svg></span>
-      <span class="pp-label">WEAPON</span><span class="pp-value" id="pp-wpn">—</span>
-    </div>
-  </div>
-
-  <div class="pp-section">
-    <div class="pp-row">
-      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></span>
-      <span class="pp-label">INVISIBLE</span><span class="pp-value" id="pp-inv">—</span>
-    </div>
-    <div class="pp-row">
-      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
-      <span class="pp-label">JOB</span><span class="pp-value" id="pp-job">—</span>
-    </div>
-    <div class="pp-row">
-      <span class="pp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M7 8l10-5"/><circle cx="9" cy="14.5" r="2.5"/><path d="M15 13h3M15 16h3"/></svg></span>
-      <span class="pp-label">RADIO</span><span class="pp-value" id="pp-radio">—</span>
-    </div>
-  </div>
-
-  <div class="pp-coords" id="pp-coords">X —  Y —  Z —</div>
-</div>
-
-<div id="spec-hud"></div>
-
-<div id="kb-hud"></div>
-
-<script>
-// ═══════════════════════════════════════════════════════════════════
-//  CATEGORY STRUCTURE — sub-tabbed
-//  Each category can have subTabs: [{name, items}]
-//  Online is special: subTabs = [{name:"Players"}, {name:"Troll"}]
-//    but Players is default (tab 0), rendered with player list
-// ═══════════════════════════════════════════════════════════════════
-const CAT_STRUCTURE = [
-  {
-    name: "Player",
-    subTabs: [
-      { name: "SELF",     items: ["God Mode","No Ragdoll","No Collision","Max Heal","Max Armor","Invisible","Super Jump","Walk On Wall","Anti Aim V2"] },
-      { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina"] },
-    ]
-  },
-  {
-    name: "Online",
-    special: "online",
-    subTabs: [
-      { name: "PLAYERS", items: [] },
-      { name: "TROLL",   items: [] },
-    ]
-  },
-  {
-    name: "Weapon",
-    subTabs: [
-      { name: "WEAPONS", items: ["Give Weapons","Give Weapon by Name","Remove All Weapons"] },
-    ]
-  },
-  {
-    name: "Combat",
-    subTabs: [
-      { name: "COMBAT", items: ["Laser Eye","Fast Punch","Aimbot","Show FOV","FOV Slider"] },
-    ]
-},
-  {
-    name: "Vehicle",
-    subTabs: [
-      { name: "SPAWN",   items: ["Spawn Custom Véhicule"] },
-      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost","Full Performance","Repair Vehicle"] },
-      { name: "CONTROL", items: ["Porter/Lancer Véhicule","Delete Close Véhicule","Unlock Vehicle","Lock Vehicle","Lock Yourself","Lock Passagers"] },
-      { name: "RADAR",   items: [] }  // ← AJOUTE CETTE LIGNE
-    ]
-  },
-  {
-    name: "Construction",
-    subTabs: [
-      { name: "BUILD", items: ["Wing Vehicle","Tower Vehicle","Ramp Vehicle","Transformer Vehicle","Nazi Vehicle", "Detach Vehicle"] },
-    ]
-  },
-  {
-    name: "Misc",
-    subTabs: [
-      { name: "MISC", items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim","Free Cam","Desync"] },
-      { name: "PROTECTION", items: ["New Player Bypass", "Panic Mode"] },
-      { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos"] },
-      { name: "SERVER",    items: ["Buy Phone/radio","Bypass Sunlife","Prime Bypass"] },
-    ]
-  },
-  {
-    name: "Settings",
-    subTabs: [
-      { name: "SETTINGS", items: ["Auto Load Config","Change Banner","Couleur du Menu","Activer Deux Couleurs","Show Keybinds"] },
-    ]
-  },
-  {
-    name: "Keybind",
-    subTabs: [
-      { name: "KEYBIND", items: ["Delete All Keybinds"] },
-    ]
-  },
-  { name: "Search", special: "search", subTabs: [ { name: "SEARCH", items: [] } ] },
-];
-
-const CONFIG_ITEMS = ["Save Config","Load Config"];
-
-// ── TOGGLE KEYS: "CatName|SubTabIndex|itemLocalIndex" (1-based)
-// We'll resolve dynamically based on known toggle actions
-// Map: global action key → category/subTab/index
-// Since Lua uses category name + global action index, we keep a mapping
-const GLOBAL_ACTION_MAP = {
-  // Player SELF (global indices per Lua)
-  "Player_2":  true,  // God Mode
-  "Player_3":  true,  // No Ragdoll
-  "Player_4":  true,  // No Collision
-  "Player_8":  true,  // Max Heal
-  "Player_9":  true,  // Max Armor
-  "Player_10": true,  // Invisible
-  "Player_11": true,  // Super Jump
-  "Player_13": true,  // Walk On Wall
-  // Player MOVEMENT
-  "Player_1":  true,  // Noclip
-  "Player_5":  true,  // Fast Run
-  "Player_12": true,  // Infinite Stamina
-  // Vehicle
-  "Vehicle_2": true,  // Porter/Lancer
-  "Vehicle_6": true,  // Vehicle God Mode
-  "Vehicle_7": true,  // Shift Boost
-  // Misc
-  "Misc_1": true,
-  "Misc_2": true,
-  "Misc_3": true,
-  "Misc_4": true,
-  // Combat
-  "Combat_1": true,
-  "Combat_2": true,
-  // Protection
-  "Protection_1": true,
-  "Protection_2": true,
-  // Settings
-  "Settings_1": true,
-  "Settings_4": true,
-  // Destroyer
-  "Destroyer_5": true,
-};
-
-// Mapping from display item name → Lua (category, index)
-// We build this from CAT_STRUCTURE plus the original Lua action indices
-const LUA_ACTION = {
-  // Player — original Lua indices
-  "Noclip":                   ["Player",  1],
-  "God Mode":                 ["Player",  2],
-  "No Ragdoll":               ["Player",  3],
-  "No Collision":             ["Player",  4],
-  "Fast Run":                 ["Player",  5],
-  "Revive":                   ["Player",  6],
-  "Teleporte To Waypoint":    ["Player",  7],
-  "Max Heal":                 ["Player",  8],
-  "Max Armor":                ["Player",  9],
-  "Invisible":                ["Player", 10],
-  "Super Jump":               ["Player", 11],
-  "Infinite Stamina":         ["Player", 12],
-  "Walk On Wall":             ["Player", 13],
-  "Anti Aim V2":              ["Player", 14],
-  // Weapon
-  "Give Weapons":             ["Weapon",  1],
-  "Give Weapon by Name":      ["Weapon",  2],
-  "Remove All Weapons":       ["Weapon",  3],
-  // Combat
-  "Laser Eye":                ["Combat",  1],
-  "Fast Punch":               ["Combat",  2],
-  "Aimbot":                   ["Combat", 3],
-  "Show FOV":                 ["Combat", 4],
-  "FOV Slider":               ["Combat", 5],
-  // Vehicle
-  "Spawn Véhicule Personnalisé": ["Vehicle", 1],
-  "Porter/Lancer Véhicule":   ["Vehicle", 2],
-  "Full Performance":         ["Vehicle", 3],
-  "Delete Close Véhicule":    ["Vehicle", 4],
-  "Réparer Véhicule":         ["Vehicle", 5],
-  "Vehicle God Mode":         ["Vehicle", 6],
-  "Shift Boost":              ["Vehicle", 7],
-  "Unlock Vehicle":           ["Vehicle", 8],
-  "Lock Vehicle":             ["Vehicle", 9],
-  "TP Into Vehicle":          ["Vehicle", 10],
-  "Bring Vehicle":            ["Vehicle", 11],
-  "Delete Vehicle":           ["Vehicle", 12],
-  "Explode Vehicle":          ["Vehicle", 13],
-  "TP To Vehicle":            ["Vehicle", 14],
-  // Construction
-  "Wing Vehicle":             ["Construction", 1],
-  "Tower Vehicle":            ["Construction", 2],
-  "Ramp Vehicle":             ["Construction", 3],
-  "Transformer Vehicle":      ["Construction", 4],
-  "Nazi Vehicle":             ["Construction", 5],
-  "Detach Vehicle":           ["Construction", 6],
-  // Misc
-  "Warp to Explode":          ["Misc", 1],
-  "Warp to Vehicle":          ["Misc", 2],
-  "Afficher liste spectateurs":["Misc", 3],
-  "Ragdoll All Players":      ["Misc", 4],
-  "Anti Aim":                 ["Misc", 5],
-  "Free Cam": ["Misc", 6],
-  // Server (now under Sunlife sub-tab in Misc)
-  "Bypass Sunlife":           ["Server", 1],
-  "Prime Bypass":             ["Server", 2],
-  // Settings
-  "Auto Load Config":         ["Settings", 1],
-  "Change Banner":            ["Settings", 2],
-  "Couleur du Menu":          ["Settings", 3],
-  "Activer Deux Couleurs":    ["Settings", 4],
-  "Show Keybinds": ["Settings", 5],
-  // Keybind
-  "Delete All Keybinds":      ["Keybind", 1],
-  // Sunlife/Prime
-  "Buy Phone/radio":          ["Sunlife/Prime", 1],
-  // Protection
-  "New Player Bypass": ["Protection", 1],
-  "Panic Mode":        ["Protection", 2],
-  // Destroyer
-  "Delete All Vehicles":      ["Destroyer", 1],
-  "Explode All Vehicles":     ["Destroyer", 2],
-  "Cage All Players":         ["Destroyer", 3],
-  "Bug All Players BMX":      ["Destroyer", 4],
-  "Vehicle Chaos":            ["Destroyer", 5],
-};
-
-// Toggle item names
-const TOGGLE_NAMES = new Set([
-  "Noclip","God Mode","No Ragdoll","No Collision","Fast Run",
-  "Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall",
-  "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost",
-  "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs",
-  "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
-  "Vehicle Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV",
-]);
-
-// LUA toggle key lookup (for toggleStates)
-function luaToggleKey(itemName) {
-  const la = LUA_ACTION[itemName];
-  if (!la) return null;
-  return la[0] + '_' + la[1];
-}
-
-// ── THEME ───────────────────────────────────────────────────────────
-const THEMES = {
-  red:    { accent:'#DC1E1E', glow:'#FF3232', dark:'#8C0A0A', sep:'rgba(50,15,15,0.9)' },
-  purple: { accent:'#8B1FDC', glow:'#AA44FF', dark:'#4A0A8C', sep:'rgba(35,10,50,0.9)' },
-  blue:   { accent:'#1E5ADC', glow:'#3278FF', dark:'#0A2A8C', sep:'rgba(10,20,50,0.9)' },
-  green:  { accent:'#1EDC4A', glow:'#32FF6E', dark:'#0A8C26', sep:'rgba(10,40,20,0.9)' },
-};
-const TWOTONE_LEFT  = '#DC1E1E';
-const TWOTONE_RIGHT = '#8B1FDC';
-
-let currentTheme   = 'red';
-let twoToneEnabled = false;
-const appEl = document.getElementById('app');
-const root  = document.documentElement;
-
-function applyTheme(name, twotone) {
-  currentTheme   = name;
-  twoToneEnabled = twotone;
-  appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green','twotone');
-  if (twotone) {
-    appEl.classList.add('twotone');
-    root.style.setProperty('--accent-l',   TWOTONE_LEFT);
-    root.style.setProperty('--accent-r',   TWOTONE_RIGHT);
-    root.style.setProperty('--accent',      TWOTONE_LEFT);
-    root.style.setProperty('--accent-glow', '#FF3232');
-    root.style.setProperty('--accent-dark', '#8C0A0A');
-    root.style.setProperty('--sep', 'rgba(50,10,40,0.9)');
-  } else {
-    appEl.classList.add('theme-' + name);
-    const t = THEMES[name];
-    root.style.setProperty('--accent',      t.accent);
-    root.style.setProperty('--accent-glow', t.glow);
-    root.style.setProperty('--accent-dark', t.dark);
-    root.style.setProperty('--sep',         t.sep);
-    root.style.setProperty('--accent-l',    t.accent);
-    root.style.setProperty('--accent-r',    t.accent);
-  }
-}
-
-// ── BANNER ──────────────────────────────────────────────────────────
-const BANNERS = [
-  "yari_menu_banniere_rouge.png",
-  "banniere.gif","banniere1.png","banniere2.png","banniere2giff.gif",
-];
-let bannerIdx = 0;
-const bannerImg = document.querySelector('#banner img');
-
-function setBanner(idx) {
-  bannerIdx = ((idx % BANNERS.length) + BANNERS.length) % BANNERS.length;
-  bannerImg.src = BANNERS[bannerIdx];
-  bannerImg.onerror = () => { bannerImg.src = BANNERS[0]; };
-}
-
-// ── WEAPON DATA ──────────────────────────────────────────────────────
-const WEAPON_CAT_ORDER = ["Pistol","SMG","Rifle","Shotgun","Sniper","Machine Gun","Melee","Heavy","Throwables","Tools","Stun"];
-const WEAPON_DATA = {
-  "Pistol":[{name:"Pistol",hash:"weapon_pistol"},{name:"Pistol Mk II",hash:"weapon_pistol_mk2"},{name:"Combat Pistol",hash:"weapon_combatpistol"},{name:"AP Pistol",hash:"weapon_appistol"},{name:"Pistol .50",hash:"weapon_pistol50"},{name:"SNS Pistol",hash:"weapon_snspistol"},{name:"SNS Pistol Mk II",hash:"weapon_snspistol_mk2"},{name:"Heavy Pistol",hash:"weapon_heavypistol"},{name:"Vintage Pistol",hash:"weapon_vintagepistol"},{name:"Marksman Pistol",hash:"weapon_marksmanpistol"},{name:"Heavy Revolver",hash:"weapon_revolver"},{name:"Heavy Revolver Mk II",hash:"weapon_revolver_mk2"},{name:"Double Action Revolver",hash:"weapon_doubleaction"},{name:"Ceramic Pistol",hash:"weapon_ceramicpistol"},{name:"Navy Revolver",hash:"weapon_navyrevolver"},{name:"Perico Pistol",hash:"weapon_gadgetpistol"},{name:"WM 29 Pistol",hash:"weapon_pistolxm3"},{name:"Flare Gun",hash:"weapon_flaregun"},{name:"Up-n-Atomizer",hash:"weapon_raypistol"}],
-  "SMG":[{name:"Micro SMG",hash:"weapon_microsmg"},{name:"SMG",hash:"weapon_smg"},{name:"SMG Mk II",hash:"weapon_smg_mk2"},{name:"Assault SMG",hash:"weapon_assaultsmg"},{name:"Combat PDW",hash:"weapon_combatpdw"},{name:"Machine Pistol",hash:"weapon_machinepistol"},{name:"Mini SMG",hash:"weapon_minismg"},{name:"Tactical SMG",hash:"weapon_tecpistol"}],
-  "Rifle":[{name:"Assault Rifle",hash:"weapon_assaultrifle"},{name:"Assault Rifle Mk II",hash:"weapon_assaultrifle_mk2"},{name:"Carbine Rifle",hash:"weapon_carbinerifle"},{name:"Carbine Rifle Mk II",hash:"weapon_carbinerifle_mk2"},{name:"Advanced Rifle",hash:"weapon_advancedrifle"},{name:"Special Carbine",hash:"weapon_specialcarbine"},{name:"Special Carbine Mk II",hash:"weapon_specialcarbine_mk2"},{name:"Bullpup Rifle",hash:"weapon_bullpuprifle"},{name:"Bullpup Rifle Mk II",hash:"weapon_bullpuprifle_mk2"},{name:"Compact Rifle",hash:"weapon_compactrifle"},{name:"Military Rifle",hash:"weapon_militaryrifle"},{name:"Heavy Rifle",hash:"weapon_heavyrifle"},{name:"Service Carbine",hash:"weapon_tacticalrifle"},{name:"Battle Rifle",hash:"weapon_battlerifle"}],
-  "Shotgun":[{name:"Pump Shotgun",hash:"weapon_pumpshotgun"},{name:"Pump Shotgun Mk II",hash:"weapon_pumpshotgun_mk2"},{name:"Sawed-Off Shotgun",hash:"weapon_sawnoffshotgun"},{name:"Assault Shotgun",hash:"weapon_assaultshotgun"},{name:"Bullpup Shotgun",hash:"weapon_bullpupshotgun"},{name:"Heavy Shotgun",hash:"weapon_heavyshotgun"},{name:"Musket",hash:"weapon_musket"},{name:"Double Barrel Shotgun",hash:"weapon_dbshotgun"},{name:"Sweeper Shotgun",hash:"weapon_autoshotgun"},{name:"Combat Shotgun",hash:"weapon_combatshotgun"}],
-  "Sniper":[{name:"Sniper Rifle",hash:"weapon_sniperrifle"},{name:"Heavy Sniper",hash:"weapon_heavysniper"},{name:"Heavy Sniper Mk II",hash:"weapon_heavysniper_mk2"},{name:"Marksman Rifle",hash:"weapon_marksmanrifle"},{name:"Marksman Rifle Mk II",hash:"weapon_marksmanrifle_mk2"},{name:"Precision Rifle",hash:"weapon_precisionrifle"}],
-  "Machine Gun":[{name:"MG",hash:"weapon_mg"},{name:"Combat MG",hash:"weapon_combatmg"},{name:"Combat MG Mk II",hash:"weapon_combatmg_mk2"},{name:"Gusenberg Sweeper",hash:"weapon_gusenberg"},{name:"Unholy Hellbringer",hash:"weapon_raycarbine"}],
-  "Melee":[{name:"Unarmed",hash:"weapon_unarmed"},{name:"Knife",hash:"weapon_knife"},{name:"Nightstick",hash:"weapon_nightstick"},{name:"Hammer",hash:"weapon_hammer"},{name:"Baseball Bat",hash:"weapon_bat"},{name:"Golf Club",hash:"weapon_golfclub"},{name:"Crowbar",hash:"weapon_crowbar"},{name:"Bottle",hash:"weapon_bottle"},{name:"Dagger",hash:"weapon_dagger"},{name:"Hatchet",hash:"weapon_hatchet"},{name:"Knuckle Duster",hash:"weapon_knuckle"},{name:"Machete",hash:"weapon_machete"},{name:"Flashlight",hash:"weapon_flashlight"},{name:"Switchblade",hash:"weapon_switchblade"},{name:"Battle Axe",hash:"weapon_battleaxe"},{name:"Pool Cue",hash:"weapon_poolcue"},{name:"Wrench",hash:"weapon_wrench"},{name:"Stone Hatchet",hash:"weapon_stone_hatchet"},{name:"Candy Cane",hash:"weapon_candycane"},{name:"Stun Rod",hash:"weapon_stunrod"}],
-  "Heavy":[{name:"RPG",hash:"weapon_rpg"},{name:"Grenade Launcher",hash:"weapon_grenadelauncher"},{name:"Smoke Grenade Launcher",hash:"weapon_grenadelauncher_smoke"},{name:"Minigun",hash:"weapon_minigun"},{name:"Firework Launcher",hash:"weapon_firework"},{name:"Homing Launcher",hash:"weapon_hominglauncher"},{name:"Railgun",hash:"weapon_railgun"},{name:"Compact Grenade Launcher",hash:"weapon_compactlauncher"},{name:"Widowmaker",hash:"weapon_rayminigun"},{name:"Compact EMP Launcher",hash:"weapon_emplauncher"},{name:"Snowball Launcher",hash:"weapon_snowlauncher"},{name:"Railgun XM3",hash:"weapon_railgunxm3"}],
-  "Throwables":[{name:"Grenade",hash:"weapon_grenade"},{name:"BZ Gas",hash:"weapon_bzgas"},{name:"Tear Gas",hash:"weapon_smokegrenade"},{name:"Molotov",hash:"weapon_molotov"},{name:"Sticky Bomb",hash:"weapon_stickybomb"},{name:"Proximity Mine",hash:"weapon_proxmine"},{name:"Snowball",hash:"weapon_snowball"},{name:"Pipe Bomb",hash:"weapon_pipebomb"},{name:"Ball",hash:"weapon_ball"},{name:"Flare",hash:"weapon_flare"},{name:"Acid Package",hash:"weapon_acidpackage"}],
-  "Tools":[{name:"Jerry Can",hash:"weapon_petrolcan"},{name:"Hazardous Jerry Can",hash:"weapon_hazardcan"},{name:"Fertilizer Can",hash:"weapon_fertilizercan"},{name:"Fire Extinguisher",hash:"weapon_fireextinguisher"},{name:"Metal Detector",hash:"weapon_metaldetector"},{name:"Hacking Device",hash:"weapon_hackingdevice"}],
-  "Stun":[{name:"Stun Gun",hash:"weapon_stungun"},{name:"Stun Gun MP",hash:"weapon_stungun_mp"}],
-};
-
-// ── STATE ────────────────────────────────────────────────────────────
-let tab        = 'main';     // 'main' | 'config'
-let selIdx     = 0, scrollOff = 0;   // main category list
-let curCatIdx  = null;               // index into CAT_STRUCTURE (null = at root)
-let subTabIdx  = 0;                  // which sub-tab is active inside a category
-let itemSelIdx = 0, itemScrollOff = 0; // item selection within sub-tab
-
-// Online sub-state
-let nearbyPlayers   = [];
-let selectedPlayers = {};
-let playerSel       = 0;
-let trollActions = ["Ragdoll","Silent Kill","Stun Player","Spectate","Revive","Smash Attack","Launch Player","Launch Simple","Cage Player","Cage Player M2","Stop Cage Player M2","Bug Player","Bug Player BMX","Bug Player Avenger","Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle","Attach To Hood","Detach From Hood"];
-let trollSel        = 0;
-let searchQuery   = '';
-let searchResults = [];
-
-// Weapon sub-state
-let weaponMenuOpen = false;
-let weaponCatIdx   = 0;
-let weaponSelIdx   = 0;
-
-// Toggles
-const toggleStates = {};
-
-const MAX_VIS  = 10;
-const MAX_VIS_W = 9;
-
-const tabMainEl  = document.getElementById('tab-main');
-const tabCfgEl   = document.getElementById('tab-cfg');
-const subTabsEl  = document.getElementById('sub-tabs');
-const catHeader  = document.getElementById('cat-header');
-const itemsList  = document.getElementById('items-list');
-
-// ── PLAYER PANEL ────────────────────────────────────────────────────
-const playerPanel = document.getElementById('player-panel');
-
-function updatePlayerPanel(player) {
-  if (!player) { playerPanel.classList.remove('visible'); return; }
-  playerPanel.classList.add('visible');
-  document.getElementById('pp-name').textContent = player.name || '—';
-  document.getElementById('pp-sid').textContent = '#' + (player.serverId || '—');
-  const hp = Math.max(0, Math.min(100, player.health ?? 100));
-  const hpBar = document.getElementById('pp-hp-bar');
-  hpBar.style.width = hp + '%';
-  hpBar.className = 'pp-bar-fill health' + (hp < 30 ? ' low' : hp < 60 ? ' mid' : '');
-  document.getElementById('pp-hp-pct').textContent = hp + '%';
-  const arm = Math.max(0, Math.min(100, player.armor ?? 0));
-  document.getElementById('pp-arm-bar').style.width = arm + '%';
-  document.getElementById('pp-arm-pct').textContent = arm + '%';
-  document.getElementById('pp-dist').textContent = (player.distance ?? '—') + 'm';
-  const veh = document.getElementById('pp-veh');
-  veh.textContent = player.vehicle || 'on foot';
-  veh.className = 'pp-value' + (player.vehicle && player.vehicle !== 'on foot' ? ' warn' : '');
-  document.getElementById('pp-spd').textContent = (player.speed ?? '—') + ' km/h';
-  const wpn = document.getElementById('pp-wpn');
-  const wpnName = (player.weapon || 'unarmed').replace('weapon_','').replace(/_/g,' ');
-  wpn.textContent = wpnName;
-  wpn.className = 'pp-value' + (player.weapon && player.weapon !== 'weapon_unarmed' ? ' danger' : '');
-  const inv = document.getElementById('pp-inv');
-  inv.textContent = player.invisible ? 'yes' : 'no';
-  inv.className = 'pp-value' + (player.invisible ? ' danger' : ' ok');
-  document.getElementById('pp-job').textContent = player.job || '—';
-  document.getElementById('pp-radio').textContent = player.radio || 'None';
-  if (player.coords) {
-    document.getElementById('pp-coords').textContent = 'X ' + Math.floor(player.coords.x) + '  Y ' + Math.floor(player.coords.y) + '  Z ' + Math.floor(player.coords.z);
-  } else {
-    document.getElementById('pp-coords').textContent = 'X —  Y —  Z —';
-  }
-}
-
-// ── RENDER SUB-TABS BAR ─────────────────────────────────────────────
-function renderSubTabs(cat) {
-  if (!cat || cat.subTabs.length <= 1) {
-    subTabsEl.innerHTML = '';
-    subTabsEl.className = '';
-    return;
-  }
-  subTabsEl.className = 'show';
-  subTabsEl.innerHTML = '';
-  cat.subTabs.forEach((st, i) => {
-    const el = document.createElement('div');
-    el.className = 'sub-tab' + (i === subTabIdx ? ' active' : '');
-    el.textContent = st.name;
-    subTabsEl.appendChild(el);
-  });
-}
-
-// ── RENDER ───────────────────────────────────────────────────────────
-function render() {
-  itemsList.innerHTML = '';
-
-  if (tab === 'config') {
-    subTabsEl.innerHTML = ''; subTabsEl.className = '';
-    catHeader.className = '';
-    renderConfigList();
-    return;
-  }
-
-  if (curCatIdx === null) {
-    subTabsEl.innerHTML = ''; subTabsEl.className = '';
-    catHeader.className = '';
-    renderCategoryRoot();
-    return;
-  }
-
-  const cat = CAT_STRUCTURE[curCatIdx];
-  renderSubTabs(cat);
-
-  if (cat.name === 'Vehicle' && subTabIdx === 3) {
-    catHeader.textContent = 'VEHICLE › RADAR';
-    catHeader.className   = 'show';
-    if (!radarMode) renderRadarList();
-    else            renderRadarActions();
-    return;
-  }
-
-  if (cat.special === 'online') { renderOnline(cat); return; }
-  if (cat.special === 'search') { renderSearch(cat); return; }
-
-  if (cat.name === 'Weapon' && weaponMenuOpen) {
-    catHeader.textContent = '← ' + (WEAPON_CAT_ORDER[weaponCatIdx] || 'Pistol').toUpperCase() + ' → (' + (weaponCatIdx+1) + '/' + WEAPON_CAT_ORDER.length + ')';
-    catHeader.className   = 'show';
-    renderWeaponList();
-    return;
-  }
-
-  const stab = cat.subTabs[subTabIdx];
-  catHeader.textContent = cat.name.toUpperCase() + ' › ' + (stab ? stab.name : '');
-  catHeader.className   = 'show';
-  if (stab) renderItemList(stab.items, cat.name);
-}
-
-function renderCategoryRoot() {
-  for (let i = 0; i < MAX_VIS; i++) {
-    const idx = i + scrollOff;
-    if (idx >= CAT_STRUCTURE.length) break;
-    const c   = CAT_STRUCTURE[idx];
-    makeItem(c.name, idx === selIdx, '›', null);
-  }
-}
-
-function renderConfigList() {
-  CONFIG_ITEMS.forEach((name, i) => {
-    makeItem(name, i === selIdx, '+', null);   // selIdx au lieu de itemSelIdx
-  });
-}
-
-function renderItemList(items, catName) {
-  if (!items || items.length === 0) {
-    const d = document.createElement('div');
-    d.className = 'menu-item';
-    d.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun élément</span>';
-    itemsList.appendChild(d);
-    return;
-  }
-  for (let i = 0; i < MAX_VIS; i++) {
-    const idx  = i + itemScrollOff;
-    if (idx >= items.length) break;
-    const name = items[idx];
-    const isSel = idx === itemSelIdx;
-
-    // ── FOV Slider ────────────────────────────────────────────────
-    if (name === 'FOV Slider') {
-      const fov = window._aimbotFOV || 30;
-      const pct = ((fov - 5) / (180 - 5)) * 100;
-      const el  = document.createElement('div');
-      el.className = 'menu-item' + (isSel ? ' sel' : '');
-      el.style.height = 'auto';
-      el.style.flexDirection = 'column';
-      el.style.alignItems    = 'flex-start';
-      el.style.padding       = '5px 14px 5px 28px';
-      el.style.gap           = '4px';
-      el.innerHTML = `
-        <div class="bar"></div>
-        <div style="display:flex;align-items:center;width:100%;gap:8px;">
-          <span class="item-name" style="font-size:12px">FOV</span>
-          <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:40px;text-align:right">${fov}°</span>
+    <div class="container">
+        <div class="header">
+            <div class="header-title">
+                <div class="header-dot"></div>
+                <span>FREECAM</span>
+            </div>
+            <div class="header-status" id="status-text">READY TO OPERATE</div>
         </div>
-        <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
-          <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
-        </div>
-        ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">← → AJUSTER</div>' : ''}
-      `;
-      itemsList.appendChild(el);
-      continue;
-    }
 
-    // ── Couleur du Menu ───────────────────────────────────────────
-    if (name === 'Couleur du Menu') {
-      const el = document.createElement('div');
-      el.className = 'menu-item' + (isSel ? ' sel' : '');
-      el.style.height = 'auto'; el.style.padding = '4px 14px 4px 28px';
-      el.innerHTML = `<div class="bar"></div><span class="item-name" style="font-size:12px">Couleur</span>`;
-      const strip = document.createElement('div');
-      strip.style.cssText = 'display:flex;gap:6px;align-items:center;margin-left:auto;';
-      ['red','purple','blue','green'].forEach(c => {
-        const dot = document.createElement('div');
-        dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
-        dot.addEventListener('click', () => {
-          applyTheme(c, false);
-          sendToLua({ type:'colorChange', theme:c, twotone:false });
-          render();
+        <div class="silhouette-area">
+            <div class="silhouette"></div>
+        </div>
+
+        <div class="menu-wrapper">
+            <div class="menu-header">
+                SELECT ACTION · USE ARROW KEYS TO NAVIGATE
+            </div>
+            <div class="menu-list" id="menuList">
+                <!-- Items will be generated by JS -->
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-item">
+                <span class="key">↑↓</span>
+                <span>Navigate</span>
+            </div>
+            <div class="footer-item">
+                <span class="key">ENTER</span>
+                <span>Execute</span>
+            </div>
+            <div class="footer-item">
+                <span class="key">ESC</span>
+                <span>Close</span>
+            </div>
+        </div>
+
+        <div class="info-box" id="infoBox"></div>
+    </div>
+
+    <script>
+        const FREECAM_ACTIONS = [
+            { name: "Teleport", needsPlayer: false, icon: "⊚" },
+            { name: "Cage Player", needsPlayer: true, icon: "▲" },
+            { name: "Cage Player M2", needsPlayer: true, icon: "▲" },
+            { name: "Bug BMX", needsPlayer: true, icon: "⚙" },
+            { name: "Silent Kill", needsPlayer: true, icon: "✕" },
+            { name: "Stun Player", needsPlayer: true, icon: "⚡" },
+            { name: "Smash Attack", needsPlayer: true, icon: "◆" },
+            { name: "Launch Player", needsPlayer: true, icon: "↗" },
+            { name: "Ragdoll", needsPlayer: true, icon: "❋" },
+            { name: "Revive", needsPlayer: true, icon: "✚" },
+            { name: "Rain Vehicle", needsPlayer: true, icon: "⧉" },
+            { name: "Stop Rain Vehicle", needsPlayer: true, icon: "⊠" },
+            { name: "Explode Vehicles", needsPlayer: false, icon: "☆" },
+            { name: "Delete Vehicles", needsPlayer: false, icon: "⊘" },
+        ];
+
+        class FreecamMenu {
+            constructor() {
+                this.selectedIndex = 0;
+                this.scrollOffset = 0;
+                this.actions = FREECAM_ACTIONS;
+                this.isVisible = true;
+                this.init();
+            }
+
+            init() {
+                this.renderMenu();
+                this.attachEvents();
+                this.updateSelection();
+            }
+
+            renderMenu() {
+                const menuList = document.getElementById('menuList');
+                menuList.innerHTML = '';
+
+                this.actions.forEach((action, index) => {
+                    const item = document.createElement('div');
+                    item.className = `menu-item ${action.needsPlayer ? 'needs-player' : ''}`;
+                    item.innerHTML = `
+                        <div class="item-icon">${action.icon}</div>
+                        <div class="item-name">${action.name}</div>
+                        <div class="item-status"></div>
+                    `;
+                    item.addEventListener('click', () => this.selectItem(index));
+                    item.addEventListener('dblclick', () => this.executeAction());
+                    menuList.appendChild(item);
+                });
+            }
+
+            updateSelection() {
+                document.querySelectorAll('.menu-item').forEach((item, index) => {
+                    item.classList.toggle('active', index === this.selectedIndex);
+                });
+
+                const selectedAction = this.actions[this.selectedIndex];
+                const statusText = document.getElementById('status-text');
+                const infoBox = document.getElementById('infoBox');
+
+                if (selectedAction.needsPlayer) {
+                    statusText.textContent = 'REQUIRES TARGET PLAYER';
+                    infoBox.textContent = '⚠ This action requires a player target';
+                    infoBox.classList.add('warning');
+                    infoBox.classList.add('show');
+                } else {
+                    statusText.textContent = 'READY TO OPERATE';
+                    infoBox.classList.remove('show');
+                }
+
+                // Scroll into view
+                const menuList = document.getElementById('menuList');
+                const activeItem = menuList.children[this.selectedIndex];
+                if (activeItem) {
+                    activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+
+            selectItem(index) {
+                this.selectedIndex = Math.max(0, Math.min(index, this.actions.length - 1));
+                this.updateSelection();
+            }
+
+            moveUp() {
+                if (this.selectedIndex > 0) {
+                    this.selectItem(this.selectedIndex - 1);
+                }
+            }
+
+            moveDown() {
+                if (this.selectedIndex < this.actions.length - 1) {
+                    this.selectItem(this.selectedIndex + 1);
+                }
+            }
+
+            executeAction() {
+                const action = this.actions[this.selectedIndex];
+                console.log(`Executing: ${action.name}`);
+
+                // Simulate execution feedback
+                const statusText = document.getElementById('status-text');
+                const originalText = statusText.textContent;
+                statusText.textContent = `EXECUTING: ${action.name.toUpperCase()}`;
+                statusText.style.color = 'var(--accent-glow)';
+
+                setTimeout(() => {
+                    statusText.textContent = originalText;
+                    statusText.style.color = 'var(--text-secondary)';
+                }, 1500);
+
+                // Here you would send the action to your backend/game
+                // Example: window.post(JSON.stringify({action: action.name}));
+            }
+
+            attachEvents() {
+                document.addEventListener('keydown', (e) => {
+                    switch (e.key.toLowerCase()) {
+                        case 'arrowup':
+                            e.preventDefault();
+                            this.moveUp();
+                            break;
+                        case 'arrowdown':
+                            e.preventDefault();
+                            this.moveDown();
+                            break;
+                        case 'enter':
+                            e.preventDefault();
+                            this.executeAction();
+                            break;
+                        case 'escape':
+                            e.preventDefault();
+                            this.close();
+                            break;
+                    }
+                });
+
+                // Mouse wheel scroll
+                document.getElementById('menuList').addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    if (e.deltaY > 0) {
+                        this.moveDown();
+                    } else {
+                        this.moveUp();
+                    }
+                });
+            }
+
+            close() {
+                console.log('Menu closed');
+                document.body.style.opacity = '0.8';
+                setTimeout(() => {
+                    document.body.style.opacity = '1';
+                }, 300);
+            }
+        }
+
+        // Initialize menu when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new FreecamMenu();
         });
-        strip.appendChild(dot);
-      });
-      el.appendChild(strip);
-      itemsList.appendChild(el);
-      continue;
-    }
-
-    if (name === 'Activer Deux Couleurs') {
-      makeItem(name, isSel, null, twoToneEnabled);
-      continue;
-    }
-
-    const isTog = TOGGLE_NAMES.has(name);
-    const tk    = luaToggleKey(name);
-    const togVal = isTog ? (toggleStates[tk] === true) : null;
-    makeItem(name, isSel, isTog ? null : '+', togVal);
-  }
-}
-
-let onlineTPMethod    = 'player';   // 'player' | 'coords'
-let onlineSortBy      = 'distance'; // 'distance' | 'alpha'
-let onlineFreezeList  = false;
-let onlineLineToSel   = false;
-
-function renderOnline(cat) {
-  catHeader.textContent = 'ONLINE › ' + cat.subTabs[subTabIdx].name;
-  catHeader.className = 'show';
-
-  if (subTabIdx === 0) {
-    const HEADER_ROWS = 5;
-
-    // row 0 — TP METHOD
-    const r0 = document.createElement('div');
-    r0.className = 'menu-item' + (playerSel === 0 ? ' sel' : '');
-    r0.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
-    r0.innerHTML = `<div class="bar"></div>
-      <span class="item-name" style="font-size:11px;color:rgba(180,180,180,0.7);letter-spacing:1px">TP METHOD</span>
-      <span style="font-size:10px;color:var(--accent);font-family:'Share Tech Mono',monospace;letter-spacing:1px;white-space:nowrap">TO PLAYER ▶</span>`;
-    itemsList.appendChild(r0);
-
-    // row 1 — SORT BY
-    const r1 = document.createElement('div');
-    r1.className = 'menu-item' + (playerSel === 1 ? ' sel' : '');
-    r1.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
-    r1.innerHTML = `<div class="bar"></div>
-      <span class="item-name" style="font-size:11px;color:rgba(180,180,180,0.7);letter-spacing:1px">SORT BY</span>
-      <span style="font-size:10px;color:var(--accent);font-family:'Share Tech Mono',monospace;letter-spacing:1px;white-space:nowrap">— ${onlineSortBy === 'distance' ? 'DISTANCE' : 'ALPHABETICAL'} —</span>`;
-    itemsList.appendChild(r1);
-
-    // row 2 — FREEZE LIST
-    const r2 = document.createElement('div');
-    r2.className = 'menu-item' + (playerSel === 2 ? ' sel' : '');
-    r2.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
-    r2.innerHTML = `<div class="bar"></div>
-      <span class="item-name" style="font-size:11px;color:rgba(180,180,180,0.7);letter-spacing:1px">FREEZE LIST</span>
-      <div class="tog${onlineFreezeList ? ' on' : ''}" style="transform:scale(0.85)"></div>`;
-    itemsList.appendChild(r2);
-
-    // row 3 — LINE TO SEL  ← EXISTANT, inchangé
-    const r3 = document.createElement('div');
-    r3.className = 'menu-item' + (playerSel === 3 ? ' sel' : '');
-    r3.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
-    r3.innerHTML = `<div class="bar"></div>
-      <span class="item-name" style="font-size:11px;color:rgba(180,180,180,0.7);letter-spacing:1px">LINE TO SEL</span>
-      <div class="tog${onlineLineToSel ? ' on' : ''}" style="transform:scale(0.85)"></div>`;
-    itemsList.appendChild(r3);
-
-    // row 4 — UNSELECT ALL  ← NOUVEAU
-    const selCountUA = Object.keys(selectedPlayers).length;
-    const r4 = document.createElement('div');
-    r4.className = 'menu-item' + (playerSel === 4 ? ' sel' : '');
-    r4.style.cssText = 'height:26px;background:rgba(5,5,5,0.97);';
-    r4.innerHTML = `<div class="bar"></div>
-      <span class="item-name" style="font-size:11px;letter-spacing:1px;color:${selCountUA > 0 ? '#dc821e' : 'rgba(180,180,180,0.35)'}">${selCountUA > 0 ? '✕ UNSELECT ALL (' + selCountUA + ')' : '✕ UNSELECT ALL'}</span>`;
-    itemsList.appendChild(r4);
-
-    // séparateur  ← EXISTANT, inchangé
-    const sep = document.createElement('div');
-    sep.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:2px 0;opacity:0.5;';
-    itemsList.appendChild(sep);
-
-    // sélection count
-    const selCount = Object.keys(selectedPlayers).length;
-    if (selCount > 0) {
-      const hd = document.createElement('div');
-      hd.style.cssText = 'padding:2px 14px;font-size:10px;color:#32c832;font-family:"Share Tech Mono",monospace;';
-      hd.textContent = '● ' + selCount + ' sélectionné(s)';
-      itemsList.appendChild(hd);
-    }
-
-    // joueurs
-    if (nearbyPlayers.length === 0) {
-      const el = document.createElement('div');
-      el.className = 'menu-item';
-      el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun joueur à proximité</span>';
-      itemsList.appendChild(el);
-    } else {
-      let sorted = [...nearbyPlayers];
-      if (onlineSortBy === 'alpha') sorted.sort((a, b) => a.name.localeCompare(b.name));
-
-      const playerAbsSel = playerSel - HEADER_ROWS; // 0-based dans sorted
-      let pScrollStart = 0;
-      if (playerAbsSel >= MAX_VIS) pScrollStart = playerAbsSel - MAX_VIS + 1;
-      if (pScrollStart < 0) pScrollStart = 0;
-
-      sorted.slice(pScrollStart, pScrollStart + MAX_VIS).forEach((p, i) => {
-        const absIdx = i + pScrollStart;
-        const isOn  = selectedPlayers[p.serverId] === true;
-        const isSel = absIdx === playerAbsSel;
-        const el = document.createElement('div');
-        el.className = 'menu-item' + (isSel ? ' sel' : '');
-        el.innerHTML = `<div class="bar"></div>
-          <span class="item-name" style="font-size:11px">[${p.serverId}] ${p.name} <span style="color:var(--dimmed)">${p.distance}m</span></span>
-          <div class="tog${isOn ? ' on' : ''}"></div>`;
-        itemsList.appendChild(el);
-      });
-    }
-
-  } else {
-    // Troll — inchangé
-    const selCount = Object.keys(selectedPlayers).length;
-    const hd = document.createElement('div');
-    hd.style.cssText = 'padding:2px 14px;font-size:10px;font-family:"Share Tech Mono",monospace;';
-    hd.style.color = selCount > 0 ? '#32c832' : '#dc821e';
-    hd.textContent = selCount > 0 ? '● ' + selCount + ' joueur(s) ciblé(s)' : '⚠ Aucun joueur sélectionné';
-    itemsList.appendChild(hd);
-    let tScrollStart = 0;
-    if (trollSel >= MAX_VIS) tScrollStart = trollSel - MAX_VIS + 1;
-    trollActions.slice(tScrollStart, tScrollStart + MAX_VIS).forEach((name, i) => {
-      const absIdx = i + tScrollStart;
-      const el = document.createElement('div');
-      el.className = 'menu-item' + (absIdx === trollSel ? ' sel' : '');
-      el.innerHTML = `<div class="bar"></div><span class="item-name">${name}</span><span class="item-ind">▶</span>`;
-      itemsList.appendChild(el);
-    });
-  }
-}
-
-function renderSearch(cat) {
-  catHeader.textContent = 'SEARCH › ' + searchResults.length + ' résultat(s)';
-  catHeader.className = 'show';
-
-  const rows = [{ input: true }];
-  if (searchQuery && searchResults.length === 0) rows.push({ empty: true });
-  searchResults.forEach(r => rows.push(r));
-
-  for (let i = 0; i < MAX_VIS; i++) {
-    const idx = i + itemScrollOff;
-    if (idx >= rows.length) break;
-    const r  = rows[idx];
-    const el = document.createElement('div');
-    el.className = 'menu-item' + (idx === itemSelIdx ? ' sel' : '');
-    const bar = document.createElement('div'); bar.className = 'bar'; el.appendChild(bar);
-
-    const nm = document.createElement('span'); nm.className = 'item-name';
-    if (r.input) {
-      nm.textContent = '🔍 ' + (searchQuery || 'Entrée pour rechercher...');
-      if (!searchQuery) nm.style.opacity = '0.55';
-      el.appendChild(nm);
-      const ind = document.createElement('span'); ind.className = 'item-ind'; ind.textContent = '⌨';
-      el.appendChild(ind);
-    } else if (r.empty) {
-      nm.textContent = 'Aucun résultat';
-      nm.style.cssText = 'color:var(--dimmed);font-size:11px';
-      el.appendChild(nm);
-    } else {
-      nm.textContent = r.name;
-      el.appendChild(nm);
-      const tag = document.createElement('span');
-      tag.textContent = r.cat + ' › ' + r.sub;
-      tag.style.cssText = 'font-size:9px;margin-right:8px;color:rgba(180,180,180,0.45);font-family:"Share Tech Mono",monospace;';
-      el.appendChild(tag);
-      if (TOGGLE_NAMES.has(r.name)) {
-        const t = document.createElement('div');
-        t.className = 'tog' + (toggleStates[luaToggleKey(r.name)] === true ? ' on' : '');
-        el.appendChild(t);
-      } else {
-        const ind = document.createElement('span'); ind.className = 'item-ind'; ind.textContent = '+';
-        el.appendChild(ind);
-      }
-    }
-    itemsList.appendChild(el);
-  }
-}
-
-function renderWeaponList() {
-  const catName = WEAPON_CAT_ORDER[weaponCatIdx] || 'Pistol';
-  const weapons = WEAPON_DATA[catName] || [];
-  const hint = document.createElement('div');
-  hint.style.cssText = 'padding:2px 14px;font-size:9px;letter-spacing:1px;color:rgba(180,180,180,0.45);font-family:"Share Tech Mono",monospace;background:rgba(5,5,5,0.9);border-bottom:1px solid rgba(40,10,10,0.5);';
-  hint.textContent = '← → CATÉGORIE   ↑ ↓ ARME   ↵ DONNER';
-  itemsList.appendChild(hint);
-  let scrollStart = 0;
-  if (weaponSelIdx >= MAX_VIS_W) scrollStart = weaponSelIdx - MAX_VIS_W + 1;
-  for (let i = 0; i < MAX_VIS_W; i++) {
-    const idx = i + scrollStart;
-    if (idx >= weapons.length) break;
-    const w   = weapons[idx];
-    const el  = document.createElement('div');
-    el.className = 'menu-item' + (idx === weaponSelIdx ? ' sel' : '');
-    const hashShort = w.hash.replace('weapon_','').replace(/_/g,' ');
-    el.innerHTML = `<div class="bar"></div>
-      <span class="item-name" style="font-size:12px">${w.name}</span>
-      <span class="item-ind" style="font-size:9px;opacity:0.45;font-family:'Share Tech Mono',monospace;">${hashShort}</span>`;
-    itemsList.appendChild(el);
-  }
-  if (weapons.length > MAX_VIS_W) {
-    const ind = document.createElement('div');
-    ind.style.cssText = 'padding:2px 14px;font-size:9px;color:rgba(180,180,180,0.4);font-family:"Share Tech Mono",monospace;text-align:right;';
-    ind.textContent = (weaponSelIdx + 1) + ' / ' + weapons.length;
-    itemsList.appendChild(ind);
-  }
-}
-
-function makeItem(name, selected, ind, togState) {
-  const el  = document.createElement('div');
-  el.className = 'menu-item' + (selected ? ' sel' : '');
-  const bar = document.createElement('div');
-  bar.className = 'bar';
-  el.appendChild(bar);
-  const nm = document.createElement('span');
-  nm.className = 'item-name';
-  nm.textContent = name;
-  el.appendChild(nm);
-  if (togState !== null && togState !== undefined) {
-    const t = document.createElement('div');
-    t.className = 'tog' + (togState ? ' on' : '');
-    el.appendChild(t);
-  } else if (ind === '›') {
-    const s = document.createElement('span');
-    s.className = 'item-chev';
-    s.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 5 16 12 9 19"/></svg>';
-    el.appendChild(s);
-  } else if (ind) {
-    const s = document.createElement('span');
-    s.className = 'item-ind';
-    s.textContent = ind;
-    el.appendChild(s);
-  }
-  itemsList.appendChild(el);
-}
-
-// ── LUA BRIDGE ───────────────────────────────────────────────────────
-function sendToLua(obj) {
-  if (!window.__yariCallback) return;
-  try { window.__yariCallback(JSON.stringify(obj)); } catch(_) {}
-}
-
-// ── MESSAGE HANDLER ──────────────────────────────────────────────────
-window.addEventListener('message', function(e) {
-  let d = e.data;
-  if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
-  if (!d || !d.type) return;
-
-  if (d.type === 'showMenu') { appEl.style.display = 'flex'; render(); return; }
-  if (d.type === 'hideMenu') { appEl.style.display = 'none'; playerPanel.classList.remove('visible'); return; }
-
-  if (d.type === 'spectatorToggle') {
-    document.getElementById('spec-hud').className = d.enabled ? 'visible' : '';
-    if (!d.enabled) document.getElementById('spec-hud').innerHTML = '';
-    return;
-  }
-
-  if (d.type === 'freecam') {
-    const hud = document.getElementById('freecam-hud');
-    if (!d.enabled) {
-      hud.className = '';
-      return;
-    }
-    hud.className = 'visible';
-
-    // Aimed player
-    const aimedEl = document.getElementById('fc-aimed');
-    if (d.aimedPlayer) {
-      aimedEl.textContent = '● ' + d.aimedPlayer;
-      aimedEl.className = 'fc-aimed';
-    } else {
-      aimedEl.textContent = '— aucun joueur visé —';
-      aimedEl.className = 'fc-aimed none';
-    }
-
-    // Actions strip — show window of 7 centered on selected
-    const actionsEl = document.getElementById('fc-actions');
-    actionsEl.innerHTML = '';
-    const actions = d.actions || [];
-    const sel     = d.selIdx || 0;
-    const half    = 3;
-    const start   = Math.max(0, sel - half);
-    const end     = Math.min(actions.length, start + 7);
-
-    for (let i = start; i < end; i++) {
-      const a   = actions[i];
-      const el  = document.createElement('div');
-      el.className = 'fc-action'
-        + (i === sel ? ' active' : '')
-        + (a.needsPlayer ? ' needs-player' : '');
-      el.textContent = a.name;
-      actionsEl.appendChild(el);
-    }
-    return;
-  }
-
-  if (d.type === 'spectatorUpdate') {
-    const hud = document.getElementById('spec-hud');
-    if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
-    hud.className = 'visible';
-    const list = d.list || [];
-    let html = `<div class="spec-header"><div class="spec-dot"></div><span class="spec-count">${list.length}</span><span class="spec-label">SPECTATEURS</span></div>`;
-    if (list.length === 0) {
-      html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
-    } else {
-      const MAX_SPEC = 10;
-      const overflow = list.length > MAX_SPEC;
-      const visible  = list.slice(0, MAX_SPEC);
-  
-      visible.forEach((p, i) => {
-          const isNoclip  = p.type.includes('Noclip');
-          const isAdmin   = p.type.includes('Admin');
-          const rowCls    = isNoclip ? 'noclip' : 'admin';
-          const typeLabel = p.type.replace(/[\[\]]/g, '');
-          const isLast    = overflow && i === MAX_SPEC - 1;
-          const extra     = isLast
-              ? `<span style="color:var(--accent);font-size:9px;font-family:'Share Tech Mono',monospace;margin-left:4px;flex-shrink:0">+${list.length - MAX_SPEC}</span>`
-              : '';
-          html += `<div class="spec-row ${rowCls}"><span class="spec-sid">${p.serverId}</span><span class="spec-name">${p.name}</span>${extra}<span class="spec-dist">${p.distance}m</span><span class="spec-type ${rowCls}">${typeLabel}</span></div>`;
-      });
-    }
-    hud.innerHTML = html;
-    return;
-  }
-
-  if (d.type === 'keybindHud') {
-    const hud = document.getElementById('kb-hud');
-    if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
-    hud.className = 'visible';
-    hud.innerHTML = '';
-  
-    const title = document.createElement('div');
-    title.className = 'kb-title';
-    title.innerHTML = '<div class="kb-dot"></div><span>KEYBINDS</span>';
-    hud.appendChild(title);
-  
-    const list = Array.isArray(d.list) ? d.list : [];
-    if (list.length === 0) {
-      const e = document.createElement('div');
-      e.className = 'kb-empty';
-      e.textContent = 'Aucun keybind actif';
-      hud.appendChild(e);
-      return;
-    }
-    list.forEach(b => {
-      const row = document.createElement('div'); row.className = 'kb-row';
-      const nm  = document.createElement('span'); nm.className = 'kb-name'; nm.textContent = b.name;
-      const sp  = document.createElement('span'); sp.className = 'kb-sep';  sp.textContent = '–';
-      const k   = document.createElement('span'); k.className  = 'kb-key';  k.textContent = b.key;
-      row.append(nm, sp, k);
-      if (b.state === true || b.state === false) {
-        const ind = document.createElement('div');
-        ind.className = 'kb-ind ' + (b.state ? 'on' : 'off');
-        row.appendChild(ind);
-      }
-      hud.appendChild(row);
-    });
-    return;
-  }
-
-  if (d.type === 'setBanner') { setBanner(d.index || 0); return; }
-
-  if (d.type === 'applyTheme') {
-    applyTheme(d.theme || currentTheme, d.twotone === true);
-    render(); return;
-  }
-
-  if (d.type === 'setToggleStates') {
-    if (d.states) Object.assign(toggleStates, d.states);
-    if ('Settings_4' in (d.states || {})) {
-      twoToneEnabled = d.states['Settings_4'] === true;
-      applyTheme(currentTheme, twoToneEnabled);
-    }
-    render(); return;
-  }
-
-  if (d.type === 'radarUpdate') {
-    handleRadarUpdate(d.vehicles || []);
-    return;
-  }
-
-  if (d.type === 'sync') {
-    updatePlayerPanel(d.focusedPlayer || null);
-
-
-    if (d.toggles) {
-      Object.assign(toggleStates, d.toggles);
-      if ('Settings_4' in d.toggles) {
-        twoToneEnabled = d.toggles['Settings_4'] === true;
-        applyTheme(currentTheme, twoToneEnabled);
-      }
-    }
-
-    // Tab
-    if (d.tab) {
-      tab = d.tab;
-      tabMainEl.className = 'tab' + (tab === 'main'   ? ' active' : '');
-      tabCfgEl.className  = 'tab' + (tab === 'config' ? ' active' : '');
-    }
-
-    // Handle sub-tab changes (for Radar)
-
-    // Category cursor
-    // curCatName absent from JSON means Lua sent nil → clear category
-    if ('curCatName' in d || d.type === 'sync') {
-      const name = d.curCatName || null;
-      if (!name) {
-        curCatIdx = null;
-        subTabIdx = 0;
-      } else {
-        const idx = CAT_STRUCTURE.findIndex(c => c.name === name);
-        curCatIdx = idx >= 0 ? idx : null;
-      }
-    }
-
-    // Check if we're opening/closing RADAR
-    if ('curCatName' in d && d.curCatName === 'Vehicle' && d.subTabIdx !== undefined) {
-      const oldRadar = radarActive && subTabIdx === 3;
-      const newRadar = d.subTabIdx === 3;
-   
-      if (newRadar && !oldRadar) {
-        onRadarTabOpen();
-      } else if (!newRadar && oldRadar) {
-        onRadarTabClose();
-      }
-   
-      subTabIdx = d.subTabIdx;
-    }
-
-    // Indices
-    if (d.selIdx      !== undefined) { if (curCatIdx !== null) itemSelIdx   = d.selIdx;    else selIdx    = d.selIdx; }
-    if (d.scrollOff   !== undefined) { if (curCatIdx !== null) itemScrollOff= d.scrollOff; else scrollOff = d.scrollOff; }
-
-    if (d.onlineTPMethod   !== undefined) onlineTPMethod   = d.onlineTPMethod;
-    if (d.onlineSortBy     !== undefined) onlineSortBy     = d.onlineSortBy;
-    if (d.onlineFreezeList !== undefined) onlineFreezeList = d.onlineFreezeList;
-    if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
-
-    if (d.radarVehicles  !== undefined) radarVehicles    = d.radarVehicles;
-  if (d.radarSelIdx    !== undefined) radarSelectedIdx = d.radarSelIdx;
-  if (d.radarActionIdx !== undefined) radarActionIdx   = d.radarActionIdx;
-  if (d.radarMode      !== undefined) radarMode        = d.radarMode;
-  if (d.radarActive    !== undefined) radarActive      = d.radarActive;
-
-    // Sub-tab from Lua (for categories where Lua drives Q/E)
-    if (d.subTabIdx !== undefined) subTabIdx = d.subTabIdx;
-
-    if (curCatIdx !== null && CAT_STRUCTURE[curCatIdx] && CAT_STRUCTURE[curCatIdx].name === 'Vehicle') {
-      if (subTabIdx === 3 && !radarActive) {
-        onRadarTabOpen();
-      } else if (subTabIdx !== 3 && radarActive) {
-        onRadarTabClose();
-      }
-    }
-
-    // Online
-    if (d.nearbyPlayers   !== undefined) nearbyPlayers   = d.nearbyPlayers;
-    if (d.selectedPlayers !== undefined) selectedPlayers = d.selectedPlayers;
-    if (d.trollSel        !== undefined) trollSel        = d.trollSel;
-    if (d.playerSel       !== undefined) playerSel       = d.playerSel;
-
-    // Weapon
-    if ('weaponMenuOpen' in d) weaponMenuOpen = d.weaponMenuOpen === true;
-    if (d.weaponCatIdx  !== undefined) weaponCatIdx  = d.weaponCatIdx;
-    if (d.weaponSelIdx  !== undefined) weaponSelIdx  = d.weaponSelIdx;
-
-    // Combat 
-
-    if (d.aimbotFOV !== undefined) window._aimbotFOV = d.aimbotFOV;
-
-    if (d.searchQuery !== undefined) searchQuery = d.searchQuery || '';
-    if (d.searchResults !== undefined) searchResults = Array.isArray(d.searchResults) ? d.searchResults : [];
-    
-    render();
-  }
-});
-
-let radarMode        = false;
-let radarVehicles    = [];
-let radarSelectedIdx = 0;
-let radarActionIdx   = 0;
-let radarActive      = false;
-
-const radarActions = [
-  "TP Into Vehicle",
-  "Bring Vehicle",
-  "Delete Vehicle",
-  "Explode Vehicle",
-  "TP To Vehicle"
-];
-
-function onRadarTabOpen()  { radarActive = true;  radarMode = false; radarSelectedIdx = 0; radarActionIdx = 0; radarVehicles = []; }
-function onRadarTabClose() { radarActive = false; }
-
-function renderRadarList() {
-  catHeader.textContent = 'VEHICLES › NEARBY (' + radarVehicles.length + ')';
-  catHeader.className = 'show';
-
-  if (radarVehicles.length === 0) {
-    const el = document.createElement('div');
-    el.className = 'menu-item';
-    el.innerHTML = '<span class="item-name" style="color:var(--dimmed);font-size:11px">Aucun véhicule à proximité (rayon 500m)</span>';
-    itemsList.appendChild(el);
-    return;
-  }
-
-  const start = Math.max(0, radarSelectedIdx - MAX_VIS + 1 < 0 ? 0 : radarSelectedIdx - MAX_VIS + 1);
-  for (let i = 0; i < MAX_VIS; i++) {
-    const idx = i + start;
-    if (idx >= radarVehicles.length) break;
-    const veh  = radarVehicles[idx];
-    const isSel = idx === radarSelectedIdx;
-    const dist  = typeof veh.dist === 'number' ? veh.dist.toFixed(0) : '—';
-    const name  = (veh.name || 'Unknown').substring(0, 22);
-    const el = document.createElement('div');
-    el.className = 'menu-item' + (isSel ? ' sel' : '');
-    el.innerHTML = `<div class="bar"></div>
-      <span class="item-name">${name}</span>
-      <span style="font-size:10px;color:var(--dimmed);font-family:'Share Tech Mono',monospace;margin-right:6px">${dist}m</span>
-      <div class="item-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 5 16 12 9 19"/></svg></div>`;
-    itemsList.appendChild(el);
-  }
-}
-
-function renderRadarActions() {
-  const veh  = radarVehicles[radarSelectedIdx];
-  const name = veh ? (veh.name || 'Unknown') : '?';
-  const dist = veh ? (typeof veh.dist === 'number' ? veh.dist.toFixed(0) + 'm' : '—') : '—';
-  catHeader.textContent = name + ' — ' + dist;
-  catHeader.className = 'show';
-
-  const allActions = [...radarActions, '← Retour'];
-  allActions.forEach((label, i) => {
-    const isSel = i === radarActionIdx;
-    const el = document.createElement('div');
-    el.className = 'menu-item' + (isSel ? ' sel' : '');
-    el.innerHTML = `<div class="bar"></div>
-      <span class="item-name">${label}</span>
-      ${i < radarActions.length ? '<span class="item-ind">▶</span>' : ''}`;
-    itemsList.appendChild(el);
-  });
-}
-
-render();
-</script>
+    </script>
 </body>
 </html>
