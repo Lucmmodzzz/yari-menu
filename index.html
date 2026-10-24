@@ -1684,6 +1684,10 @@ function dmEnter() {
   dmActive = true;
   dmOverlay.classList.add('active');
 
+  // Visual feedback
+  const msg = document.getElementById('dm-hint');
+  if (msg) msg.textContent = '✓ DESIGN MODE ACTIF - TEST';
+
   // Curseur custom visible dans le CEF
   if (!document.getElementById('dm-cursor')) {
     const cur = document.createElement('div');
