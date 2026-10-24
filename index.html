@@ -630,7 +630,7 @@ const CAT_STRUCTURE = [
     name: "Vehicle",
     subTabs: [
       { name: "SPAWN",   items: ["Spawn Custom Véhicule"] },
-      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost","Full Performance","Repair Vehicle", "Speed Multiplier","Brake Multiplier","Turn Multiplier"] },
+      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost","Full Performance","Repair Vehicle", "Speed Multiplier","Brake Multiplier","Turn Multiplier", "Pit Mode"] },
       { name: "CONTROL", items: ["Porter/Lancer Véhicule","Delete Close Véhicule","Unlock Vehicle","Lock Vehicle","Lock Yourself","Lock Passagers"] },
       { name: "RADAR",   items: [] }  // ← AJOUTE CETTE LIGNE
     ]
@@ -755,6 +755,7 @@ const LUA_ACTION = {
   "Speed Multiplier":         ["Vehicle", 12],
   "Brake Multiplier":         ["Vehicle", 13],
   "Turn Multiplier":          ["Vehicle", 14],
+  "Turn Multiplier":          ["Vehicle", 15],
   // Construction
   "Train Vehicle":             ["Construction", 1],
   "Wing Vehicle":             ["Construction", 2],
@@ -802,7 +803,7 @@ const TOGGLE_NAMES = new Set([
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs",
   "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
   "Vehicle Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV","Slide Run","Speed Multiplier", 
-  "Brake Multiplier", "Turn Multiplier",
+  "Brake Multiplier", "Turn Multiplier","Pit Mode"
 ]);
 
 // LUA toggle key lookup (for toggleStates)
