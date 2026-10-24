@@ -752,6 +752,9 @@ const LUA_ACTION = {
   "Delete Vehicle":           ["Vehicle", 12],
   "Explode Vehicle":          ["Vehicle", 13],
   "TP To Vehicle":            ["Vehicle", 14],
+  "Speed Multiplier":         ["Vehicle", 12],
+  "Brake Multiplier":         ["Vehicle", 13],
+  "Turn Multiplier":          ["Vehicle", 14],
   // Construction
   "Wing Vehicle":             ["Construction", 1],
   "Tower Vehicle":            ["Construction", 2],
@@ -797,7 +800,8 @@ const TOGGLE_NAMES = new Set([
   "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost",
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs",
   "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
-  "Vehicle Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV","Slide Run",
+  "Vehicle Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV","Slide Run","Speed Multiplier", 
+  "Brake Multiplier", "Turn Multiplier",
 ]);
 
 // LUA toggle key lookup (for toggleStates)
@@ -1110,6 +1114,90 @@ function renderItemList(items, catName) {
       itemsList.appendChild(el);
       continue;
     }
+
+    if (name === 'Speed Multiplier') {
+    const val = window._vehicleSpeedMult || 1.0;
+    const pct = ((val - 0.5) / (5.0 - 0.5)) * 100;
+    const el  = document.createElement('div');
+    el.className = 'menu-item' + (isSel ? ' sel' : '');
+    el.style.height = 'auto';
+    el.style.flexDirection = 'column';
+    el.style.alignItems    = 'flex-start';
+    el.style.padding       = '5px 14px 5px 28px';
+    el.style.gap           = '4px';
+    const togKey = 'Vehicle_12';
+    const isOn   = toggleStates[togKey] === true;
+    el.innerHTML = `
+      <div class="bar"></div>
+      <div style="display:flex;align-items:center;width:100%;gap:8px;">
+        <span class="item-name" style="font-size:12px">SPEED</span>
+        <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
+        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:44px;text-align:right">${val.toFixed(2)}x</span>
+      </div>
+      <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
+      </div>
+      ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (0.5×→5.0×)</div>' : ''}
+    `;
+    itemsList.appendChild(el);
+    continue;
+}
+
+if (name === 'Brake Multiplier') {
+    const val = window._vehicleBrakeMult || 1.0;
+    const pct = ((val - 0.1) / (5.0 - 0.1)) * 100;
+    const el  = document.createElement('div');
+    el.className = 'menu-item' + (isSel ? ' sel' : '');
+    el.style.height = 'auto';
+    el.style.flexDirection = 'column';
+    el.style.alignItems    = 'flex-start';
+    el.style.padding       = '5px 14px 5px 28px';
+    el.style.gap           = '4px';
+    const togKey = 'Vehicle_13';
+    const isOn   = toggleStates[togKey] === true;
+    el.innerHTML = `
+      <div class="bar"></div>
+      <div style="display:flex;align-items:center;width:100%;gap:8px;">
+        <span class="item-name" style="font-size:12px">BRAKE</span>
+        <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
+        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:44px;text-align:right">${val.toFixed(2)}x</span>
+      </div>
+      <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
+      </div>
+      ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (0.1×→5.0×)</div>' : ''}
+    `;
+    itemsList.appendChild(el);
+    continue;
+}
+
+if (name === 'Turn Multiplier') {
+    const val = window._vehicleTurnMult || 1.0;
+    const pct = ((val - 0.1) / (3.0 - 0.1)) * 100;
+    const el  = document.createElement('div');
+    el.className = 'menu-item' + (isSel ? ' sel' : '');
+    el.style.height = 'auto';
+    el.style.flexDirection = 'column';
+    el.style.alignItems    = 'flex-start';
+    el.style.padding       = '5px 14px 5px 28px';
+    el.style.gap           = '4px';
+    const togKey = 'Vehicle_14';
+    const isOn   = toggleStates[togKey] === true;
+    el.innerHTML = `
+      <div class="bar"></div>
+      <div style="display:flex;align-items:center;width:100%;gap:8px;">
+        <span class="item-name" style="font-size:12px">TURN</span>
+        <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
+        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:44px;text-align:right">${val.toFixed(2)}x</span>
+      </div>
+      <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
+      </div>
+      ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (0.1×→3.0×)</div>' : ''}
+    `;
+    itemsList.appendChild(el);
+    continue;
+}
 
     if (name === 'Activer Deux Couleurs') {
       makeItem(name, isSel, null, twoToneEnabled);
@@ -1582,10 +1670,14 @@ window.addEventListener('message', function(e) {
     if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
 
     if (d.radarVehicles  !== undefined) radarVehicles    = d.radarVehicles;
-  if (d.radarSelIdx    !== undefined) radarSelectedIdx = d.radarSelIdx;
-  if (d.radarActionIdx !== undefined) radarActionIdx   = d.radarActionIdx;
-  if (d.radarMode      !== undefined) radarMode        = d.radarMode;
-  if (d.radarActive    !== undefined) radarActive      = d.radarActive;
+    if (d.radarSelIdx    !== undefined) radarSelectedIdx = d.radarSelIdx;
+    if (d.radarActionIdx !== undefined) radarActionIdx   = d.radarActionIdx;
+    if (d.radarMode      !== undefined) radarMode        = d.radarMode;
+    if (d.radarActive    !== undefined) radarActive      = d.radarActive;
+
+    if (d.vehicleSpeedMult !== undefined) window._vehicleSpeedMult = d.vehicleSpeedMult;
+    if (d.vehicleBrakeMult !== undefined) window._vehicleBrakeMult = d.vehicleBrakeMult;
+    if (d.vehicleTurnMult  !== undefined) window._vehicleTurnMult  = d.vehicleTurnMult;
 
     // Sub-tab from Lua (for categories where Lua drives Q/E)
     if (d.subTabIdx !== undefined) subTabIdx = d.subTabIdx;
