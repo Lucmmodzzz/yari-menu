@@ -1636,6 +1636,7 @@ function dmMakeDraggable(el, label) {
   dmHandles.push({ el, handle });
 
   handle.addEventListener('mousedown', e => {
+    console.log('DM MOUSEDOWN:', e.clientX, e.clientY, label);
     e.preventDefault();
     e.stopPropagation();
     dmDragState.active = true;
@@ -1643,17 +1644,21 @@ function dmMakeDraggable(el, label) {
     const r = el.getBoundingClientRect();
     dmDragState.ox = e.clientX - r.left;
     dmDragState.oy = e.clientY - r.top;
+    console.log('DM DRAG STARTED:', { ox: dmDragState.ox, oy: dmDragState.oy });
   });
 }
 
 // Global drag listeners (added once, handle all drags)
 document.addEventListener('mousemove', e => {
-  if (!dmDragState.active || !dmDragState.el) return;
-  dmDragState.el.style.left = (e.clientX - dmDragState.ox) + 'px';
-  dmDragState.el.style.top  = (e.clientY - dmDragState.oy) + 'px';
+  if (dmDragState.active) {
+    console.log('DM MOVE:', e.clientX, e.clientY, 'active:', dmDragState.active);
+    dmDragState.el.style.left = (e.clientX - dmDragState.ox) + 'px';
+    dmDragState.el.style.top  = (e.clientY - dmDragState.oy) + 'px';
+  }
 });
 
 document.addEventListener('mouseup', () => {
+  if (dmDragState.active) console.log('DM DRAG ENDED');
   dmDragState.active = false;
   dmDragState.el = null;
 });
