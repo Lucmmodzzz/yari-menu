@@ -603,7 +603,7 @@ const CAT_STRUCTURE = [
     name: "Player",
     subTabs: [
       { name: "SELF",     items: ["God Mode","No Ragdoll","No Collision","Max Heal","Max Armor","Invisible","Super Jump","Walk On Wall","Anti Aim V2"] },
-      { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina"] },
+      { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina","Slide Run","Slide Speed"] },
     ]
   },
   {
@@ -725,6 +725,8 @@ const LUA_ACTION = {
   "Infinite Stamina":         ["Player", 12],
   "Walk On Wall":             ["Player", 13],
   "Anti Aim V2":              ["Player", 14],
+  "Slide Run":                ["Player", 15],
+  "Slide Speed":              ["Player", 16],
   // Weapon
   "Give Weapons":             ["Weapon",  1],
   "Give Weapon by Name":      ["Weapon",  2],
@@ -795,7 +797,7 @@ const TOGGLE_NAMES = new Set([
   "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost",
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs",
   "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
-  "Vehicle Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV",
+  "Vehicle Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV","Slide Run",
 ]);
 
 // LUA toggle key lookup (for toggleStates)
@@ -1051,6 +1053,31 @@ function renderItemList(items, catName) {
         <div style="display:flex;align-items:center;width:100%;gap:8px;">
           <span class="item-name" style="font-size:12px">FOV</span>
           <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:40px;text-align:right">${fov}°</span>
+        </div>
+        <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
+        </div>
+        ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">← → AJUSTER</div>' : ''}
+      `;
+      itemsList.appendChild(el);
+      continue;
+    }
+
+    if (name === 'Slide Speed') {
+      const spd = window._slideRunSpeed || 15;
+      const pct = ((spd - 5) / (80 - 5)) * 100;
+      const el  = document.createElement('div');
+      el.className = 'menu-item' + (isSel ? ' sel' : '');
+      el.style.height = 'auto';
+      el.style.flexDirection = 'column';
+      el.style.alignItems    = 'flex-start';
+      el.style.padding       = '5px 14px 5px 28px';
+      el.style.gap           = '4px';
+      el.innerHTML = `
+        <div class="bar"></div>
+        <div style="display:flex;align-items:center;width:100%;gap:8px;">
+          <span class="item-name" style="font-size:12px">SLIDE SPEED</span>
+          <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:52px;text-align:right">${spd} m/s</span>
         </div>
         <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
           <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
@@ -1585,6 +1612,7 @@ window.addEventListener('message', function(e) {
     // Combat 
 
     if (d.aimbotFOV !== undefined) window._aimbotFOV = d.aimbotFOV;
+    if (d.slideRunSpeed !== undefined) window._slideRunSpeed = d.slideRunSpeed;
 
     if (d.searchQuery !== undefined) searchQuery = d.searchQuery || '';
     if (d.searchResults !== undefined) searchResults = Array.isArray(d.searchResults) ? d.searchResults : [];
