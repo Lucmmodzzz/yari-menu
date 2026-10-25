@@ -1825,7 +1825,7 @@ function drawWebLine(x1, y1, x2, y2, alpha) {
       // On la plaque sur le segment en la faisant tourner + étirer
       const angle  = Math.atan2(dy, dx);
       const scaleX = len   / webImg.naturalWidth;
-      const scaleY = 6.0   / webImg.naturalHeight;  // épaisseur ×3 vs avant
+      const scaleY = 48.0   / webImg.naturalHeight;  // épaisseur ×3 vs avant
 
       webCtx.translate(x1, y1);
       webCtx.rotate(angle);
