@@ -1803,13 +1803,40 @@ resizeWebCanvas();
 const webImg = new Image();
 webImg.src = 'web_texture2.png';
 
+// ── Project a world-space point to screen using a simple perspective
+// transform. Works even when the point is off-screen.
+// cam: {x,y,z}  camFwd: {x,y,z} (normalised forward vector)
+// camRight: {x,y,z}  camUp: {x,y,z}
+// fovY in degrees, aspect = w/h
+function projectWorldToScreen(wx, wy, wz, cam, camRight, camUp, camFwd, fovY, w, h) {
+  const dx = wx - cam.x;
+  const dy = wy - cam.y;
+  const dz = wz - cam.z;
+
+  // Camera-space coords
+  const cx = dx * camRight.x + dy * camRight.y + dz * camRight.z;
+  const cy = dx * camUp.x    + dy * camUp.y    + dz * camUp.z;
+  const cz = dx * camFwd.x   + dy * camFwd.y   + dz * camFwd.z;
+
+  // Behind camera — still project but will be off-screen; caller handles it
+  if (cz < 0.01) return null;
+
+  const fovRad  = fovY * Math.PI / 180.0;
+  const fovTan  = Math.tan(fovRad * 0.5);
+  const aspect  = w / h;
+
+  const sx = w * 0.5 + (cx / (cz * fovTan * aspect)) * (w * 0.5);
+  const sy = h * 0.5 - (cy / (cz * fovTan))           * (h * 0.5);
+
+  return { x: sx, y: sy, depth: cz };
+}
+
 function drawWebLine(x1, y1, x2, y2, alpha) {
   if (!alpha || alpha <= 0) return;
   const dx  = x2 - x1, dy = y2 - y1;
   const len = Math.sqrt(dx*dx + dy*dy);
   if (len < 1) return;
 
-  // Affaissement naturel (bezier quadratique)
   const SAG = 0.06;
   const cx  = (x1+x2)/2 + dy * SAG;
   const cy  = (y1+y2)/2 + len * SAG;
@@ -1821,22 +1848,15 @@ function drawWebLine(x1, y1, x2, y2, alpha) {
 
   if (webImg.complete && webImg.naturalWidth > 0) {
     try {
-      // L'image est déjà orientée horizontalement (fil vers la droite)
-      // On la plaque sur le segment en la faisant tourner + étirer
       const angle  = Math.atan2(dy, dx);
-      const scaleX = len   / webImg.naturalWidth;
-      const scaleY = 256.0   / webImg.naturalHeight;  // épaisseur ×3 vs avant
-
+      const scaleX = len / webImg.naturalWidth;
+      const scaleY = 256.0 / webImg.naturalHeight;
       webCtx.translate(x1, y1);
       webCtx.rotate(angle);
       webCtx.scale(scaleX, scaleY);
-
-      // Centre verticalement l'image sur le fil
       webCtx.globalAlpha = alpha;
       webCtx.drawImage(webImg, 0, -webImg.naturalHeight / 2);
-
     } catch(_) {
-      // fallback vectoriel si drawImage plante
       webCtx.setTransform(1,0,0,1,0,0);
       webCtx.strokeStyle = 'rgba(220,220,220,0.9)';
       webCtx.lineWidth   = 3;
@@ -1846,7 +1866,6 @@ function drawWebLine(x1, y1, x2, y2, alpha) {
       webCtx.stroke();
     }
   } else {
-    // Image pas encore chargée : fil vectoriel temporaire
     webCtx.strokeStyle = 'rgba(220,220,220,0.85)';
     webCtx.lineWidth   = 3;
     webCtx.beginPath();
@@ -1861,18 +1880,50 @@ function drawWebLine(x1, y1, x2, y2, alpha) {
 (function webRenderLoop() {
   requestAnimationFrame(webRenderLoop);
 
-  // Toujours clear — même si pas de données, efface le frame précédent
+  // Always clear first — fixes the "stays on screen after release" bug
   webCtx.clearRect(0, 0, webCanvas.width, webCanvas.height);
 
   if (!webData || !webData.enabled) return;
 
-  const d     = webData;
-  const alpha = d.alpha || 1.0;
+  const d = webData;
+  const w = webCanvas.width;
+  const h = webCanvas.height;
 
+  // ── If Lua sent world-space data (new path), project here
+  if (d.cam && d.anchor) {
+    const cam    = d.cam;
+    const fwd    = d.camFwd;
+    const right  = d.camRight;
+    const up     = d.camUp;
+    const fovY   = d.fovY || 50.0;
+    const alpha  = d.alpha || 1.0;
+
+    const anchorS = projectWorldToScreen(
+      d.anchor.x, d.anchor.y, d.anchor.z,
+      cam, right, up, fwd, fovY, w, h
+    );
+    const lHandS  = projectWorldToScreen(
+      d.lHand.x, d.lHand.y, d.lHand.z,
+      cam, right, up, fwd, fovY, w, h
+    );
+    const rHandS  = projectWorldToScreen(
+      d.rHand.x, d.rHand.y, d.rHand.z,
+      cam, right, up, fwd, fovY, w, h
+    );
+
+    if (anchorS && lHandS) {
+      drawWebLine(lHandS.x, lHandS.y, anchorS.x, anchorS.y, alpha);
+    }
+    if (anchorS && rHandS) {
+      drawWebLine(rHandS.x, rHandS.y, anchorS.x, anchorS.y, alpha * 0.55);
+    }
+    return;
+  }
+
+  // ── Legacy screen-space path (kept for compatibility)
   if (d.ax !== undefined && d.lx !== undefined) {
-    // Fil principal : main gauche → ancre
+    const alpha = d.alpha || 1.0;
     drawWebLine(d.lx, d.ly, d.ax, d.ay, alpha);
-    // Fil secondaire : main droite → ancre (plus transparent)
     drawWebLine(d.rx, d.ry, d.ax, d.ay, alpha * 0.55);
   }
 })();
@@ -1882,6 +1933,10 @@ window.addEventListener('message', function(e) {
   if (typeof msg === 'string') { try { msg = JSON.parse(msg); } catch(_) { return; } }
   if (msg && msg.type === 'spiderWeb') {
     webData = msg;
+    // Immediate clear when disabled so it never freezes on-screen
+    if (!msg.enabled) {
+      webCtx.clearRect(0, 0, webCanvas.width, webCanvas.height);
+    }
   }
 });
 </script>
