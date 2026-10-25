@@ -1801,7 +1801,7 @@ window.addEventListener('resize', resizeWebCanvas);
 resizeWebCanvas();
 
 const webImg = new Image();
-webImg.src = 'web_texture2.png';
+webImg.src = 'web_texture4.png';
 
 // ── Project a world-space point to screen using a simple perspective
 // transform. Works even when the point is off-screen.
@@ -1850,7 +1850,7 @@ function drawWebLine(x1, y1, x2, y2, alpha) {
     try {
       const angle  = Math.atan2(dy, dx);
       const scaleX = len / webImg.naturalWidth;
-      const scaleY = 256.0 / webImg.naturalHeight;
+      const scaleY = 124.0 / webImg.naturalHeight;
       webCtx.translate(x1, y1);
       webCtx.rotate(angle);
       webCtx.scale(scaleX, scaleY);
