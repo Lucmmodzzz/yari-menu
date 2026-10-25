@@ -600,11 +600,12 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 // ═══════════════════════════════════════════════════════════════════
 const CAT_STRUCTURE = [
   {
-    name: "Player",
-    subTabs: [
-      { name: "SELF",     items: ["God Mode","No Ragdoll","No Collision","Max Heal","Max Armor","Invisible","Super Jump","Walk On Wall","Anti Aim V2"] },
-      { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina","Slide Run","Slide Speed", "Spider Man"] },
-    ]
+      name: "Player",
+      subTabs: [
+        { name: "SELF",     items: ["God Mode","No Ragdoll","No Collision","Max Heal","Max Armor","Invisible","Super Jump","Walk On Wall","Anti Aim V2"] },
+        { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina","Slide Run","Slide Speed","Spider Man"] },
+        { name: "WARDROBE", items: ["__wardrobe__"] },   // ← ajout
+      ]
   },
   {
     name: "Online",
@@ -1040,6 +1041,172 @@ function renderConfigList() {
   });
 }
 
+const WARDROBE_CATS = [
+  {label:"Face",       type:"comp"}, {label:"Mask",      type:"comp"},
+  {label:"Hair",       type:"comp"}, {label:"Torso",     type:"comp"},
+  {label:"Legs",       type:"comp"}, {label:"Bag",       type:"comp"},
+  {label:"Feet",       type:"comp"}, {label:"Accessory", type:"comp"},
+  {label:"Undershirt", type:"comp"}, {label:"Armour",    type:"comp"},
+  {label:"Top",        type:"comp"},
+  {label:"Hat",        type:"prop"}, {label:"Glasses",   type:"prop"},
+  {label:"Ears",       type:"prop"}, {label:"Watch",     type:"prop"},
+  {label:"Bracelet",   type:"prop"},
+];
+const MAX_OUTFIT_SLOTS = 5;
+
+let wardrobeCatIdx  = 0;
+let wardrobeDrawIdx = 0;
+let wardrobeTexIdx  = 0;
+let wardrobeMaxDraw = 0;
+let wardrobeMaxTex  = 0;
+let wardrobeTier    = 0;  // 0=drawable 1=texture
+let wardrobeMode    = 'edit'; // 'edit' | 'save' | 'load'
+let wardrobeSlotSel = 0;
+let outfitSlots     = {};  // slot 1..5 -> {label}
+
+function renderWardrobe() {
+  catHeader.textContent = 'PLAYER › WARDROBE';
+  catHeader.className = 'show';
+
+  if (wardrobeMode === 'save' || wardrobeMode === 'load') {
+    renderWardrobeSlots();
+    return;
+  }
+
+  // ── MODE EDIT ────────────────────────────────────────────────
+  const def = WARDROBE_CATS[wardrobeCatIdx];
+
+  // Row 0 – Save / Load buttons
+  const rBtns = document.createElement('div');
+  rBtns.style.cssText = 'display:flex;gap:0;height:26px;border-bottom:1px solid var(--sep);';
+  const btnSave = document.createElement('div');
+  btnSave.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:2px;font-family:"Share Tech Mono",monospace;color:#32ff6e;border-right:1px solid var(--sep);cursor:pointer;background:rgba(15,40,15,0.5);';
+  btnSave.textContent = '● SAVE';
+  btnSave.addEventListener('click', () => { wardrobeMode='save'; wardrobeSlotSel=0; render(); });
+  const btnLoad = document.createElement('div');
+  btnLoad.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:2px;font-family:"Share Tech Mono",monospace;color:#3278ff;cursor:pointer;background:rgba(10,20,40,0.5);';
+  btnLoad.textContent = '▶ LOAD';
+  btnLoad.addEventListener('click', () => { wardrobeMode='load'; wardrobeSlotSel=0; render(); });
+  rBtns.append(btnSave, btnLoad);
+  itemsList.appendChild(rBtns);
+
+  // Row 1 – Category selector
+  const rCat = document.createElement('div');
+  rCat.className = 'menu-item sel';
+  rCat.style.cssText = 'background:rgba(8,8,8,0.98);height:28px;';
+  rCat.innerHTML = `<div class="bar"></div>
+    <span style="font-size:9px;color:var(--accent);font-family:'Share Tech Mono',monospace;margin-right:6px;letter-spacing:1px">${def.type === 'prop' ? 'PROP' : 'COMP'}</span>
+    <span class="item-name" style="font-size:13px;font-weight:700">${def.label}</span>
+    <span style="font-size:10px;color:rgba(180,180,180,0.45);font-family:'Share Tech Mono',monospace;margin-left:auto">${wardrobeCatIdx+1}/${WARDROBE_CATS.length}</span>`;
+  itemsList.appendChild(rCat);
+
+  // Row 2 – Drawable slider
+  const drawPct = wardrobeMaxDraw > 0 ? (wardrobeDrawIdx / wardrobeMaxDraw) * 100 : 0;
+  const rDraw = document.createElement('div');
+  rDraw.className = 'menu-item' + (wardrobeTier === 0 ? ' sel' : '');
+  rDraw.style.cssText = 'flex-direction:column;align-items:flex-start;height:auto;padding:5px 14px 5px 28px;gap:4px;';
+  rDraw.innerHTML = `<div class="bar"></div>
+    <div style="display:flex;width:100%;align-items:center;gap:8px;">
+      <span class="item-name" style="font-size:11px;letter-spacing:1px;color:rgba(200,200,200,0.75)">DRAWABLE</span>
+      <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:64px;text-align:right">${wardrobeDrawIdx} / ${wardrobeMaxDraw}</span>
+    </div>
+    <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+      <div style="height:100%;width:${drawPct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.08s;"></div>
+    </div>
+    ${wardrobeTier===0 ? '<div style="font-size:9px;color:rgba(180,180,180,0.45);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">← → CHANGER   ↵ PASSER EN TEXTURE</div>' : ''}`;
+  itemsList.appendChild(rDraw);
+
+  // Row 3 – Texture slider
+  const texPct = wardrobeMaxTex > 0 ? (wardrobeTexIdx / wardrobeMaxTex) * 100 : 0;
+  const rTex = document.createElement('div');
+  rTex.className = 'menu-item' + (wardrobeTier === 1 ? ' sel' : '');
+  rTex.style.cssText = 'flex-direction:column;align-items:flex-start;height:auto;padding:5px 14px 5px 28px;gap:4px;';
+  rTex.innerHTML = `<div class="bar"></div>
+    <div style="display:flex;width:100%;align-items:center;gap:8px;">
+      <span class="item-name" style="font-size:11px;letter-spacing:1px;color:rgba(200,200,200,0.75)">TEXTURE</span>
+      <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:64px;text-align:right">${wardrobeTexIdx} / ${wardrobeMaxTex}</span>
+    </div>
+    <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+      <div style="height:100%;width:${texPct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.08s;"></div>
+    </div>
+    ${wardrobeTier===1 ? '<div style="font-size:9px;color:rgba(180,180,180,0.45);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">← → CHANGER   ↵ RETOUR DRAWABLE</div>' : ''}`;
+  itemsList.appendChild(rTex);
+
+  // Row 4 – Remove prop (props only)
+  if (def.type === 'prop') {
+    const rRem = document.createElement('div');
+    rRem.className = 'menu-item';
+    rRem.style.cssText = 'height:28px;';
+    rRem.innerHTML = `<div class="bar"></div>
+      <span class="item-name" style="font-size:11px;color:#dc821e;letter-spacing:1px">✕ RETIRER CET ACCESSOIRE</span>
+      <span class="item-ind" style="color:#dc821e">F10</span>`;
+    itemsList.appendChild(rRem);
+  }
+
+  // Separator
+  const sep = document.createElement('div');
+  sep.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:2px 0;opacity:0.35;';
+  itemsList.appendChild(sep);
+
+  // Quick nav - toutes les catégories en petits pills
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;padding:5px 10px;background:rgba(5,5,5,0.95);';
+  WARDROBE_CATS.forEach((c, i) => {
+    const pill = document.createElement('div');
+    const isActive = i === wardrobeCatIdx;
+    pill.style.cssText = `font-size:9px;padding:2px 6px;border-radius:2px;font-family:"Share Tech Mono",monospace;letter-spacing:1px;cursor:pointer;
+      background:${isActive ? 'var(--accent)' : 'rgba(255,255,255,0.05)'};
+      color:${isActive ? '#fff' : 'rgba(180,180,180,0.55)'};
+      border:1px solid ${isActive ? 'var(--accent)' : 'rgba(255,255,255,0.06)'};`;
+    pill.textContent = c.label;
+    pill.addEventListener('click', () => {
+      wardrobeCatIdx = i; wardrobeTier = 0;
+      sendToLua({ type:'action', category:'Wardrobe', index: 100 + i });
+      render();
+    });
+    wrap.appendChild(pill);
+  });
+  itemsList.appendChild(wrap);
+}
+
+function renderWardrobeSlots() {
+  const isSave = wardrobeMode === 'save';
+  catHeader.textContent = 'WARDROBE › ' + (isSave ? 'SAUVEGARDER' : 'CHARGER');
+  catHeader.className = 'show';
+
+  // Back row
+  const rBack = document.createElement('div');
+  rBack.className = 'menu-item' + (wardrobeSlotSel === 0 ? ' sel' : '');
+  rBack.style.cssText = 'height:26px;background:rgba(8,8,8,0.98);';
+  rBack.innerHTML = `<div class="bar"></div>
+    <span class="item-name" style="font-size:11px;color:rgba(180,180,180,0.6);letter-spacing:1px">⌫ RETOUR</span>`;
+  itemsList.appendChild(rBack);
+
+  const sep = document.createElement('div');
+  sep.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:2px 0;opacity:0.35;';
+  itemsList.appendChild(sep);
+
+  for (let s = 1; s <= MAX_OUTFIT_SLOTS; s++) {
+    const slot = outfitSlots[s];
+    const isSel = (s) === wardrobeSlotSel;
+    const el = document.createElement('div');
+    el.className = 'menu-item' + (isSel ? ' sel' : '');
+    el.style.height = '32px';
+    const label = slot ? slot.label : '— VIDE —';
+    const labelColor = slot ? '#fff' : 'rgba(160,160,160,0.35)';
+    const tag = isSave
+      ? `<span style="font-size:9px;color:#32ff6e;letter-spacing:1px;font-family:'Share Tech Mono',monospace;">SAVE</span>`
+      : (slot
+          ? `<span style="font-size:9px;color:#3278ff;letter-spacing:1px;font-family:'Share Tech Mono',monospace;">LOAD</span>`
+          : `<span style="font-size:9px;color:rgba(140,140,140,0.3);letter-spacing:1px;font-family:'Share Tech Mono',monospace;">VIDE</span>`);
+    el.innerHTML = `<div class="bar"></div>
+      <span style="font-size:10px;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:22px">0${s}</span>
+      <span class="item-name" style="font-size:12px;color:${labelColor}">${label}</span>
+      ${tag}`;
+    itemsList.appendChild(el);
+  }
+}
+
 function renderItemList(items, catName) {
   if (!items || items.length === 0) {
     const d = document.createElement('div');
@@ -1048,6 +1215,12 @@ function renderItemList(items, catName) {
     itemsList.appendChild(d);
     return;
   }
+
+  if (items.length === 1 && items[0] === '__wardrobe__') {
+      renderWardrobe();
+      return;
+  }
+  
   for (let i = 0; i < MAX_VIS; i++) {
     const idx  = i + itemScrollOff;
     if (idx >= items.length) break;
@@ -1740,6 +1913,16 @@ window.addEventListener('message', function(e) {
     if (d.onlineSortBy     !== undefined) onlineSortBy     = d.onlineSortBy;
     if (d.onlineFreezeList !== undefined) onlineFreezeList = d.onlineFreezeList;
     if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
+
+    if (d.wardrobeCatIdx  !== undefined) wardrobeCatIdx  = d.wardrobeCatIdx;
+    if (d.wardrobeDrawIdx !== undefined) wardrobeDrawIdx = d.wardrobeDrawIdx;
+    if (d.wardrobeTexIdx  !== undefined) wardrobeTexIdx  = d.wardrobeTexIdx;
+    if (d.wardrobeMaxDraw !== undefined) wardrobeMaxDraw = d.wardrobeMaxDraw;
+    if (d.wardrobeMaxTex  !== undefined) wardrobeMaxTex  = d.wardrobeMaxTex;
+    if (d.wardrobeTier    !== undefined) wardrobeTier    = d.wardrobeTier;
+    if (d.wardrobeMode    !== undefined) wardrobeMode    = d.wardrobeMode;
+    if (d.wardrobeSlotSel !== undefined) wardrobeSlotSel = d.wardrobeSlotSel;
+    if (d.outfitSlots     !== undefined) outfitSlots     = d.outfitSlots;
 
     if (d.radarVehicles  !== undefined) radarVehicles    = d.radarVehicles;
     if (d.radarSelIdx    !== undefined) radarSelectedIdx = d.radarSelIdx;
