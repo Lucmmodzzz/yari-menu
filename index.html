@@ -1907,8 +1907,8 @@ function drawWebLine(x1, y1, x2, y2, alpha) {
       cam, right, up, fwd, fovY, w, h
     );
 
-    if (anchorS && lHandS) drawWebLine(lHandS.x, lHandS.y, anchorS.x, anchorS.y, alpha);
-    if (anchorS && rHandS) drawWebLine(rHandS.x, rHandS.y, anchorS.x, anchorS.y, alpha * 0.55);
+    if (anchorS && lHandS) drawWebLine(anchorS.x, anchorS.y, lHandS.x, lHandS.y, alpha);
+    if (anchorS && rHandS) drawWebLine(anchorS.x, anchorS.y, rHandS.x, rHandS.y, alpha * 0.55);
     return;
   }
 
