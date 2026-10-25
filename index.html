@@ -1208,6 +1208,62 @@ if (name === 'Turn Multiplier') {
     continue;
 }
 
+  if (name === 'Vehicle Spin') {
+    const val  = window._vehicleSpinSpeed || 15;
+    const pct  = ((val - 1) / (60 - 1)) * 100;
+    const togKey = 'Vehicle_16';
+    const isOn   = toggleStates[togKey] === true;
+    const el   = document.createElement('div');
+    el.className = 'menu-item' + (isSel ? ' sel' : '');
+    el.style.height        = 'auto';
+    el.style.flexDirection = 'column';
+    el.style.alignItems    = 'flex-start';
+    el.style.padding       = '5px 14px 5px 28px';
+    el.style.gap           = '4px';
+    el.innerHTML = `
+      <div class="bar"></div>
+      <div style="display:flex;align-items:center;width:100%;gap:8px;">
+        <span class="item-name" style="font-size:12px">VEHICLE SPIN</span>
+        <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
+        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:48px;text-align:right">${val.toFixed(1)}°/f</span>
+      </div>
+      <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
+      </div>
+      ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → VITESSE (1→60)</div>' : ''}
+    `;
+    itemsList.appendChild(el);
+    continue;
+}
+
+if (name === 'Vehicle Spin Chaos') {
+    const val  = window._vehicleSpinChaosSpeed || 45;
+    const pct  = ((val - 1) / (120 - 1)) * 100;
+    const togKey = 'Destroyer_6';
+    const isOn   = toggleStates[togKey] === true;
+    const el   = document.createElement('div');
+    el.className = 'menu-item' + (isSel ? ' sel' : '');
+    el.style.height        = 'auto';
+    el.style.flexDirection = 'column';
+    el.style.alignItems    = 'flex-start';
+    el.style.padding       = '5px 14px 5px 28px';
+    el.style.gap           = '4px';
+    el.innerHTML = `
+      <div class="bar"></div>
+      <div style="display:flex;align-items:center;width:100%;gap:8px;">
+        <span class="item-name" style="font-size:12px">SPIN CHAOS</span>
+        <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
+        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:48px;text-align:right">${val.toFixed(1)}°/f</span>
+      </div>
+      <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
+      </div>
+      ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → VITESSE (1→120)</div>' : ''}
+    `;
+    itemsList.appendChild(el);
+    continue;
+}
+
     if (name === 'Activer Deux Couleurs') {
       makeItem(name, isSel, null, twoToneEnabled);
       continue;
@@ -1672,6 +1728,9 @@ window.addEventListener('message', function(e) {
     // Indices
     if (d.selIdx      !== undefined) { if (curCatIdx !== null) itemSelIdx   = d.selIdx;    else selIdx    = d.selIdx; }
     if (d.scrollOff   !== undefined) { if (curCatIdx !== null) itemScrollOff= d.scrollOff; else scrollOff = d.scrollOff; }
+
+    if (d.vehicleSpinSpeed      !== undefined) window._vehicleSpinSpeed      = d.vehicleSpinSpeed;
+    if (d.vehicleSpinChaosSpeed !== undefined) window._vehicleSpinChaosSpeed = d.vehicleSpinChaosSpeed;
 
     if (d.onlineTPMethod   !== undefined) onlineTPMethod   = d.onlineTPMethod;
     if (d.onlineSortBy     !== undefined) onlineSortBy     = d.onlineSortBy;
