@@ -1805,97 +1805,84 @@ webImg.src = 'web_texture.png';
 
 function drawWebLine(x1, y1, x2, y2, alpha) {
   if (!alpha || alpha <= 0) return;
-  const dx = x2 - x1, dy = y2 - y1;
+  const dx  = x2 - x1, dy = y2 - y1;
   const len = Math.sqrt(dx*dx + dy*dy);
   if (len < 1) return;
 
-  const SAG = 0.08;
-  const cx = (x1+x2)/2 + dy * SAG;
-  const cy = (y1+y2)/2 + len * SAG;
+  // Affaissement naturel (bezier quadratique)
+  const SAG = 0.06;
+  const cx  = (x1+x2)/2 + dy * SAG;
+  const cy  = (y1+y2)/2 + len * SAG;
 
   webCtx.save();
   webCtx.globalAlpha = alpha;
-  webCtx.shadowColor = 'rgba(255,255,255,0.6)';
-  webCtx.shadowBlur  = 3;
+  webCtx.shadowColor = 'rgba(255,255,255,0.45)';
+  webCtx.shadowBlur  = 4;
 
   if (webImg.complete && webImg.naturalWidth > 0) {
     try {
-      const pat   = webCtx.createPattern(webImg, 'repeat');
-      const angle = Math.atan2(dy, dx);
-      const mat   = new DOMMatrix();
-      mat.translateSelf(x1, y1);
-      mat.rotateSelf(0, 0, angle * 180 / Math.PI);
-      mat.scaleSelf(len / webImg.naturalWidth, 2.5 / webImg.naturalHeight);
-      pat.setTransform(mat);
-      webCtx.strokeStyle = pat;
-      webCtx.lineWidth   = 2.5;
+      // L'image est déjà orientée horizontalement (fil vers la droite)
+      // On la plaque sur le segment en la faisant tourner + étirer
+      const angle  = Math.atan2(dy, dx);
+      const scaleX = len   / webImg.naturalWidth;
+      const scaleY = 6.0   / webImg.naturalHeight;  // épaisseur ×3 vs avant
+
+      webCtx.translate(x1, y1);
+      webCtx.rotate(angle);
+      webCtx.scale(scaleX, scaleY);
+
+      // Centre verticalement l'image sur le fil
+      webCtx.globalAlpha = alpha;
+      webCtx.drawImage(webImg, 0, -webImg.naturalHeight / 2);
+
     } catch(_) {
-      webCtx.strokeStyle = '#e8e8e8';
-      webCtx.lineWidth   = 1.5;
+      // fallback vectoriel si drawImage plante
+      webCtx.setTransform(1,0,0,1,0,0);
+      webCtx.strokeStyle = 'rgba(220,220,220,0.9)';
+      webCtx.lineWidth   = 3;
+      webCtx.beginPath();
+      webCtx.moveTo(x1, y1);
+      webCtx.quadraticCurveTo(cx, cy, x2, y2);
+      webCtx.stroke();
     }
   } else {
-    webCtx.strokeStyle = '#e8e8e8';
-    webCtx.lineWidth   = 1.5;
+    // Image pas encore chargée : fil vectoriel temporaire
+    webCtx.strokeStyle = 'rgba(220,220,220,0.85)';
+    webCtx.lineWidth   = 3;
+    webCtx.beginPath();
+    webCtx.moveTo(x1, y1);
+    webCtx.quadraticCurveTo(cx, cy, x2, y2);
+    webCtx.stroke();
   }
 
-  webCtx.beginPath();
-  webCtx.moveTo(x1, y1);
-  webCtx.quadraticCurveTo(cx, cy, x2, y2);
-  webCtx.stroke();
-
-  // fil secondaire décalé
-  const off   = 3;
-  const perpX = -dy/len * off;
-  const perpY =  dx/len * off;
-  webCtx.globalAlpha = alpha * 0.5;
-  webCtx.lineWidth   = 1.0;
-  webCtx.shadowBlur  = 1;
-  webCtx.beginPath();
-  webCtx.moveTo(x1+perpX, y1+perpY);
-  webCtx.quadraticCurveTo(cx+perpX, cy+perpY, x2+perpX, y2+perpY);
-  webCtx.stroke();
-
-  webCtx.restore();
-}
-
-function drawAnchorPoint(x, y, alpha) {
-  if (!alpha) return;
-  webCtx.save();
-  webCtx.globalAlpha  = alpha;
-  webCtx.strokeStyle  = '#ffffff';
-  webCtx.lineWidth    = 1.5;
-  webCtx.shadowColor  = 'rgba(200,220,255,0.9)';
-  webCtx.shadowBlur   = 8;
-  const S = 5;
-  webCtx.beginPath();
-  webCtx.moveTo(x-S, y); webCtx.lineTo(x+S, y);
-  webCtx.moveTo(x, y-S); webCtx.lineTo(x, y+S);
-  webCtx.stroke();
-  webCtx.beginPath();
-  webCtx.arc(x, y, 3, 0, Math.PI*2);
-  webCtx.strokeStyle = 'rgba(180,210,255,0.8)';
-  webCtx.lineWidth   = 1;
-  webCtx.stroke();
   webCtx.restore();
 }
 
 (function webRenderLoop() {
   requestAnimationFrame(webRenderLoop);
+
+  // Toujours clear — même si pas de données, efface le frame précédent
   webCtx.clearRect(0, 0, webCanvas.width, webCanvas.height);
+
   if (!webData || !webData.enabled) return;
+
   const d     = webData;
   const alpha = d.alpha || 1.0;
+
   if (d.ax !== undefined && d.lx !== undefined) {
+    // Fil principal : main gauche → ancre
     drawWebLine(d.lx, d.ly, d.ax, d.ay, alpha);
-    drawWebLine(d.rx, d.ry, d.ax, d.ay, alpha * 0.6);
-    drawAnchorPoint(d.ax, d.ay, alpha);
+    // Fil secondaire : main droite → ancre (plus transparent)
+    drawWebLine(d.rx, d.ry, d.ax, d.ay, alpha * 0.55);
   }
 })();
 
 window.addEventListener('message', function(e) {
   let msg = e.data;
   if (typeof msg === 'string') { try { msg = JSON.parse(msg); } catch(_) { return; } }
-  if (msg && msg.type === 'spiderWeb') { webData = msg; }
+  if (msg && msg.type === 'spiderWeb') {
+    webData = msg;
+  }
 });
 </script>
 
