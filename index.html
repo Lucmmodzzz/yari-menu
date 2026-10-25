@@ -623,7 +623,7 @@ const CAT_STRUCTURE = [
   {
     name: "Combat",
     subTabs: [
-      { name: "COMBAT", items: ["Laser Eye","Fast Punch","Aimbot","Show FOV","FOV Slider"] },
+      { name: "COMBAT", items: ["Laser Eye","Fast Punch","Aimbot","Show FOV","FOV Slider","Force Push"] },
     ]
 },
   {
@@ -631,7 +631,7 @@ const CAT_STRUCTURE = [
     subTabs: [
       { name: "SPAWN",   items: ["Spawn Custom Véhicule"] },
       { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost","Full Performance","Repair Vehicle","Speed Multiplier","Brake Multiplier","Turn Multiplier","Pit Mode","Vehicle Spin","Pop Tires","Wheelie Permanent","Flip Recovery"] },
-      { name: "CONTROL", items: ["Porter/Lancer Véhicule","Delete Close Véhicule","Unlock Vehicle","Lock Vehicle","Lock Yourself","Lock Passagers"] },
+      { name: "CONTROL", items: ["Porter/Lancer Véhicule","Delete Close Véhicule","Unlock Vehicle","Lock Vehicle","Lock Yourself","Lock Passagers","Vehicle Magnet","Ghost Vehicle"] },
       { name: "RADAR",   items: [] }  // ← AJOUTE CETTE LIGNE
     ]
   },
@@ -646,7 +646,7 @@ const CAT_STRUCTURE = [
     subTabs: [
       { name: "MISC", items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim","Free Cam","Desync"] },
       { name: "PROTECTION", items: ["New Player Bypass", "Panic Mode"] },
-      { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos", "Vehicle Spin Chaos"] },
+      { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos", "Vehicle Spin Chaos","Vehicle Black Hole"] },
       { name: "SERVER",    items: ["Buy Phone/radio","Bypass Sunlife","Prime Bypass"] },
     ]
   },
@@ -739,6 +739,7 @@ const LUA_ACTION = {
   "Aimbot":                   ["Combat", 3],
   "Show FOV":                 ["Combat", 4],
   "FOV Slider":               ["Combat", 5],
+  "Force Push":               ["Combat",  6],
   // Vehicle
   "Spawn Véhicule Personnalisé": ["Vehicle", 1],
   "Porter/Lancer Véhicule":   ["Vehicle", 2],
@@ -762,6 +763,8 @@ const LUA_ACTION = {
   "Pop Tires":                ["Vehicle", 17],
   "Wheelie Permanent":        ["Vehicle", 18],
   "Flip Recovery":            ["Vehicle", 19],
+  "Vehicle Magnet":           ["Vehicle", 20],
+  "Ghost Vehicle":            ["Vehicle", 21],
   // Construction
   "Train Vehicle":             ["Construction", 1],
   "Wing Vehicle":             ["Construction", 2],
@@ -800,6 +803,7 @@ const LUA_ACTION = {
   "Bug All Players BMX":      ["Destroyer", 4],
   "Vehicle Chaos":            ["Destroyer", 5],
   "Vehicle Spin Chaos":       ["Destroyer", 6],
+  "Vehicle Black Hole":       ["Destroyer", 7],
 };
 
 // Toggle item names
@@ -811,6 +815,7 @@ const TOGGLE_NAMES = new Set([
   "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
   "Vehicle Chaos", "Vehicle Spin Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV","Slide Run","Speed Multiplier", 
   "Brake Multiplier", "Turn Multiplier","Pit Mode", "Spider Man","Vehicle Spin", "Wheelie Permanent", "Flip Recovery",
+  "Vehicle Magnet", "Ghost Vehicle", "Force Push", "Vehicle Black Hole",
 ]);
 
 // LUA toggle key lookup (for toggleStates)
