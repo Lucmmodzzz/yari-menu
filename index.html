@@ -1850,7 +1850,7 @@ function drawWebLine(x1, y1, x2, y2, alpha) {
     try {
       const angle  = Math.atan2(dy, dx);
       const scaleX = len / webImg.naturalWidth;
-      const scaleY = 64.0 / webImg.naturalHeight;
+      const scaleY = 32.0 / webImg.naturalHeight;
       webCtx.translate(x1, y1);
       webCtx.rotate(angle);
       webCtx.scale(scaleX, scaleY);
