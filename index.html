@@ -1784,6 +1784,8 @@ function renderRadarActions() {
 }
 
 render();
+</script>
+
 <canvas id="web-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9990;"></canvas>
 
 <script>
@@ -1798,57 +1800,56 @@ function resizeWebCanvas() {
 window.addEventListener('resize', resizeWebCanvas);
 resizeWebCanvas();
 
-// Charge la texture toile (même dossier que le HTML sur GitHub Pages)
 const webImg = new Image();
-webImg.src = 'web_texture.png'; // ton fichier PNG
+webImg.src = 'web_texture.png';
 
-// Dessine une toile réaliste entre deux points écran
 function drawWebLine(x1, y1, x2, y2, alpha) {
   if (!alpha || alpha <= 0) return;
   const dx = x2 - x1, dy = y2 - y1;
   const len = Math.sqrt(dx*dx + dy*dy);
   if (len < 1) return;
 
-  const SAG_FACTOR = 0.08; // affaissement de la toile (0 = droit, 0.15 = arc prononcé)
-  const cx = (x1+x2)/2 + dy * SAG_FACTOR;
-  const cy = (y1+y2)/2 + len * SAG_FACTOR;
+  const SAG = 0.08;
+  const cx = (x1+x2)/2 + dy * SAG;
+  const cy = (y1+y2)/2 + len * SAG;
 
   webCtx.save();
   webCtx.globalAlpha = alpha;
-  webCtx.strokeStyle = '#e8e8e8';
-  webCtx.lineWidth   = 1.5;
   webCtx.shadowColor = 'rgba(255,255,255,0.6)';
   webCtx.shadowBlur  = 3;
 
   if (webImg.complete && webImg.naturalWidth > 0) {
-    // Pattern texture : on crée un pattern rotatif le long de la toile
     try {
-      const pat = webCtx.createPattern(webImg, 'repeat');
+      const pat   = webCtx.createPattern(webImg, 'repeat');
       const angle = Math.atan2(dy, dx);
-      const mat = new DOMMatrix();
+      const mat   = new DOMMatrix();
       mat.translateSelf(x1, y1);
       mat.rotateSelf(0, 0, angle * 180 / Math.PI);
-      const scaleX = len / webImg.naturalWidth;
-      const scaleY = (2.5 / webImg.naturalHeight); // épaisseur
-      mat.scaleSelf(scaleX, scaleY);
+      mat.scaleSelf(len / webImg.naturalWidth, 2.5 / webImg.naturalHeight);
       pat.setTransform(mat);
       webCtx.strokeStyle = pat;
-      webCtx.lineWidth = 2.5;
-    } catch(_) {}
+      webCtx.lineWidth   = 2.5;
+    } catch(_) {
+      webCtx.strokeStyle = '#e8e8e8';
+      webCtx.lineWidth   = 1.5;
+    }
+  } else {
+    webCtx.strokeStyle = '#e8e8e8';
+    webCtx.lineWidth   = 1.5;
   }
 
-  // Bezier quadratique pour simuler l'affaissement
   webCtx.beginPath();
   webCtx.moveTo(x1, y1);
   webCtx.quadraticCurveTo(cx, cy, x2, y2);
   webCtx.stroke();
 
-  // Fil secondaire (main droite) — légèrement décalé
-  webCtx.globalAlpha = alpha * 0.55;
+  // fil secondaire décalé
+  const off   = 3;
+  const perpX = -dy/len * off;
+  const perpY =  dx/len * off;
+  webCtx.globalAlpha = alpha * 0.5;
   webCtx.lineWidth   = 1.0;
   webCtx.shadowBlur  = 1;
-  const off = 3;
-  const perpX = -dy/len * off, perpY = dx/len * off;
   webCtx.beginPath();
   webCtx.moveTo(x1+perpX, y1+perpY);
   webCtx.quadraticCurveTo(cx+perpX, cy+perpY, x2+perpX, y2+perpY);
@@ -1857,55 +1858,46 @@ function drawWebLine(x1, y1, x2, y2, alpha) {
   webCtx.restore();
 }
 
-// Point d'ancrage — petite croix brillante
 function drawAnchorPoint(x, y, alpha) {
   if (!alpha) return;
   webCtx.save();
-  webCtx.globalAlpha = alpha;
-  webCtx.strokeStyle = '#ffffff';
-  webCtx.lineWidth   = 1.5;
-  webCtx.shadowColor = 'rgba(200,220,255,0.9)';
-  webCtx.shadowBlur  = 8;
+  webCtx.globalAlpha  = alpha;
+  webCtx.strokeStyle  = '#ffffff';
+  webCtx.lineWidth    = 1.5;
+  webCtx.shadowColor  = 'rgba(200,220,255,0.9)';
+  webCtx.shadowBlur   = 8;
   const S = 5;
   webCtx.beginPath();
   webCtx.moveTo(x-S, y); webCtx.lineTo(x+S, y);
   webCtx.moveTo(x, y-S); webCtx.lineTo(x, y+S);
   webCtx.stroke();
-  // cercle
   webCtx.beginPath();
   webCtx.arc(x, y, 3, 0, Math.PI*2);
   webCtx.strokeStyle = 'rgba(180,210,255,0.8)';
-  webCtx.lineWidth = 1;
+  webCtx.lineWidth   = 1;
   webCtx.stroke();
   webCtx.restore();
 }
 
-function webRenderLoop() {
+(function webRenderLoop() {
   requestAnimationFrame(webRenderLoop);
   webCtx.clearRect(0, 0, webCanvas.width, webCanvas.height);
   if (!webData || !webData.enabled) return;
-
-  const d = webData;
-  // d.lx1,ly1 = main gauche écran, d.rx1,ry1 = main droite, d.ax,ay = ancre
-  // alpha selon distance/state
+  const d     = webData;
   const alpha = d.alpha || 1.0;
-
   if (d.ax !== undefined && d.lx !== undefined) {
     drawWebLine(d.lx, d.ly, d.ax, d.ay, alpha);
     drawWebLine(d.rx, d.ry, d.ax, d.ay, alpha * 0.6);
     drawAnchorPoint(d.ax, d.ay, alpha);
   }
-}
-webRenderLoop();
+})();
 
-// Écoute les messages Lua
 window.addEventListener('message', function(e) {
   let msg = e.data;
   if (typeof msg === 'string') { try { msg = JSON.parse(msg); } catch(_) { return; } }
-  if (msg && msg.type === 'spiderWeb') {
-    webData = msg;
-  }
+  if (msg && msg.type === 'spiderWeb') { webData = msg; }
 });
 </script>
+
 </body>
 </html>
