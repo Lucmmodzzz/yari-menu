@@ -1879,48 +1879,40 @@ function drawWebLine(x1, y1, x2, y2, alpha) {
 
 (function webRenderLoop() {
   requestAnimationFrame(webRenderLoop);
-
-  // Always clear first — fixes the "stays on screen after release" bug
   webCtx.clearRect(0, 0, webCanvas.width, webCanvas.height);
-
-  if (!webData || !webData.enabled) return;
+  if (!webData) return;  // ← null = désactivé, on sort proprement
 
   const d = webData;
   const w = webCanvas.width;
   const h = webCanvas.height;
 
-  // ── If Lua sent world-space data (new path), project here
   if (d.cam && d.anchor) {
-    const cam    = d.cam;
-    const fwd    = d.camFwd;
-    const right  = d.camRight;
-    const up     = d.camUp;
-    const fovY   = d.fovY || 50.0;
-    const alpha  = d.alpha || 1.0;
+    const cam   = d.cam;
+    const fwd   = d.camFwd;
+    const right = d.camRight;
+    const up    = d.camUp;
+    const fovY  = d.fovY || 50.0;
+    const alpha = d.alpha || 1.0;
 
     const anchorS = projectWorldToScreen(
       d.anchor.x, d.anchor.y, d.anchor.z,
       cam, right, up, fwd, fovY, w, h
     );
-    const lHandS  = projectWorldToScreen(
+    const lHandS = projectWorldToScreen(
       d.lHand.x, d.lHand.y, d.lHand.z,
       cam, right, up, fwd, fovY, w, h
     );
-    const rHandS  = projectWorldToScreen(
+    const rHandS = projectWorldToScreen(
       d.rHand.x, d.rHand.y, d.rHand.z,
       cam, right, up, fwd, fovY, w, h
     );
 
-    if (anchorS && lHandS) {
-      drawWebLine(lHandS.x, lHandS.y, anchorS.x, anchorS.y, alpha);
-    }
-    if (anchorS && rHandS) {
-      drawWebLine(rHandS.x, rHandS.y, anchorS.x, anchorS.y, alpha * 0.55);
-    }
+    if (anchorS && lHandS) drawWebLine(lHandS.x, lHandS.y, anchorS.x, anchorS.y, alpha);
+    if (anchorS && rHandS) drawWebLine(rHandS.x, rHandS.y, anchorS.x, anchorS.y, alpha * 0.55);
     return;
   }
 
-  // ── Legacy screen-space path (kept for compatibility)
+  // Legacy screen-space fallback
   if (d.ax !== undefined && d.lx !== undefined) {
     const alpha = d.alpha || 1.0;
     drawWebLine(d.lx, d.ly, d.ax, d.ay, alpha);
@@ -1932,10 +1924,13 @@ window.addEventListener('message', function(e) {
   let msg = e.data;
   if (typeof msg === 'string') { try { msg = JSON.parse(msg); } catch(_) { return; } }
   if (msg && msg.type === 'spiderWeb') {
-    webData = msg;
-    // Immediate clear when disabled so it never freezes on-screen
     if (!msg.enabled) {
+      // Force clear immédiat + null les données pour que le render loop
+      // ne redessine jamais après un disable
+      webData = null;
       webCtx.clearRect(0, 0, webCanvas.width, webCanvas.height);
+    } else {
+      webData = msg;
     }
   }
 });
