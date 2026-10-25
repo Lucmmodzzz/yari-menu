@@ -1073,100 +1073,116 @@ function renderWardrobe() {
     return;
   }
 
-  // ── MODE EDIT ────────────────────────────────────────────────
+  // ── Items displayed as standard menu rows ──────────────────────
   const def = WARDROBE_CATS[wardrobeCatIdx];
 
-  // Row 0 – Save / Load buttons
-  const rBtns = document.createElement('div');
-  rBtns.style.cssText = 'display:flex;gap:0;height:26px;border-bottom:1px solid var(--sep);';
-  const btnSave = document.createElement('div');
-  btnSave.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:2px;font-family:"Share Tech Mono",monospace;color:#32ff6e;border-right:1px solid var(--sep);cursor:pointer;background:rgba(15,40,15,0.5);';
-  btnSave.textContent = '● SAVE';
-  btnSave.addEventListener('click', () => { wardrobeMode='save'; wardrobeSlotSel=0; render(); });
-  const btnLoad = document.createElement('div');
-  btnLoad.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:2px;font-family:"Share Tech Mono",monospace;color:#3278ff;cursor:pointer;background:rgba(10,20,40,0.5);';
-  btnLoad.textContent = '▶ LOAD';
-  btnLoad.addEventListener('click', () => { wardrobeMode='load'; wardrobeSlotSel=0; render(); });
-  rBtns.append(btnSave, btnLoad);
-  itemsList.appendChild(rBtns);
+  // Build a virtual item list so itemSelIdx / itemScrollOff work
+  // identically to every other category.
+  // Slots:
+  //   0  = Category selector (← →)
+  //   1  = Drawable slider   (← →)
+  //   2  = Texture slider    (← →)
+  //   3  = Save outfit
+  //   4  = Load outfit
+  //   5  = Remove prop (props only)
+  const rows = [
+    { type: 'category' },
+    { type: 'drawable' },
+    { type: 'texture'  },
+    { type: 'save'     },
+    { type: 'load'     },
+  ];
+  if (def && def.type === 'prop') rows.push({ type: 'removeprop' });
 
-  // Row 1 – Category selector
-  const rCat = document.createElement('div');
-  rCat.className = 'menu-item sel';
-  rCat.style.cssText = 'background:rgba(8,8,8,0.98);height:28px;';
-  rCat.innerHTML = `<div class="bar"></div>
-    <span style="font-size:9px;color:var(--accent);font-family:'Share Tech Mono',monospace;margin-right:6px;letter-spacing:1px">${def.type === 'prop' ? 'PROP' : 'COMP'}</span>
-    <span class="item-name" style="font-size:13px;font-weight:700">${def.label}</span>
-    <span style="font-size:10px;color:rgba(180,180,180,0.45);font-family:'Share Tech Mono',monospace;margin-left:auto">${wardrobeCatIdx+1}/${WARDROBE_CATS.length}</span>`;
-  itemsList.appendChild(rCat);
+  for (let i = 0; i < MAX_VIS; i++) {
+    const idx = i + itemScrollOff;
+    if (idx >= rows.length) break;
+    const row   = rows[idx];
+    const isSel = idx === itemSelIdx;
+    const el    = document.createElement('div');
+    el.className = 'menu-item' + (isSel ? ' sel' : '');
 
-  // Row 2 – Drawable slider
-  const drawPct = wardrobeMaxDraw > 0 ? (wardrobeDrawIdx / wardrobeMaxDraw) * 100 : 0;
-  const rDraw = document.createElement('div');
-  rDraw.className = 'menu-item' + (wardrobeTier === 0 ? ' sel' : '');
-  rDraw.style.cssText = 'flex-direction:column;align-items:flex-start;height:auto;padding:5px 14px 5px 28px;gap:4px;';
-  rDraw.innerHTML = `<div class="bar"></div>
-    <div style="display:flex;width:100%;align-items:center;gap:8px;">
-      <span class="item-name" style="font-size:11px;letter-spacing:1px;color:rgba(200,200,200,0.75)">DRAWABLE</span>
-      <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:64px;text-align:right">${wardrobeDrawIdx} / ${wardrobeMaxDraw}</span>
-    </div>
-    <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
-      <div style="height:100%;width:${drawPct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.08s;"></div>
-    </div>
-    ${wardrobeTier===0 ? '<div style="font-size:9px;color:rgba(180,180,180,0.45);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">← → CHANGER   ↵ PASSER EN TEXTURE</div>' : ''}`;
-  itemsList.appendChild(rDraw);
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    el.appendChild(bar);
 
-  // Row 3 – Texture slider
-  const texPct = wardrobeMaxTex > 0 ? (wardrobeTexIdx / wardrobeMaxTex) * 100 : 0;
-  const rTex = document.createElement('div');
-  rTex.className = 'menu-item' + (wardrobeTier === 1 ? ' sel' : '');
-  rTex.style.cssText = 'flex-direction:column;align-items:flex-start;height:auto;padding:5px 14px 5px 28px;gap:4px;';
-  rTex.innerHTML = `<div class="bar"></div>
-    <div style="display:flex;width:100%;align-items:center;gap:8px;">
-      <span class="item-name" style="font-size:11px;letter-spacing:1px;color:rgba(200,200,200,0.75)">TEXTURE</span>
-      <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:64px;text-align:right">${wardrobeTexIdx} / ${wardrobeMaxTex}</span>
-    </div>
-    <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
-      <div style="height:100%;width:${texPct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.08s;"></div>
-    </div>
-    ${wardrobeTier===1 ? '<div style="font-size:9px;color:rgba(180,180,180,0.45);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">← → CHANGER   ↵ RETOUR DRAWABLE</div>' : ''}`;
-  itemsList.appendChild(rTex);
+    if (row.type === 'category') {
+      // Category name — left/right to change
+      const nm = document.createElement('span');
+      nm.className = 'item-name';
+      nm.textContent = (def ? def.label : '—') + ' (' + (def && def.type === 'prop' ? 'PROP' : 'COMP') + ')';
+      el.appendChild(nm);
+      const cnt = document.createElement('span');
+      cnt.style.cssText = 'font-size:10px;color:var(--accent);font-family:"Share Tech Mono",monospace;white-space:nowrap;';
+      cnt.textContent = (wardrobeCatIdx + 1) + ' / ' + WARDROBE_CATS.length;
+      el.appendChild(cnt);
+      if (isSel) {
+        const hint = document.createElement('span');
+        hint.style.cssText = 'font-size:9px;color:rgba(180,180,180,0.45);font-family:"Share Tech Mono",monospace;margin-left:6px;white-space:nowrap;';
+        hint.textContent = '← →';
+        el.appendChild(hint);
+      }
 
-  // Row 4 – Remove prop (props only)
-  if (def.type === 'prop') {
-    const rRem = document.createElement('div');
-    rRem.className = 'menu-item';
-    rRem.style.cssText = 'height:28px;';
-    rRem.innerHTML = `<div class="bar"></div>
-      <span class="item-name" style="font-size:11px;color:#dc821e;letter-spacing:1px">✕ RETIRER CET ACCESSOIRE</span>
-      <span class="item-ind" style="color:#dc821e">F10</span>`;
-    itemsList.appendChild(rRem);
+    } else if (row.type === 'drawable' || row.type === 'texture') {
+      const isDraw = row.type === 'drawable';
+      const val    = isDraw ? wardrobeDrawIdx : wardrobeTexIdx;
+      const maxVal = isDraw ? wardrobeMaxDraw : wardrobeMaxTex;
+      const pct    = maxVal > 0 ? (val / maxVal) * 100 : 0;
+      const label  = isDraw ? 'DRAWABLE' : 'TEXTURE';
+
+      el.style.flexDirection = 'column';
+      el.style.alignItems    = 'flex-start';
+      el.style.height        = 'auto';
+      el.style.padding       = '5px 14px 5px 28px';
+      el.style.gap           = '4px';
+
+      el.innerHTML = `<div class="bar"></div>
+        <div style="display:flex;align-items:center;width:100%;gap:8px;">
+          <span class="item-name" style="font-size:12px">${label}</span>
+          <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:72px;text-align:right">${val} / ${maxVal}</span>
+        </div>
+        <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.08s;"></div>
+        </div>
+        ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.45);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">← → AJUSTER</div>' : ''}`;
+
+    } else if (row.type === 'save') {
+      const nm = document.createElement('span');
+      nm.className = 'item-name';
+      nm.textContent = 'Save Outfit';
+      el.appendChild(nm);
+      const ind = document.createElement('span');
+      ind.className = 'item-ind';
+      ind.style.color = '#32ff6e';
+      ind.textContent = '+';
+      el.appendChild(ind);
+
+    } else if (row.type === 'load') {
+      const nm = document.createElement('span');
+      nm.className = 'item-name';
+      nm.textContent = 'Load Outfit';
+      el.appendChild(nm);
+      const ind = document.createElement('span');
+      ind.className = 'item-ind';
+      ind.style.color = '#3278ff';
+      ind.textContent = '+';
+      el.appendChild(ind);
+
+    } else if (row.type === 'removeprop') {
+      const nm = document.createElement('span');
+      nm.className = 'item-name';
+      nm.style.color = '#dc821e';
+      nm.textContent = 'Remove Accessory';
+      el.appendChild(nm);
+      const ind = document.createElement('span');
+      ind.className = 'item-ind';
+      ind.style.color = '#dc821e';
+      ind.textContent = '✕';
+      el.appendChild(ind);
+    }
+
+    itemsList.appendChild(el);
   }
-
-  // Separator
-  const sep = document.createElement('div');
-  sep.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:2px 0;opacity:0.35;';
-  itemsList.appendChild(sep);
-
-  // Quick nav - toutes les catégories en petits pills
-  const wrap = document.createElement('div');
-  wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;padding:5px 10px;background:rgba(5,5,5,0.95);';
-  WARDROBE_CATS.forEach((c, i) => {
-    const pill = document.createElement('div');
-    const isActive = i === wardrobeCatIdx;
-    pill.style.cssText = `font-size:9px;padding:2px 6px;border-radius:2px;font-family:"Share Tech Mono",monospace;letter-spacing:1px;cursor:pointer;
-      background:${isActive ? 'var(--accent)' : 'rgba(255,255,255,0.05)'};
-      color:${isActive ? '#fff' : 'rgba(180,180,180,0.55)'};
-      border:1px solid ${isActive ? 'var(--accent)' : 'rgba(255,255,255,0.06)'};`;
-    pill.textContent = c.label;
-    pill.addEventListener('click', () => {
-      wardrobeCatIdx = i; wardrobeTier = 0;
-      sendToLua({ type:'action', category:'Wardrobe', index: 100 + i });
-      render();
-    });
-    wrap.appendChild(pill);
-  });
-  itemsList.appendChild(wrap);
 }
 
 function renderWardrobeSlots() {
