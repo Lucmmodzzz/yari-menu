@@ -1192,7 +1192,7 @@ function renderWardrobeSlots() {
 
   // Back row
   const rBack = document.createElement('div');
-  rBack.className = 'menu-item' + (wardrobeSlotSel === 0 ? ' sel' : '');
+  rBack.className = 'menu-item' + (itemSelIdx === 0 ? ' sel' : '');
   rBack.style.cssText = 'height:26px;background:rgba(8,8,8,0.98);';
   rBack.innerHTML = `<div class="bar"></div>
     <span class="item-name" style="font-size:11px;color:rgba(180,180,180,0.6);letter-spacing:1px">⌫ RETOUR</span>`;
@@ -1204,7 +1204,7 @@ function renderWardrobeSlots() {
 
   for (let s = 1; s <= MAX_OUTFIT_SLOTS; s++) {
     const slot = outfitSlots[s];
-    const isSel = (s) === wardrobeSlotSel;
+    const isSel = s === itemSelIdx;
     const el = document.createElement('div');
     el.className = 'menu-item' + (isSel ? ' sel' : '');
     el.style.height = '32px';
