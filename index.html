@@ -594,9 +594,6 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 <script>
 // ═══════════════════════════════════════════════════════════════════
 //  CATEGORY STRUCTURE — sub-tabbed
-//  Each category can have subTabs: [{name, items}]
-//  Online is special: subTabs = [{name:"Players"}, {name:"Troll"}]
-//    but Players is default (tab 0), rendered with player list
 // ═══════════════════════════════════════════════════════════════════
 const CAT_STRUCTURE = [
   {
@@ -604,7 +601,7 @@ const CAT_STRUCTURE = [
       subTabs: [
         { name: "SELF",     items: ["God Mode","No Ragdoll","No Collision","Max Heal","Max Armor","Invisible","Super Jump","Walk On Wall","Anti Aim V2"] },
         { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina","Slide Run","Slide Speed","Spider Man"] },
-        { name: "WARDROBE", items: ["__wardrobe__"] },   // ← ajout
+        { name: "WARDROBE", items: ["__wardrobe__"] },
       ]
   },
   {
@@ -633,7 +630,7 @@ const CAT_STRUCTURE = [
       { name: "SPAWN",   items: ["Spawn Custom Véhicule"] },
       { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost","Full Performance","Repair Vehicle","Speed Multiplier","Brake Multiplier","Turn Multiplier","Pit Mode","Vehicle Spin","Pop Tires","Wheelie Permanent","Flip Recovery"] },
       { name: "CONTROL", items: ["Porter/Lancer Véhicule","Delete Close Véhicule","Unlock Vehicle","Lock Vehicle","Lock Yourself","Lock Passagers","Vehicle Magnet"] },
-      { name: "RADAR",   items: [] }  // ← AJOUTE CETTE LIGNE
+      { name: "RADAR",   items: [] }
     ]
   },
   {
@@ -668,10 +665,7 @@ const CAT_STRUCTURE = [
 
 const CONFIG_ITEMS = ["Save Config","Load Config"];
 
-// ── TOGGLE KEYS: "CatName|SubTabIndex|itemLocalIndex" (1-based)
-// We'll resolve dynamically based on known toggle actions
-// Map: global action key → category/subTab/index
-// Since Lua uses category name + global action index, we keep a mapping
+// ── TOGGLE KEYS:
 const GLOBAL_ACTION_MAP = {
   // Player SELF (global indices per Lua)
   "Player_2":  true,  // God Mode
