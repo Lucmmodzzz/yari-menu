@@ -645,7 +645,7 @@ const CAT_STRUCTURE = [
       { name: "MISC", items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim","Free Cam","Desync"] },
       { name: "PROTECTION", items: ["New Player Bypass", "Panic Mode"] },
       { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos", "Vehicle Spin Chaos","Vehicle Black Hole"] },
-      { name: "SERVER",    items: ["Buy Phone/radio","Bypass Sunlife","Prime Bypass"] },
+      { name: "SERVER",    items: ["Bypass Sunlife","Prime Bypass", "Bypass GLife"] },
     ]
   },
   {
@@ -701,6 +701,8 @@ const GLOBAL_ACTION_MAP = {
   "Settings_4": true,
   // Destroyer
   "Destroyer_5": true,
+  // Server
+  "Server_3": true,
 };
 
 // Mapping from display item name → Lua (category, index)
@@ -777,6 +779,7 @@ const LUA_ACTION = {
   // Server (now under Sunlife sub-tab in Misc)
   "Bypass Sunlife":           ["Server", 1],
   "Prime Bypass":             ["Server", 2],
+  "Bypass Glife":             ["Server", 3],
   // Settings
   "Auto Load Config":         ["Settings", 1],
   "Change Banner":            ["Settings", 2],
@@ -785,8 +788,6 @@ const LUA_ACTION = {
   "Show Keybinds": ["Settings", 5],
   // Keybind
   "Delete All Keybinds":      ["Keybind", 1],
-  // Sunlife/Prime
-  "Buy Phone/radio":          ["Sunlife/Prime", 1],
   // Protection
   "New Player Bypass": ["Protection", 1],
   "Panic Mode":        ["Protection", 2],
