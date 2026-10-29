@@ -2197,5 +2197,199 @@ window.addEventListener('message', function(e) {
 });
 </script>
 
+<style>
+#ka-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 99999;
+  align-items: center; justify-content: center;
+  flex-direction: column;
+  font-family: 'Rajdhani', sans-serif;
+}
+#ka-overlay.visible { display: flex; }
+
+#ka-box {
+  width: 380px;
+  background: #0A0A0A;
+  border-top: 3px solid var(--accent);
+  border-bottom: 3px solid var(--accent);
+  box-shadow: 0 0 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+
+#ka-header {
+  background: rgba(15,5,5,0.99);
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.ka-title {
+  font-size: 22px; font-weight: 700; letter-spacing: 5px; color: #fff;
+  text-shadow: 0 0 14px var(--accent-glow);
+}
+.ka-sub {
+  font-size: 10px; letter-spacing: 3px;
+  color: rgba(180,180,180,0.55);
+  font-family: 'Share Tech Mono', monospace;
+}
+
+#ka-body { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+
+#ka-input-wrap {
+  position: relative; display: flex; align-items: center;
+}
+#ka-input {
+  width: 100%; padding: 10px 44px 10px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(220,30,30,0.35);
+  border-radius: 3px;
+  color: #fff; font-family: 'Share Tech Mono', monospace;
+  font-size: 13px; letter-spacing: 2px;
+  outline: none; caret-color: var(--accent);
+  transition: border-color 0.15s;
+}
+#ka-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(220,30,30,0.18); }
+#ka-input::placeholder { color: rgba(180,180,180,0.28); letter-spacing: 1px; }
+
+#ka-enter-hint {
+  position: absolute; right: 10px;
+  font-size: 9px; color: rgba(180,180,180,0.35);
+  font-family: 'Share Tech Mono', monospace;
+  pointer-events: none; letter-spacing: 1px;
+}
+
+#ka-status {
+  min-height: 36px; padding: 8px 12px;
+  border-radius: 3px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; letter-spacing: 1px;
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  color: rgba(180,180,180,0.5);
+  transition: all 0.15s;
+}
+#ka-status.checking { color: #ffaa32; border-color: rgba(255,170,50,0.3); background: rgba(255,170,50,0.06); }
+#ka-status.success  { color: #32ff6e; border-color: rgba(50,255,110,0.35); background: rgba(50,255,110,0.06); }
+#ka-status.error    { color: #ff4444; border-color: rgba(255,68,68,0.35);  background: rgba(255,68,68,0.06); }
+
+.ka-dot-anim { display: inline-block; animation: kaBlink 0.7s ease-in-out infinite; }
+@keyframes kaBlink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+#ka-footer {
+  padding: 10px 22px 14px;
+  font-size: 9px; letter-spacing: 1px;
+  color: rgba(120,120,120,0.5);
+  font-family: 'Share Tech Mono', monospace;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  display: flex; justify-content: space-between;
+}
+</style>
+
+<div id="ka-overlay">
+  <div id="ka-box">
+    <div id="ka-header">
+      <div class="ka-title">YARI MENU</div>
+      <div class="ka-sub">LICENCE VERIFICATION REQUIRED</div>
+    </div>
+    <div id="ka-body">
+      <div id="ka-input-wrap">
+        <input id="ka-input" type="text" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" />
+        <span id="ka-enter-hint">↵ ENTER</span>
+      </div>
+      <div id="ka-status">
+        <span id="ka-status-icon">●</span>
+        <span id="ka-status-msg">Entrez votre clé de licence</span>
+      </div>
+    </div>
+    <div id="ka-footer">
+      <span>KEYAUTH PROTECTED</span>
+      <span id="ka-version-txt">v1.0</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── KEYAUTH OVERLAY JS ───────────────────────────────────────────────
+(function() {
+  const overlay   = document.getElementById('ka-overlay');
+  const input     = document.getElementById('ka-input');
+  const statusEl  = document.getElementById('ka-status');
+  const statusMsg = document.getElementById('ka-status-msg');
+  const statusIco = document.getElementById('ka-status-icon');
+  let kaReady = false;
+
+  function setStatus(state, msg) {
+    statusEl.className = state;
+    if (state === 'checking') {
+      statusIco.innerHTML = '<span class="ka-dot-anim">◌</span>';
+      statusMsg.textContent = msg || 'Vérification en cours...';
+    } else if (state === 'success') {
+      statusIco.textContent = '✓';
+      statusMsg.textContent = msg || 'Clé valide — chargement du menu...';
+    } else if (state === 'error') {
+      statusIco.textContent = '✕';
+      statusMsg.textContent = msg || 'Clé invalide';
+      input.focus();
+    } else {
+      statusIco.textContent = '●';
+      statusMsg.textContent = msg || 'Entrez votre clé de licence';
+    }
+  }
+
+  function submit() {
+    const key = input.value.trim();
+    if (!key) { setStatus('error', 'Clé vide'); return; }
+    // Envoie au Lua via le bridge existant
+    if (window.__yariCallback) {
+      window.__yariCallback(JSON.stringify({ type: 'kaSubmit', key: key }));
+    }
+  }
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); submit(); }
+  });
+
+  // Écoute les messages du Lua
+  window.addEventListener('message', function(e) {
+    let d = e.data;
+    if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
+    if (!d || d.type !== 'kaStatus') return;
+
+    if (d.state === 'prompt') {
+      // Pas de clé sauvegardée → affiche l'overlay
+      overlay.classList.add('visible');
+      document.getElementById('app').style.display = 'none';
+      setStatus('idle', 'Entrez votre clé de licence');
+      setTimeout(() => input.focus(), 100);
+
+    } else if (d.state === 'prompt_error') {
+      // Clé sauvegardée invalide → affiche avec message d'erreur
+      overlay.classList.add('visible');
+      document.getElementById('app').style.display = 'none';
+      setStatus('error', d.message || 'Clé expirée — saisissez une nouvelle clé');
+      setTimeout(() => input.focus(), 100);
+
+    } else if (d.state === 'checking') {
+      setStatus('checking', d.message);
+
+    } else if (d.state === 'success') {
+      setStatus('success', null);
+      // Attend 900ms pour que le joueur voie le succès, puis cache l'overlay
+      setTimeout(function() {
+        overlay.classList.remove('visible');
+        // Le menu s'ouvre normalement ensuite via les touches F9
+      }, 900);
+
+    } else if (d.state === 'error') {
+      overlay.classList.add('visible');
+      setStatus('error', d.message || 'Clé invalide');
+      input.focus();
+    }
+  });
+})();
+</script>
+  
 </body>
 </html>
