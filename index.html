@@ -1058,6 +1058,10 @@ let wardrobeTier    = 0;  // 0=drawable 1=texture
 let wardrobeMode    = 'edit'; // 'edit' | 'save' | 'load'
 let wardrobeSlotSel = 0;
 let outfitSlots     = {};  // slot 1..5 -> {label}
+let localPedNames   = [];
+let localPedSel     = 0;
+let localPedApplied = 0;
+let localPedState   = 'idle';
 
 function renderWardrobe() {
   catHeader.textContent = 'PLAYER › WARDROBE';
@@ -1086,6 +1090,7 @@ function renderWardrobe() {
     { type: 'texture'  },
     { type: 'save'     },
     { type: 'load'     },
+    { type: 'localped' },
   ];
   if (def && def.type === 'prop') rows.push({ type: 'removeprop' });
 
@@ -1162,6 +1167,30 @@ function renderWardrobe() {
       ind.style.color = '#3278ff';
       ind.textContent = '+';
       el.appendChild(ind);
+
+      } else if (row.type === 'localped') {
+      const names = Array.isArray(localPedNames) ? localPedNames : Object.values(localPedNames || {});
+      const labelOf = i => i === 0 ? 'OFF (normal)' : (names[i - 1] || '?');
+      const appliedTxt = localPedApplied === 0 ? 'OFF' : (names[localPedApplied - 1] || '?');
+      const stateTxt = String(localPedState || '').toUpperCase();
+      const hint = isSel
+        ? `<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:'Share Tech Mono',monospace;">← → CHOISIR · ↵ APPLIQUER · ${stateTxt}</div>`
+        : '';
+      el.style.flexDirection = 'column';
+      el.style.alignItems    = 'flex-start';
+      el.style.height        = 'auto';
+      el.style.padding       = '5px 14px 5px 28px';
+      el.style.gap           = '4px';
+      el.innerHTML = `<div class="bar"></div>
+        <div style="display:flex;align-items:center;width:100%;gap:8px;">
+          <span class="item-name" style="font-size:12px">LOCAL PED</span>
+          <span style="font-size:10px;color:rgba(180,180,180,0.6);font-family:'Share Tech Mono',monospace;">actif : ${appliedTxt}</span>
+        </div>
+        <div style="display:flex;align-items:center;width:100%;gap:8px;">
+          <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${labelOf(localPedSel)}</span>
+          <span style="font-size:10px;color:rgba(180,180,180,0.5);font-family:'Share Tech Mono',monospace;">${localPedSel + 1}/${names.length + 1}</span>
+        </div>
+        ${hint}`;
 
     } else if (row.type === 'removeprop') {
       const nm = document.createElement('span');
@@ -1934,6 +1963,10 @@ window.addEventListener('message', function(e) {
     if (d.wardrobeMode    !== undefined) wardrobeMode    = d.wardrobeMode;
     if (d.wardrobeSlotSel !== undefined) wardrobeSlotSel = d.wardrobeSlotSel;
     if (d.outfitSlots     !== undefined) outfitSlots     = d.outfitSlots;
+    if (d.localPedNames   !== undefined) localPedNames   = d.localPedNames;
+    if (d.localPedSel     !== undefined) localPedSel     = d.localPedSel;
+    if (d.localPedApplied !== undefined) localPedApplied = d.localPedApplied;
+    if (d.localPedState   !== undefined) localPedState   = d.localPedState;
 
     if (d.radarVehicles  !== undefined) radarVehicles    = d.radarVehicles;
     if (d.radarSelIdx    !== undefined) radarSelectedIdx = d.radarSelIdx;
