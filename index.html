@@ -1170,28 +1170,39 @@ function renderWardrobe() {
       el.appendChild(ind);
 
       } else if (row.type === 'localped') {
-      const names = Array.isArray(localPedNames) ? localPedNames : Object.values(localPedNames || {});
-      const labelOf = i => i === 0 ? 'OFF (normal)' : (names[i - 1] || '?');
-      const appliedTxt = localPedApplied === 0 ? 'OFF' : (names[localPedApplied - 1] || '?');
-      const stateTxt = String(localPedState || '').toUpperCase();
-      const hint = isSel
-        ? `<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:'Share Tech Mono',monospace;">← → CHOISIR · ↵ APPLIQUER · ${stateTxt}</div>`
-        : '';
-      el.style.flexDirection = 'column';
-      el.style.alignItems    = 'flex-start';
-      el.style.height        = 'auto';
-      el.style.padding       = '5px 14px 5px 28px';
-      el.style.gap           = '4px';
-      el.innerHTML = `<div class="bar"></div>
-        <div style="display:flex;align-items:center;width:100%;gap:8px;">
-          <span class="item-name" style="font-size:12px">LOCAL PED</span>
-          <span style="font-size:10px;color:rgba(180,180,180,0.6);font-family:'Share Tech Mono',monospace;">actif : ${appliedTxt}</span>
-        </div>
-        <div style="display:flex;align-items:center;width:100%;gap:8px;">
-          <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${labelOf(localPedSel)}</span>
-          <span style="font-size:10px;color:rgba(180,180,180,0.5);font-family:'Share Tech Mono',monospace;">${localPedSel + 1}/${names.length + 1}</span>
-        </div>
-        ${hint}`;
+      const names      = Array.isArray(localPedNames) ? localPedNames : Object.values(localPedNames || {});
+      const total      = names.length + 1;
+      const labelOf    = i => i === 0 ? 'OFF (normal)' : (names[i - 1] || '?');
+      const curLabel   = labelOf(localPedSel);
+      const stateTxt   = String(localPedState || '').toUpperCase();
+
+      // flat row — same height/padding as Face (COMP)
+      el.style.flexDirection = 'row';
+      el.style.alignItems    = 'center';
+      el.style.height        = '30px';
+      el.style.padding       = '0 16px 0 28px';
+      el.innerHTML = `
+        <div class="bar"></div>
+        <span class="item-name" style="font-size:13px;font-weight:500;">LOCAL PED</span>
+        <span style="
+          font-size:11px;
+          color:var(--accent);
+          font-family:'Share Tech Mono',monospace;
+          white-space:nowrap;
+          overflow:hidden;
+          text-overflow:ellipsis;
+          max-width:120px;
+          text-align:right;
+          margin-right:6px;
+        ">${curLabel}</span>
+        <span style="
+          font-size:10px;
+          color:rgba(180,180,180,0.5);
+          font-family:'Share Tech Mono',monospace;
+          white-space:nowrap;
+          flex-shrink:0;
+        ">${localPedSel + 1} / ${total}${isSel ? ' ← →' : ''}</span>
+      `;
 
     } else if (row.type === 'removeprop') {
       const nm = document.createElement('span');
