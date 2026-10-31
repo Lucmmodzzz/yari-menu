@@ -1269,6 +1269,34 @@ function renderItemList(items, catName) {
     const name = items[idx];
     const isSel = idx === itemSelIdx;
 
+    if (name === 'Noclip') {
+      const MODES = ['Normal', 'Desync', 'Solo'];
+      const modeIdx = window._noclipMode || 0;
+      const modeName = MODES[modeIdx];
+      const tk = 'Player_1';
+      const isOn = toggleStates[tk] === true;
+      const el = document.createElement('div');
+      el.className = 'menu-item' + (isSel ? ' sel' : '');
+      el.style.flexDirection = 'row';
+      el.style.alignItems    = 'center';
+      el.style.height        = '30px';
+      el.style.padding       = '0 16px 0 28px';
+      el.innerHTML = `
+        <div class="bar"></div>
+        <span class="item-name" style="font-size:13px;font-weight:500;">Noclip</span>
+        <span style="
+          font-size:10px;
+          color:rgba(180,180,180,0.55);
+          font-family:'Share Tech Mono',monospace;
+          margin-right:8px;
+          white-space:nowrap;
+        ">${isSel ? '← ' : ''}${modeName}${isSel ? ' →' : ''}</span>
+        <div class="tog${isOn ? ' on' : ''}"></div>
+      `;
+      itemsList.appendChild(el);
+      continue;
+    }
+    
     // ── FOV Slider ────────────────────────────────────────────────
     if (name === 'FOV Slider') {
       const fov = window._aimbotFOV || 30;
@@ -1955,6 +1983,8 @@ window.addEventListener('message', function(e) {
     if (d.onlineSortBy     !== undefined) onlineSortBy     = d.onlineSortBy;
     if (d.onlineFreezeList !== undefined) onlineFreezeList = d.onlineFreezeList;
     if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
+
+    if (d.noclipMode !== undefined) window._noclipMode = d.noclipMode;
 
     if (d.wardrobeCatIdx  !== undefined) wardrobeCatIdx  = d.wardrobeCatIdx;
     if (d.wardrobeDrawIdx !== undefined) wardrobeDrawIdx = d.wardrobeDrawIdx;
