@@ -1170,39 +1170,40 @@ function renderWardrobe() {
       el.appendChild(ind);
 
       } else if (row.type === 'localped') {
-      const names      = Array.isArray(localPedNames) ? localPedNames : Object.values(localPedNames || {});
-      const total      = names.length + 1;
-      const labelOf    = i => i === 0 ? 'OFF (normal)' : (names[i - 1] || '?');
-      const curLabel   = labelOf(localPedSel);
-      const stateTxt   = String(localPedState || '').toUpperCase();
-
-      // flat row — same height/padding as Face (COMP)
-      el.style.flexDirection = 'row';
-      el.style.alignItems    = 'center';
-      el.style.height        = '30px';
-      el.style.padding       = '0 16px 0 28px';
-      el.innerHTML = `
-        <div class="bar"></div>
-        <span class="item-name" style="font-size:13px;font-weight:500;">LOCAL PED</span>
-        <span style="
-          font-size:11px;
-          color:var(--accent);
-          font-family:'Share Tech Mono',monospace;
-          white-space:nowrap;
-          overflow:hidden;
-          text-overflow:ellipsis;
-          max-width:120px;
-          text-align:right;
-          margin-right:6px;
-        ">${curLabel}</span>
-        <span style="
-          font-size:10px;
-          color:rgba(180,180,180,0.5);
-          font-family:'Share Tech Mono',monospace;
-          white-space:nowrap;
-          flex-shrink:0;
-        ">${localPedSel + 1} / ${total}${isSel ? ' ← →' : ''}</span>
-      `;
+        const names    = Array.isArray(localPedNames) ? localPedNames : Object.values(localPedNames || {});
+        const total    = names.length + 1;
+        const labelOf  = i => i === 0 ? 'OFF (normal)' : (names[i - 1] || '?');
+        const curLabel = labelOf(localPedSel);
+  
+        // flat 30px row, identical to Face (COMP)
+        el.style.flexDirection = 'row';
+        el.style.alignItems    = 'center';
+        el.style.height        = '30px';
+        el.style.padding       = '0 16px 0 28px';
+        el.innerHTML = `
+          <div class="bar"></div>
+          <span class="item-name" style="font-size:13px;font-weight:500;">LOCAL PED</span>
+          <span style="
+            font-size:11px;
+            font-weight:700;
+            color:var(--accent);
+            font-family:'Share Tech Mono',monospace;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            max-width:110px;
+            margin-right:6px;
+            text-align:right;
+          ">${curLabel}</span>
+          <span style="
+            font-size:11px;
+            font-weight:700;
+            color:var(--accent);
+            font-family:'Share Tech Mono',monospace;
+            white-space:nowrap;
+            flex-shrink:0;
+          ">${localPedSel + 1} / ${total}${isSel ? ' ← →' : ''}</span>
+        `;
 
     } else if (row.type === 'removeprop') {
       const nm = document.createElement('span');
