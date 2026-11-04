@@ -599,7 +599,7 @@ const CAT_STRUCTURE = [
   {
       name: "Player",
       subTabs: [
-        { name: "SELF",     items: ["God Mode","No Ragdoll","No Collision","Max Heal","Max Armor","Invisible","Super Jump","Walk On Wall","Anti Aim V2"] },
+        { name: "SELF",     items: ["God Mode","No Ragdoll","No Collision","Max Heal","Max Armor","Invisible","Super Jump","Walk On Wall", "Walk On Wall SM","Anti Aim V2"] },
         { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina","Slide Run","Slide Speed","Spider Man"] },
         { name: "WARDROBE", items: ["__wardrobe__"] },
       ]
@@ -676,6 +676,7 @@ const GLOBAL_ACTION_MAP = {
   "Player_10": true,  // Invisible
   "Player_11": true,  // Super Jump
   "Player_13": true,  // Walk On Wall
+  "Player_14": true,  // Walk On Wall SM
   // Player MOVEMENT
   "Player_1":  true,  // Noclip
   "Player_5":  true,  // Fast Run
@@ -722,10 +723,11 @@ const LUA_ACTION = {
   "Super Jump":               ["Player", 11],
   "Infinite Stamina":         ["Player", 12],
   "Walk On Wall":             ["Player", 13],
-  "Anti Aim V2":              ["Player", 14],
-  "Slide Run":                ["Player", 15],
-  "Slide Speed":              ["Player", 16],
-  "Spider Man":               ["Player", 17],
+  "Walk On Wall SM":          ["Player", 14],
+  "Anti Aim V2":              ["Player", 15],
+  "Slide Run":                ["Player", 16],
+  "Slide Speed":              ["Player", 17],
+  "Spider Man":               ["Player", 18],
   // Weapon
   "Give Weapons":             ["Weapon",  1],
   "Give Weapon by Name":      ["Weapon",  2],
@@ -808,7 +810,7 @@ const LUA_ACTION = {
 // Toggle item names
 const TOGGLE_NAMES = new Set([
   "Noclip","God Mode","No Ragdoll","No Collision","Fast Run",
-  "Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall",
+  "Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall","Walk On Wall SM",
   "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost",
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs",
   "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
