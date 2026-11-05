@@ -644,7 +644,7 @@ const CAT_STRUCTURE = [
     subTabs: [
       { name: "MISC", items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim","Free Cam","Desync"] },
       { name: "PROTECTION", items: ["New Player Bypass", "Panic Mode"] },
-      { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos", "Vehicle Spin Chaos","Vehicle Black Hole"] },
+      { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos", "Vehicle Spin Chaos","Vehicle Black Hole", "Disable Map Collision"] },
       { name: "SERVER",    items: ["Bypass Sunlife","Prime Bypass", "Bypass GLife", "Bypass Seed"] },
     ]
   },
@@ -805,6 +805,7 @@ const LUA_ACTION = {
   "Vehicle Chaos":            ["Destroyer", 5],
   "Vehicle Spin Chaos":       ["Destroyer", 6],
   "Vehicle Black Hole":       ["Destroyer", 7],
+  "Disable Map Collision":     ["Destroyer", 8],
 };
 
 // Toggle item names
@@ -816,7 +817,7 @@ const TOGGLE_NAMES = new Set([
   "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
   "Vehicle Chaos", "Vehicle Spin Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV","Slide Run","Speed Multiplier", 
   "Brake Multiplier", "Turn Multiplier","Pit Mode", "Spider Man","Vehicle Spin", "Wheelie Permanent", "Flip Recovery",
-  "Vehicle Magnet", "Force Push", "Vehicle Black Hole", "Infinite Ammo", "No Reload"
+  "Vehicle Magnet", "Force Push", "Vehicle Black Hole", "Disable Map Collision", "Infinite Ammo", "No Reload"
 ]);
 
 // LUA toggle key lookup (for toggleStates)
