@@ -1310,7 +1310,7 @@ function renderItemList(items, catName) {
           font-family:'Share Tech Mono',monospace;
           margin-right:8px;
           white-space:nowrap;
-        ">${isSel ? '← ' : ''}${modeName}${isSel ? ' →' : ''}</span>
+        ">${isSel ? '← ' : ''}${modeName}${isSel ? ' →' : ' ◈'}</span>
         <div class="tog${isOn ? ' on' : ''}"></div>
       `;
       itemsList.appendChild(el);
@@ -1334,11 +1334,11 @@ function renderItemList(items, catName) {
         <span class="item-name" style="font-size:13px;font-weight:500;">Noclip</span>
         <span style="
           font-size:10px;
-          color:rgba(180,180,180,0.55);
+          color:${isSel ? 'var(--accent)' : 'rgba(200,200,200,0.75)'};
           font-family:'Share Tech Mono',monospace;
           margin-right:8px;
           white-space:nowrap;
-        ">${isSel ? '← ' : ''}${modeName}${isSel ? ' →' : ''}</span>
+        ">← ${modeName} →</span>
         <div class="tog${isOn ? ' on' : ''}"></div>
       `;
       itemsList.appendChild(el);
