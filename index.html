@@ -599,7 +599,14 @@ const CAT_STRUCTURE = [
   {
       name: "Player",
       subTabs: [
-        { name: "SELF",     items: ["God Mode","No Ragdoll","No Collision","Max Heal","Max Armor","Invisible","Super Jump","Walk On Wall", "Walk On Wall SM","Anti Aim V2"] },
+        { name: "SELF", items: [
+          "__sep:Protection",
+          "God Mode","No Ragdoll","No Collision",
+          "__sep:Health",
+          "Max Heal","Max Armor",
+          "__sep:Misc",
+          "Invisible","Super Jump","Walk On Wall","Walk On Wall SM","Anti Aim V2"
+        ]},
         { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina","Slide Run","Slide Speed","Spider Man"] },
         { name: "WARDROBE", items: ["__wardrobe__"] },
       ]
@@ -1273,6 +1280,19 @@ function renderItemList(items, catName) {
     if (idx >= items.length) break;
     const name = items[idx];
     const isSel = idx === itemSelIdx;
+
+    if (name.startsWith('__sep:')) {
+      const label = name.slice(6);
+      const el = document.createElement('div');
+      el.style.cssText = 'display:flex;align-items:center;padding:0 14px;height:22px;gap:8px;';
+      el.innerHTML = `
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.14));"></div>
+        <span style="font-size:9px;letter-spacing:2px;color:rgba(180,180,180,0.4);font-family:'Share Tech Mono',monospace;white-space:nowrap;text-transform:uppercase;">${label}</span>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,0.14),transparent);"></div>
+      `;
+      itemsList.appendChild(el);
+      continue;
+    }
 
     if (name === 'Noclip') {
       const MODES = ['Normal', 'Desync', 'Solo'];
