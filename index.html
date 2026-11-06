@@ -1676,15 +1676,6 @@ function renderOnline(cat) {
       <span class="item-name" style="font-size:11px;letter-spacing:1px;color:${selCountUA > 0 ? '#dc821e' : 'rgba(180,180,180,0.35)'}">${selCountUA > 0 ? '✕ UNSELECT ALL (' + selCountUA + ')' : '✕ UNSELECT ALL'}</span>`;
     itemsList.appendChild(r4);
 
-    const rCount = document.createElement('div');
-    rCount.style.cssText = 'display:flex;align-items:center;padding:0 12px;height:20px;background:rgba(5,5,5,0.97);border-bottom:1px solid rgba(255,255,255,0.03);gap:6px;';
-    rCount.innerHTML = `
-      <span style="font-size:9px;letter-spacing:1.5px;color:rgba(180,180,180,0.4);font-family:'Share Tech Mono',monospace;">CLIENTS</span>
-      <span style="font-size:10px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;letter-spacing:1px;">${typeof d.clientsCount === 'number' ? d.clientsCount : '—'}</span>
-      <span style="font-size:9px;color:rgba(130,130,130,0.35);font-family:'Share Tech Mono',monospace;letter-spacing:1px;">connectés</span>
-    `;
-    itemsList.appendChild(rCount);
-
     // séparateur  ← EXISTANT, inchangé
     const sep = document.createElement('div');
     sep.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:2px 0;opacity:0.5;';
@@ -2090,8 +2081,6 @@ window.addEventListener('message', function(e) {
     if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
 
     if (d.disableMapCollisionMode !== undefined) window._disableMapCollisionMode = d.disableMapCollisionMode;
-
-    if (d.clientsCount !== undefined) window._clientsCount = d.clientsCount;
 
     if (d.noclipMode !== undefined) window._noclipMode = d.noclipMode;
 
