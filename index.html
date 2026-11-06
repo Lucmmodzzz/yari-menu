@@ -628,7 +628,7 @@ const CAT_STRUCTURE = [
     name: "Vehicle",
     subTabs: [
       { name: "SPAWN",   items: ["Spawn Custom Véhicule"] },
-      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost", "Horn Boost","Full Performance","Repair Vehicle","Speed Multiplier","Brake Multiplier","Turn Multiplier","Pit Mode","Vehicle Spin","Pop Tires","Wheelie Permanent","Flip Recovery"] },
+      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost","Full Performance","Repair Vehicle","Speed Multiplier","Brake Multiplier","Turn Multiplier","Pit Mode","Vehicle Spin","Pop Tires","Wheelie Permanent","Flip Recovery"] },
       { name: "CONTROL", items: ["Porter/Lancer Véhicule","Delete Close Véhicule","Unlock Vehicle","Lock Vehicle","Lock Yourself","Lock Passagers","Vehicle Magnet"] },
       { name: "RADAR",   items: [] }
     ]
@@ -684,13 +684,8 @@ const GLOBAL_ACTION_MAP = {
   "Player_17": true,  // Spider Man
   // Vehicle
   "Vehicle_2": true,  // Porter/Lancer
-  "Vehicle_6":  true,  // Vehicle God Mode
-  "Vehicle_7":  true,  // Shift Boost
-  "Vehicle_8":  true,  // Horn Boost
-  "Vehicle_14": true,  // Speed Multiplier
-  "Vehicle_15": true,  // Brake Multiplier
-  "Vehicle_16": true,  // Turn Multiplier
-  "Vehicle_18": true,
+  "Vehicle_6": true,  // Vehicle God Mode
+  "Vehicle_7": true,  // Shift Boost
   // Misc
   "Misc_1": true,
   "Misc_2": true,
@@ -748,33 +743,29 @@ const LUA_ACTION = {
   "Infinite Ammo":            ["Combat", 7],
   "No Reload":                ["Combat",  8],
   // Vehicle
-  "Spawn Custom Véhicule":    ["Vehicle",  1],
-  "Porter/Lancer Véhicule":   ["Vehicle",  2],
-  "Full Performance":         ["Vehicle",  3],
-  "Delete Close Véhicule":    ["Vehicle",  4],
-  "Repair Vehicle":           ["Vehicle",  5],
-  "Vehicle God Mode":         ["Vehicle",  6],
-  "Shift Boost":              ["Vehicle",  7],
-  "Horn Boost":               ["Vehicle",  8],
-  "Unlock Vehicle":           ["Vehicle",  9],
-  "Lock Vehicle":             ["Vehicle", 10],
-  "Lock Yourself":            ["Vehicle", 11],
-  "Lock Passagers":           ["Vehicle", 12],
-  "Vehicle Magnet":           ["Vehicle", 13],
-  "Speed Multiplier":         ["Vehicle", 14],
-  "Brake Multiplier":         ["Vehicle", 15],
-  "Turn Multiplier":          ["Vehicle", 16],
-  "Pit Mode":                 ["Vehicle", 17],
-  "Vehicle Spin":             ["Vehicle", 18],
-  "Pop Tires":                ["Vehicle", 19],
-  "Wheelie Permanent":        ["Vehicle", 20],
-  "Flip Recovery":            ["Vehicle", 21],
-  // Radar actions (internes)
-  "TP Into Vehicle":          ["Vehicle", 22],
-  "Bring Vehicle":            ["Vehicle", 23],
-  "Delete Vehicle":           ["Vehicle", 24],
-  "Explode Vehicle":          ["Vehicle", 25],
-  "TP To Vehicle":            ["Vehicle", 26],
+  "Spawn Véhicule Personnalisé": ["Vehicle", 1],
+  "Porter/Lancer Véhicule":   ["Vehicle", 2],
+  "Full Performance":         ["Vehicle", 3],
+  "Delete Close Véhicule":    ["Vehicle", 4],
+  "Réparer Véhicule":         ["Vehicle", 5],
+  "Vehicle God Mode":         ["Vehicle", 6],
+  "Shift Boost":              ["Vehicle", 7],
+  "Unlock Vehicle":           ["Vehicle", 8],
+  "Lock Vehicle":             ["Vehicle", 9],
+  "TP Into Vehicle":          ["Vehicle", 10],
+  "Bring Vehicle":            ["Vehicle", 11],
+  "Delete Vehicle":           ["Vehicle", 12],
+  "Explode Vehicle":          ["Vehicle", 13],
+  "TP To Vehicle":            ["Vehicle", 14],
+  "Speed Multiplier":         ["Vehicle", 12],
+  "Brake Multiplier":         ["Vehicle", 13],
+  "Turn Multiplier":          ["Vehicle", 14],
+  "Pit Mode":                 ["Vehicle", 15],
+  "Vehicle Spin":             ["Vehicle", 16],
+  "Pop Tires":                ["Vehicle", 17],
+  "Wheelie Permanent":        ["Vehicle", 18],
+  "Flip Recovery":            ["Vehicle", 19],
+  "Vehicle Magnet":           ["Vehicle", 20],
   // Construction
   "Train Vehicle":             ["Construction", 1],
   "Wing Vehicle":             ["Construction", 2],
@@ -822,7 +813,7 @@ const LUA_ACTION = {
 const TOGGLE_NAMES = new Set([
   "Noclip","God Mode","No Ragdoll","No Collision","Fast Run",
   "Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall","Walk On Wall SM",
-  "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost", "Horn Boost",
+  "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost",
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs",
   "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
   "Vehicle Chaos", "Vehicle Spin Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV","Slide Run","Speed Multiplier", 
@@ -1404,47 +1395,6 @@ function renderItemList(items, catName) {
       itemsList.appendChild(el);
       continue;
     }
-
-    if (name === 'Horn Boost') {
-      const spd  = window._hornBoostSpeed   ?? 100;
-      const isOn = window._hornBoostEnabled ?? false;
-      const pct  = ((spd - 1) / (300 - 1)) * 100;
-      const el   = document.createElement('div');
-      el.className = 'menu-item' + (isSel ? ' sel' : '');
-      el.style.height        = 'auto';
-      el.style.flexDirection = 'column';
-      el.style.alignItems    = 'flex-start';
-      el.style.padding       = '5px 14px 5px 28px';
-      el.style.gap           = '4px';
-      el.innerHTML = `
-          <div class="bar"></div>
-          <div style="display:flex;align-items:center;width:100%;gap:8px;">
-              <span class="item-name" style="font-size:12px">HORN BOOST</span>
-              <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
-              <span style="
-                  font-size:12px;
-                  font-weight:700;
-                  color:var(--accent);
-                  font-family:'Share Tech Mono',monospace;
-                  min-width:52px;
-                  text-align:right;
-              ">${spd} m/s</span>
-          </div>
-          <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
-              <div style="
-                  height:100%;
-                  width:${pct}%;
-                  background:var(--accent);
-                  border-radius:3px;
-                  box-shadow:0 0 6px var(--accent-glow);
-                  transition:width 0.1s;
-              "></div>
-          </div>
-          ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (1→300 m/s)</div>' : ''}
-      `;
-      itemsList.appendChild(el);
-      continue;
-  }
 
     // ── Couleur du Menu ───────────────────────────────────────────
     if (name === 'Couleur du Menu') {
@@ -2086,9 +2036,6 @@ window.addEventListener('message', function(e) {
 
     if (d.noclipMode !== undefined) window._noclipMode = d.noclipMode;
 
-    if (d.hornBoostSpeed   !== undefined) window._hornBoostSpeed   = d.hornBoostSpeed;
-    if (d.hornBoostEnabled !== undefined) window._hornBoostEnabled = d.hornBoostEnabled;
-
     if (d.wardrobeCatIdx  !== undefined) wardrobeCatIdx  = d.wardrobeCatIdx;
     if (d.wardrobeDrawIdx !== undefined) wardrobeDrawIdx = d.wardrobeDrawIdx;
     if (d.wardrobeTexIdx  !== undefined) wardrobeTexIdx  = d.wardrobeTexIdx;
@@ -2212,8 +2159,7 @@ function renderRadarActions() {
     itemsList.appendChild(el);
   });
 }
-  
-appEl.style.display = 'flex';
+
 render();
 </script>
 
