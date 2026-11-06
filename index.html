@@ -1718,7 +1718,7 @@ function renderOnline(cat) {
       });
     }
 
-    if (typeof window._serverPlayerCount === 'number') {
+    if (window._serverPlayerCount != null) {
       const countRow = document.createElement('div');
       countRow.style.cssText = 'padding:3px 14px;font-size:10px;color:rgba(180,180,180,0.55);font-family:"Share Tech Mono",monospace;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,0.04);';
       countRow.innerHTML = `<span style="color:var(--accent);font-size:9px;">●</span> <span style="letter-spacing:1px;">SERVEUR</span> <span style="margin-left:auto;color:#e8e8e8;font-weight:700;">${window._serverPlayerCount} JOUEURS</span>`;
