@@ -628,7 +628,7 @@ const CAT_STRUCTURE = [
     name: "Vehicle",
     subTabs: [
       { name: "SPAWN",   items: ["Spawn Custom Véhicule"] },
-      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost","Full Performance","Repair Vehicle","Speed Multiplier","Brake Multiplier","Turn Multiplier","Pit Mode","Vehicle Spin","Pop Tires","Wheelie Permanent","Flip Recovery"] },
+      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost", "Horn Boost","Full Performance","Repair Vehicle","Speed Multiplier","Brake Multiplier","Turn Multiplier","Pit Mode","Vehicle Spin","Pop Tires","Wheelie Permanent","Flip Recovery"] },
       { name: "CONTROL", items: ["Porter/Lancer Véhicule","Delete Close Véhicule","Unlock Vehicle","Lock Vehicle","Lock Yourself","Lock Passagers","Vehicle Magnet"] },
       { name: "RADAR",   items: [] }
     ]
@@ -686,6 +686,7 @@ const GLOBAL_ACTION_MAP = {
   "Vehicle_2": true,  // Porter/Lancer
   "Vehicle_6": true,  // Vehicle God Mode
   "Vehicle_7": true,  // Shift Boost
+  "Vehicle_8": true,  // Horn Boost
   // Misc
   "Misc_1": true,
   "Misc_2": true,
@@ -750,22 +751,23 @@ const LUA_ACTION = {
   "Réparer Véhicule":         ["Vehicle", 5],
   "Vehicle God Mode":         ["Vehicle", 6],
   "Shift Boost":              ["Vehicle", 7],
-  "Unlock Vehicle":           ["Vehicle", 8],
-  "Lock Vehicle":             ["Vehicle", 9],
-  "TP Into Vehicle":          ["Vehicle", 10],
-  "Bring Vehicle":            ["Vehicle", 11],
-  "Delete Vehicle":           ["Vehicle", 12],
-  "Explode Vehicle":          ["Vehicle", 13],
-  "TP To Vehicle":            ["Vehicle", 14],
+  "Horm Boost":               ["Vehicle", 8],
+  "Unlock Vehicle":           ["Vehicle", 9],
+  "Lock Vehicle":             ["Vehicle", 10],
+  "TP Into Vehicle":          ["Vehicle", 11],
+  "Bring Vehicle":            ["Vehicle", 12],
+  "Delete Vehicle":           ["Vehicle", 13],
+  "Explode Vehicle":          ["Vehicle", 14],
+  "TP To Vehicle":            ["Vehicle", 15],
   "Speed Multiplier":         ["Vehicle", 12],
   "Brake Multiplier":         ["Vehicle", 13],
   "Turn Multiplier":          ["Vehicle", 14],
-  "Pit Mode":                 ["Vehicle", 15],
-  "Vehicle Spin":             ["Vehicle", 16],
-  "Pop Tires":                ["Vehicle", 17],
-  "Wheelie Permanent":        ["Vehicle", 18],
-  "Flip Recovery":            ["Vehicle", 19],
-  "Vehicle Magnet":           ["Vehicle", 20],
+  "Pit Mode":                 ["Vehicle", 16],
+  "Vehicle Spin":             ["Vehicle", 17],
+  "Pop Tires":                ["Vehicle", 18],
+  "Wheelie Permanent":        ["Vehicle", 19],
+  "Flip Recovery":            ["Vehicle", 20],
+  "Vehicle Magnet":           ["Vehicle", 21],
   // Construction
   "Train Vehicle":             ["Construction", 1],
   "Wing Vehicle":             ["Construction", 2],
@@ -813,7 +815,7 @@ const LUA_ACTION = {
 const TOGGLE_NAMES = new Set([
   "Noclip","God Mode","No Ragdoll","No Collision","Fast Run",
   "Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall","Walk On Wall SM",
-  "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost",
+  "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost", "Horn Boost"
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs",
   "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
   "Vehicle Chaos", "Vehicle Spin Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV","Slide Run","Speed Multiplier", 
