@@ -1,3 +1,4 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -13,11 +14,14 @@
   right: 28px;
   transform: translateY(-50%);
   width: 220px;
-  background: rgba(8,8,8,0.93);
+  background: rgba(8,8,8,0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border-left: 3px solid var(--accent);
   border-top: 1px solid rgba(255,255,255,0.06);
   border-bottom: 1px solid rgba(255,255,255,0.06);
-  box-shadow: -4px 0 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
+  border-radius: 5px;
+  box-shadow: -4px 0 24px rgba(0,0,0,0.75), 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
   font-family: 'Share Tech Mono', monospace;
   z-index: 9999;
   pointer-events: none;
@@ -162,8 +166,12 @@
   border-top: 3px solid var(--accent);
   border-bottom: 3px solid var(--accent);
   border-left: 1px solid rgba(255,255,255,0.06);
-  background: var(--bg);
-  box-shadow: 0 0 22px rgba(0,0,0,0.55);
+  background: rgba(10, 10, 10, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 5px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.75), 0 4px 12px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03);
+  overflow: hidden;
   font-family: 'Share Tech Mono', monospace;
   z-index: 9998;
   pointer-events: none;
@@ -268,10 +276,14 @@
 
 #kb-hud {
   display: none; position: fixed; bottom: 24px; right: 24px; width: 250px;
-  background: var(--bg);
+  background: rgba(10, 10, 10, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border-top: 3px solid var(--accent);
   border-bottom: 3px solid var(--accent);
-  box-shadow: 0 0 20px rgba(0,0,0,0.45);
+  border-radius: 5px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.75), 0 4px 12px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03);
+  overflow: hidden;
   font-family: 'Share Tech Mono', monospace;
   z-index: 9999; pointer-events: none;
 }
@@ -319,12 +331,16 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 #app {
   position: fixed; top: 150px; left: 200px; width: 350px;
   display: none; flex-direction: column;
-  background: var(--bg);
+  background: rgba(10, 10, 10, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border-top: 3px solid var(--accent);
   border-bottom: 3px solid var(--accent);
-  box-shadow: 0 0 20px rgba(0,0,0,0.45), 0 0 6px rgba(0,0,0,0.3) inset;
+  border-radius: 5px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.75), 0 4px 12px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03), 0 0 6px rgba(0,0,0,0.3) inset;
   user-select: none;
   transition: border-color 0.25s;
+  overflow: hidden;
 }
 
 #app.twotone { border-top: none; border-bottom: none; }
@@ -2374,3 +2390,4 @@ window.addEventListener('message', function(e) {
 
 </body>
 </html>
+</body></html>
