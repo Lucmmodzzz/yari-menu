@@ -595,73 +595,9 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 // ═══════════════════════════════════════════════════════════════════
 //  CATEGORY STRUCTURE — sub-tabbed
 // ═══════════════════════════════════════════════════════════════════
-const CAT_STRUCTURE = [
-  {
-      name: "Player",
-      subTabs: [
-        { name: "SELF", items: [ "God Mode","No Ragdoll","No Collision", "Max Heal","Max Armor", "Invisible","Super Jump","Walk On Wall","Walk On Wall SM","Anti Aim V2"] },
-        { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina","Slide Run","Slide Speed","Spider Man"] },
-        { name: "WARDROBE", items: ["__wardrobe__"] },
-      ]
-  },
-  {
-    name: "Online",
-    special: "online",
-    subTabs: [
-      { name: "PLAYERS", items: [] },
-      { name: "TROLL",   items: [] },
-    ]
-  },
-  {
-    name: "Weapon",
-    subTabs: [
-      { name: "WEAPONS", items: ["Give Weapons","Give Weapon by Name","Remove All Weapons"] },
-    ]
-  },
-  {
-    name: "Combat",
-    subTabs: [
-      { name: "COMBAT", items: ["Laser Eye","Fast Punch","Aimbot","Show FOV","FOV Slider","Force Push", "Infinite Ammo", "No Reload"] },
-    ]
-},
-  {
-    name: "Vehicle",
-    subTabs: [
-      { name: "SPAWN",   items: ["Spawn Custom Véhicule"] },
-      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost", "Horn Boost", "Full Performance","Repair Vehicle","Speed Multiplier","Brake Multiplier","Turn Multiplier","Pit Mode","Vehicle Spin","Pop Tires","Wheelie Permanent","Flip Recovery"] },
-      { name: "CONTROL", items: ["Porter/Lancer Véhicule","Delete Close Véhicule","Unlock Vehicle","Lock Vehicle","Lock Yourself","Lock Passagers","Vehicle Magnet"] },
-      { name: "RADAR",   items: [] }
-    ]
-  },
-  {
-    name: "Construction",
-    subTabs: [
-      { name: "BUILD", items: ["Train Vehicle","Wing Vehicle","Tower Vehicle","Ramp Vehicle","Transformer Vehicle", "Mega Transformer Vehicle","Nazi Vehicle", "Detach Vehicle"] },
-    ]
-  },
-  {
-    name: "Misc",
-    subTabs: [
-      { name: "MISC", items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim","Free Cam","Desync"] },
-      { name: "PROTECTION", items: ["New Player Bypass", "Panic Mode"] },
-      { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos", "Vehicle Spin Chaos","Vehicle Black Hole", "Disable Map Collision"] },
-      { name: "SERVER",    items: ["Bypass Sunlife","Prime Bypass", "Bypass GLife", "Bypass Seed"] },
-    ]
-  },
-  {
-    name: "Settings",
-    subTabs: [
-      { name: "SETTINGS", items: ["Auto Load Config","Change Banner","Couleur du Menu","Activer Deux Couleurs","Show Keybinds"] },
-    ]
-  },
-  {
-    name: "Keybind",
-    subTabs: [
-      { name: "KEYBIND", items: ["Delete All Keybinds"] },
-    ]
-  },
-  { name: "Search", special: "search", subTabs: [ { name: "SEARCH", items: [] } ] },
-];
+let CAT_STRUCTURE = [];
+let LUA_ACTION = {};
+let TOGGLE_NAMES = new Set();
 
 const CONFIG_ITEMS = ["Save Config","Load Config"];
 
@@ -716,129 +652,6 @@ const GLOBAL_ACTION_MAP = {
   // Server
   "Server_3": true,
 };
-
-// Mapping from display item name → Lua (category, index)
-// We build this from CAT_STRUCTURE plus the original Lua action indices
-const LUA_ACTION = {
-  // Player
-  "Noclip":                   ["Player",  1],
-  "God Mode":                 ["Player",  2],
-  "No Ragdoll":               ["Player",  3],
-  "No Collision":             ["Player",  4],
-  "Fast Run":                 ["Player",  5],
-  "Revive":                   ["Player",  6],
-  "Teleporte To Waypoint":    ["Player",  7],
-  "Max Heal":                 ["Player",  8],
-  "Max Armor":                ["Player",  9],
-  "Invisible":                ["Player", 10],
-  "Super Jump":               ["Player", 11],
-  "Infinite Stamina":         ["Player", 12],
-  "Walk On Wall":             ["Player", 13],
-  "Walk On Wall SM":          ["Player", 14],
-  "Anti Aim V2":              ["Player", 15],
-  "Slide Run":                ["Player", 16],
-  "Slide Speed":              ["Player", 17],
-  "Spider Man":               ["Player", 18],
-
-  // Weapon
-  "Give Weapons":             ["Weapon",  1],
-  "Give Weapon by Name":      ["Weapon",  2],
-  "Remove All Weapons":       ["Weapon",  3],
-
-  // Combat
-  "Laser Eye":                ["Combat",  1],
-  "Fast Punch":               ["Combat",  2],
-  "Aimbot":                   ["Combat",  3],
-  "Show FOV":                 ["Combat",  4],
-  "FOV Slider":               ["Combat",  5],
-  "Force Push":               ["Combat",  6],
-  "Infinite Ammo":            ["Combat",  7],
-  "No Reload":                ["Combat",  8],
-
-  // Vehicle 
-  "Spawn Custom Véhicule":    ["Vehicle",  1],
-  "Porter/Lancer Véhicule":   ["Vehicle",  2],
-  "Full Performance":         ["Vehicle",  3],
-  "Delete Close Véhicule":    ["Vehicle",  4],
-  "Repair Vehicle":           ["Vehicle",  5],
-  "Vehicle God Mode":         ["Vehicle",  6],
-  "Shift Boost":              ["Vehicle",  7],
-  "Horn Boost":               ["Vehicle",  8],
-  "Unlock Vehicle":           ["Vehicle",  9],
-  "Lock Vehicle":             ["Vehicle", 10],
-  "Lock Yourself":            ["Vehicle", 11],
-  "Lock Passagers":           ["Vehicle", 12],
-  "Speed Multiplier":         ["Vehicle", 13],
-  "Brake Multiplier":         ["Vehicle", 14],
-  "Turn Multiplier":          ["Vehicle", 15],
-  "Pit Mode":                 ["Vehicle", 16],
-  "Vehicle Spin":             ["Vehicle", 17],
-  "Pop Tires":                ["Vehicle", 18],
-  "Wheelie Permanent":        ["Vehicle", 19],
-  "Flip Recovery":            ["Vehicle", 20],
-  "Vehicle Magnet":           ["Vehicle", 21],
-
-  // Construction
-  "Train Vehicle":             ["Construction", 1],
-  "Wing Vehicle":              ["Construction", 2],
-  "Tower Vehicle":             ["Construction", 3],
-  "Ramp Vehicle":              ["Construction", 4],
-  "Transformer Vehicle":       ["Construction", 5],
-  "Mega Transformer Vehicle":  ["Construction", 6],
-  "Nazi Vehicle":              ["Construction", 7],
-  "Detach Vehicle":            ["Construction", 8],
-
-  // Misc
-  "Warp to Explode":           ["Misc", 1],
-  "Warp to Vehicle":           ["Misc", 2],
-  "Afficher liste spectateurs":["Misc", 3],
-  "Ragdoll All Players":       ["Misc", 4],
-  "Anti Aim":                  ["Misc", 5],
-  "Free Cam":                  ["Misc", 6],
-  "Desync":                    ["Misc", 7],
-
-  // Protection
-  "New Player Bypass":         ["Protection", 1],
-  "Panic Mode":                ["Protection", 2],
-
-  // Destroyer
-  "Delete All Vehicles":       ["Destroyer", 1],
-  "Explode All Vehicles":      ["Destroyer", 2],
-  "Cage All Players":          ["Destroyer", 3],
-  "Bug All Players BMX":       ["Destroyer", 4],
-  "Vehicle Chaos":             ["Destroyer", 5],
-  "Vehicle Spin Chaos":        ["Destroyer", 6],
-  "Vehicle Black Hole":        ["Destroyer", 7],
-  "Disable Map Collision":     ["Destroyer", 8],
-
-  // Server
-  "Bypass Sunlife":            ["Server", 1],
-  "Prime Bypass":              ["Server", 2],
-  "Bypass GLife":              ["Server", 3],
-  "Bypass Seed":               ["Server", 4],
-
-  // Settings
-  "Auto Load Config":          ["Settings", 1],
-  "Change Banner":             ["Settings", 2],
-  "Couleur du Menu":           ["Settings", 3],
-  "Activer Deux Couleurs":     ["Settings", 4],
-  "Show Keybinds":             ["Settings", 5],
-
-  // Keybind
-  "Delete All Keybinds":       ["Keybind", 1],
-};
-
-// Toggle item names
-const TOGGLE_NAMES = new Set([
-  "Noclip","God Mode","No Ragdoll","No Collision","Fast Run",
-  "Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall","Walk On Wall SM",
-  "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost",
-  "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs",
-  "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
-  "Vehicle Chaos", "Vehicle Spin Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV","Slide Run","Speed Multiplier", 
-  "Brake Multiplier", "Turn Multiplier","Pit Mode", "Spider Man","Vehicle Spin", "Wheelie Permanent", "Flip Recovery",
-  "Vehicle Magnet", "Force Push", "Vehicle Black Hole", "Disable Map Collision", "Infinite Ammo", "No Reload", "Horn Boost"
-]);
 
 // LUA toggle key lookup (for toggleStates)
 function luaToggleKey(itemName) {
@@ -1853,7 +1666,30 @@ window.addEventListener('message', function(e) {
   if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
   if (!d || !d.type) return;
 
-  if (d.type === 'showMenu') { appEl.style.display = 'flex'; render(); return; }
+  if (d.type === 'showMenu') {
+      if (d.menuDef && d.menuDef.length > 0) {
+          CAT_STRUCTURE = d.menuDef;
+          LUA_ACTION = {};
+          TOGGLE_NAMES = new Set();
+          // Calculer LUA_ACTION automatiquement
+          d.menuDef.forEach(cat => {
+              let globalIdx = 0;
+              (cat.subTabs || []).forEach(st => {
+                  (st.items || []).forEach(item => {
+                      globalIdx++;
+                      if (item.name && item.name !== '__wardrobe__') {
+                          LUA_ACTION[item.name] = [cat.name, globalIdx];
+                          if (item.toggle) TOGGLE_NAMES.add(item.name);
+                      }
+                  });
+              });
+          });
+      }
+      appEl.style.display = 'flex';
+      render();
+      return;
+  }
+  
   if (d.type === 'hideMenu') { appEl.style.display = 'none'; playerPanel.classList.remove('visible'); return; }
 
   if (d.type === 'spectatorToggle') {
