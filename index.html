@@ -654,7 +654,7 @@ const CAT_STRUCTURE = [
       name: "Player",
       subTabs: [
         { name: "SELF", items: [ "God Mode","No Ragdoll","No Collision", "Max Heal","Max Armor", "Invisible","Super Jump","Walk On Wall","Walk On Wall SM","Anti Aim V2"] },
-        { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina","Slide Run","Slide Speed","Spider Man"] },
+        { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina","Slide Run","Slide Speed","Spider Man", "Walk On Water"] },
         { name: "WARDROBE", items: ["__wardrobe__"] },
       ]
   },
@@ -736,6 +736,7 @@ const GLOBAL_ACTION_MAP = {
   "Player_5":  true,  // Fast Run
   "Player_12": true,  // Infinite Stamina
   "Player_17": true,  // Spider Man
+  "Player_18": true,  // Walk On Water
   // Vehicle
   "Vehicle_2": true,  // Porter/Lancer
   "Vehicle_6": true,  // Vehicle God Mode
@@ -794,6 +795,7 @@ const LUA_ACTION = {
   "Slide Run":                ["Player", 16],
   "Slide Speed":              ["Player", 17],
   "Spider Man":               ["Player", 18],
+  "Walk On Water":            ["Player", 19],
 
   // Weapon
   "Spoof Weapon":             ["Weapon",  1],
@@ -894,7 +896,7 @@ const TOGGLE_NAMES = new Set([
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Spoof Weapon",
   "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
   "Vehicle Chaos", "Vehicle Spin Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV","Slide Run","Speed Multiplier", 
-  "Brake Multiplier", "Turn Multiplier","Pit Mode", "Spider Man","Vehicle Spin", "Wheelie Permanent", "Flip Recovery", "Wall Ride",
+  "Brake Multiplier", "Turn Multiplier","Pit Mode", "Spider Man", "Walk On Water", "Vehicle Spin", "Wheelie Permanent", "Flip Recovery", "Wall Ride",
   "Vehicle Magnet", "Force Push", "Vehicle Black Hole", "Disable Map Collision", "Infinite Ammo", "No Reload", "Horn Boost"
 ]);
 
