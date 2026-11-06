@@ -682,7 +682,7 @@ const CAT_STRUCTURE = [
     name: "Vehicle",
     subTabs: [
       { name: "SPAWN",   items: ["Spawn Custom Véhicule"] },
-      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost", "Horn Boost", "Full Performance","Repair Vehicle","Speed Multiplier","Brake Multiplier","Turn Multiplier","Pit Mode","Vehicle Spin","Pop Tires","Wheelie Permanent","Flip Recovery"] },
+      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost", "Horn Boost", "Full Performance","Repair Vehicle","Speed Multiplier","Brake Multiplier","Turn Multiplier","Pit Mode","Vehicle Spin","Pop Tires","Wheelie Permanent","Flip Recovery", "Wall Ride"] },
       { name: "CONTROL", items: ["Porter/Lancer Véhicule","Delete Close Véhicule","Unlock Vehicle","Lock Vehicle","Lock Yourself","Lock Passagers","Vehicle Magnet"] },
       { name: "RADAR",   items: [] }
     ]
@@ -749,7 +749,8 @@ const GLOBAL_ACTION_MAP = {
   "Vehicle_17": true,  // Vehicle Spin 
   "Vehicle_19": true,  // Wheelie Permanent
   "Vehicle_20": true,  // Flip Recovery
-  "Vehicle_21": true,
+  "Vehicle_21": true,  // Vehicle Magnet
+  "Vehicle_22": true,  // Wall Ride
   // Misc
   "Misc_1": true,
   "Misc_2": true,
@@ -832,6 +833,7 @@ const LUA_ACTION = {
   "Wheelie Permanent":        ["Vehicle", 19],
   "Flip Recovery":            ["Vehicle", 20],
   "Vehicle Magnet":           ["Vehicle", 21],
+  "Wall Ride":                ["Vehicle", 22],
 
   // Construction
   "Train Vehicle":             ["Construction", 1],
@@ -892,7 +894,7 @@ const TOGGLE_NAMES = new Set([
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Spoof Weapon",
   "Laser Eye","Fast Punch","New Player Bypass","Auto Load Config","Activer Deux Couleurs",
   "Vehicle Chaos", "Vehicle Spin Chaos","Show Keybinds","Anti Aim V2","Aimbot", "Show FOV","Slide Run","Speed Multiplier", 
-  "Brake Multiplier", "Turn Multiplier","Pit Mode", "Spider Man","Vehicle Spin", "Wheelie Permanent", "Flip Recovery",
+  "Brake Multiplier", "Turn Multiplier","Pit Mode", "Spider Man","Vehicle Spin", "Wheelie Permanent", "Flip Recovery", "Wall Ride",
   "Vehicle Magnet", "Force Push", "Vehicle Black Hole", "Disable Map Collision", "Infinite Ammo", "No Reload", "Horn Boost"
 ]);
 
