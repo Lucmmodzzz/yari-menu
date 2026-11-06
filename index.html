@@ -1396,6 +1396,47 @@ function renderItemList(items, catName) {
       continue;
     }
 
+    if (name === 'Horn Boost') {
+      const spd  = window._hornBoostSpeed   ?? 100;
+      const isOn = window._hornBoostEnabled ?? false;
+      const pct  = ((spd - 1) / (300 - 1)) * 100;
+      const el   = document.createElement('div');
+      el.className = 'menu-item' + (isSel ? ' sel' : '');
+      el.style.height        = 'auto';
+      el.style.flexDirection = 'column';
+      el.style.alignItems    = 'flex-start';
+      el.style.padding       = '5px 14px 5px 28px';
+      el.style.gap           = '4px';
+      el.innerHTML = `
+          <div class="bar"></div>
+          <div style="display:flex;align-items:center;width:100%;gap:8px;">
+              <span class="item-name" style="font-size:12px">HORN BOOST</span>
+              <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
+              <span style="
+                  font-size:12px;
+                  font-weight:700;
+                  color:var(--accent);
+                  font-family:'Share Tech Mono',monospace;
+                  min-width:52px;
+                  text-align:right;
+              ">${spd} m/s</span>
+          </div>
+          <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+              <div style="
+                  height:100%;
+                  width:${pct}%;
+                  background:var(--accent);
+                  border-radius:3px;
+                  box-shadow:0 0 6px var(--accent-glow);
+                  transition:width 0.1s;
+              "></div>
+          </div>
+          ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (1→300 m/s)</div>' : ''}
+      `;
+      itemsList.appendChild(el);
+      continue;
+  }
+
     // ── Couleur du Menu ───────────────────────────────────────────
     if (name === 'Couleur du Menu') {
       const el = document.createElement('div');
@@ -2035,6 +2076,9 @@ window.addEventListener('message', function(e) {
     if (d.disableMapCollisionMode !== undefined) window._disableMapCollisionMode = d.disableMapCollisionMode;
 
     if (d.noclipMode !== undefined) window._noclipMode = d.noclipMode;
+
+    if (d.hornBoostSpeed   !== undefined) window._hornBoostSpeed   = d.hornBoostSpeed;
+    if (d.hornBoostEnabled !== undefined) window._hornBoostEnabled = d.hornBoostEnabled;
 
     if (d.wardrobeCatIdx  !== undefined) wardrobeCatIdx  = d.wardrobeCatIdx;
     if (d.wardrobeDrawIdx !== undefined) wardrobeDrawIdx = d.wardrobeDrawIdx;
