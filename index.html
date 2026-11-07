@@ -2039,19 +2039,18 @@ window.addEventListener('message', function(e) {
   }
 
   if (d.type === 'freecam') {
-    const hud      = document.getElementById('freecam-hud');
+    const hud       = document.getElementById('freecam-hud');
     const centerHud = document.getElementById('fc-center-hud');
 
     if (!d.enabled) {
-      hud.className        = '';
-      centerHud.className  = '';
+      hud.className       = '';
+      centerHud.className = '';
       return;
     }
     hud.classList.add('visible');
     centerHud.classList.add('visible');
 
-    // Aimed player
-    const aimedEl = document.getElementById('fc-aimed');
+    const aimedEl     = document.getElementById('fc-aimed');
     const centerAimed = document.getElementById('fc-center-aimed');
     if (d.aimedPlayer) {
       aimedEl.textContent     = '● ' + d.aimedPlayer;
@@ -2063,20 +2062,18 @@ window.addEventListener('message', function(e) {
       centerAimed.textContent = '';
     }
 
-    // Action courante — centre bas
     const centerAction = document.getElementById('fc-center-action');
     const actions = d.actions || [];
     const sel     = typeof d.selIdx === 'number' ? d.selIdx : 0;
     const cur     = actions[sel];
     if (cur) {
       const dimmed = cur.needsPlayer && !d.aimedPlayer;
-      centerAction.textContent    = cur.name;
-      centerAction.style.color    = dimmed ? 'rgba(160,160,160,0.4)' : '#fff';
+      centerAction.textContent       = cur.name;
+      centerAction.style.color       = dimmed ? 'rgba(160,160,160,0.4)' : '#fff';
       centerAction.style.borderColor = dimmed ? 'rgba(120,120,120,0.3)' : 'var(--accent)';
       centerAction.style.boxShadow   = dimmed ? 'none' : '0 0 12px rgba(0,0,0,0.5), 0 0 8px var(--accent-glow)';
     }
 
-    // Action list (panneau droit — inchangé)
     const listEl  = document.getElementById('fc-list');
     const VISIBLE = 8;
     const total   = actions.length;
@@ -2085,8 +2082,8 @@ window.addEventListener('message', function(e) {
     listEl.innerHTML = '';
 
     for (let i = winStart; i < Math.min(winStart + VISIBLE, total); i++) {
-      const a  = actions[i];
-      const el = document.createElement('div');
+      const a        = actions[i];
+      const el       = document.createElement('div');
       const isActive = i === sel;
       const isDimmed = a.needsPlayer && !d.aimedPlayer;
       el.className = 'fc-item' + (isActive ? ' active' : '') + (isDimmed ? ' dimmed' : '');
@@ -2106,12 +2103,11 @@ window.addEventListener('message', function(e) {
       bar.innerHTML = `<div class="fc-scrollbar-thumb" style="height:${thumbH}%;top:${thumbT}%"></div>`;
       listEl.appendChild(bar);
     }
-
     return;
   }
 
   if (d.type === 'spectatorUpdate') {
-    const hud = document.getElementById('spec-hud');
+    const hud  = document.getElementById('spec-hud');
     if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
     hud.className = 'visible';
     const list = d.list || [];
@@ -2122,17 +2118,16 @@ window.addEventListener('message', function(e) {
       const MAX_SPEC = 10;
       const overflow = list.length > MAX_SPEC;
       const visible  = list.slice(0, MAX_SPEC);
-  
       visible.forEach((p, i) => {
-          const isNoclip  = p.type.includes('Noclip');
-          const isAdmin   = p.type.includes('Admin');
-          const rowCls    = isNoclip ? 'noclip' : 'admin';
-          const typeLabel = p.type.replace(/[\[\]]/g, '');
-          const isLast    = overflow && i === MAX_SPEC - 1;
-          const extra     = isLast
-              ? `<span style="color:var(--accent);font-size:9px;font-family:'Share Tech Mono',monospace;margin-left:4px;flex-shrink:0">+${list.length - MAX_SPEC}</span>`
-              : '';
-          html += `<div class="spec-row ${rowCls}"><span class="spec-sid">${p.serverId}</span><span class="spec-name">${p.name}</span>${extra}<span class="spec-dist">${p.distance}m</span><span class="spec-type ${rowCls}">${typeLabel}</span></div>`;
+        const isNoclip  = p.type.includes('Noclip');
+        const isAdmin   = p.type.includes('Admin');
+        const rowCls    = isNoclip ? 'noclip' : 'admin';
+        const typeLabel = p.type.replace(/[\[\]]/g, '');
+        const isLast    = overflow && i === MAX_SPEC - 1;
+        const extra     = isLast
+          ? `<span style="color:var(--accent);font-size:9px;font-family:'Share Tech Mono',monospace;margin-left:4px;flex-shrink:0">+${list.length - MAX_SPEC}</span>`
+          : '';
+        html += `<div class="spec-row ${rowCls}"><span class="spec-sid">${p.serverId}</span><span class="spec-name">${p.name}</span>${extra}<span class="spec-dist">${p.distance}m</span><span class="spec-type ${rowCls}">${typeLabel}</span></div>`;
       });
     }
     hud.innerHTML = html;
@@ -2144,12 +2139,10 @@ window.addEventListener('message', function(e) {
     if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
     hud.className = 'visible';
     hud.innerHTML = '';
-  
     const title = document.createElement('div');
     title.className = 'kb-title';
     title.innerHTML = '<div class="kb-dot"></div><span>KEYBINDS</span>';
     hud.appendChild(title);
-  
     const list = Array.isArray(d.list) ? d.list : [];
     if (list.length === 0) {
       const e = document.createElement('div');
@@ -2178,7 +2171,8 @@ window.addEventListener('message', function(e) {
 
   if (d.type === 'applyTheme') {
     applyTheme(d.theme || currentTheme, d.twotone === true);
-    render(); return;
+    render();
+    return;
   }
 
   if (d.type === 'setToggleStates') {
@@ -2187,7 +2181,8 @@ window.addEventListener('message', function(e) {
       twoToneEnabled = d.states['Settings_4'] === true;
       applyTheme(currentTheme, twoToneEnabled);
     }
-    render(); return;
+    render();
+    return;
   }
 
   if (d.type === 'radarUpdate') {
@@ -2195,9 +2190,40 @@ window.addEventListener('message', function(e) {
     return;
   }
 
+  // ── KEY PICKER ───────────────────────────────────────────────────────
+  if (d.type === 'showKeyPicker') {
+    document.getElementById('key-picker').classList.add('visible');
+    document.getElementById('kp-detected').classList.remove('has-key');
+    document.getElementById('kp-key-label').textContent = 'EN ATTENTE…';
+    document.getElementById('kp-hint').textContent = '—';
+    document.getElementById('kp-hint').classList.remove('ready');
+    return;
+  }
+
+  if (d.type === 'keyPickerDetected') {
+    const box   = document.getElementById('kp-detected');
+    const label = document.getElementById('kp-key-label');
+    const hint  = document.getElementById('kp-hint');
+    box.classList.add('has-key');
+    label.textContent = d.keyName || ('0x' + (d.keyCode || 0).toString(16).toUpperCase());
+    hint.textContent  = 'Appuyez sur ENTER pour confirmer';
+    hint.classList.add('ready');
+    return;
+  }
+
+  if (d.type === 'hideKeyPicker') {
+    const picker = document.getElementById('key-picker');
+    picker.style.animation = 'kp-out .15s ease both';
+    setTimeout(() => {
+      picker.classList.remove('visible');
+      picker.style.animation = '';
+    }, 160);
+    return;
+  }
+
+  // ── SYNC ─────────────────────────────────────────────────────────────
   if (d.type === 'sync') {
     updatePlayerPanel(d.focusedPlayer || null);
-
 
     if (d.toggles) {
       Object.assign(toggleStates, d.toggles);
@@ -2207,17 +2233,12 @@ window.addEventListener('message', function(e) {
       }
     }
 
-    // Tab
     if (d.tab) {
       tab = d.tab;
       tabMainEl.className = 'tab' + (tab === 'main'   ? ' active' : '');
       tabCfgEl.className  = 'tab' + (tab === 'config' ? ' active' : '');
     }
 
-    // Handle sub-tab changes (for Radar)
-
-    // Category cursor
-    // curCatName absent from JSON means Lua sent nil → clear category
     if ('curCatName' in d || d.type === 'sync') {
       const name = d.curCatName || null;
       if (!name) {
@@ -2229,92 +2250,69 @@ window.addEventListener('message', function(e) {
       }
     }
 
-    // Check if we're opening/closing RADAR
     if ('curCatName' in d && d.curCatName === 'Vehicle' && d.subTabIdx !== undefined) {
       const oldRadar = radarActive && subTabIdx === 3;
       const newRadar = d.subTabIdx === 3;
-   
-      if (newRadar && !oldRadar) {
-        onRadarTabOpen();
-      } else if (!newRadar && oldRadar) {
-        onRadarTabClose();
-      }
-   
+      if (newRadar && !oldRadar) { onRadarTabOpen(); }
+      else if (!newRadar && oldRadar) { onRadarTabClose(); }
       subTabIdx = d.subTabIdx;
     }
 
-    // Indices
-    if (d.selIdx      !== undefined) { if (curCatIdx !== null) itemSelIdx   = d.selIdx;    else selIdx    = d.selIdx; }
-    if (d.scrollOff   !== undefined) { if (curCatIdx !== null) itemScrollOff= d.scrollOff; else scrollOff = d.scrollOff; }
+    if (d.selIdx    !== undefined) { if (curCatIdx !== null) itemSelIdx    = d.selIdx;    else selIdx    = d.selIdx; }
+    if (d.scrollOff !== undefined) { if (curCatIdx !== null) itemScrollOff = d.scrollOff; else scrollOff = d.scrollOff; }
 
     if (d.vehicleSpinSpeed      !== undefined) window._vehicleSpinSpeed      = d.vehicleSpinSpeed;
     if (d.vehicleSpinChaosSpeed !== undefined) window._vehicleSpinChaosSpeed = d.vehicleSpinChaosSpeed;
-
-    if (d.onlineTPMethod   !== undefined) onlineTPMethod   = d.onlineTPMethod;
-    if (d.onlineSortBy     !== undefined) onlineSortBy     = d.onlineSortBy;
-    if (d.onlineFreezeList !== undefined) onlineFreezeList = d.onlineFreezeList;
-    if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
-
+    if (d.onlineTPMethod        !== undefined) onlineTPMethod                = d.onlineTPMethod;
+    if (d.onlineSortBy          !== undefined) onlineSortBy                  = d.onlineSortBy;
+    if (d.onlineFreezeList      !== undefined) onlineFreezeList              = d.onlineFreezeList;
+    if (d.onlineLineToSel       !== undefined) onlineLineToSel               = d.onlineLineToSel;
     if (d.disableMapCollisionMode !== undefined) window._disableMapCollisionMode = d.disableMapCollisionMode;
+    if (d.serverPlayerCount     !== undefined) window._serverPlayerCount     = d.serverPlayerCount;
+    if (d.noclipMode            !== undefined) window._noclipMode            = d.noclipMode;
+    if (d.hornBoostSpeed        !== undefined) window._hornBoostSpeed        = d.hornBoostSpeed;
+    if (d.wardrobeCatIdx        !== undefined) wardrobeCatIdx                = d.wardrobeCatIdx;
+    if (d.wardrobeDrawIdx       !== undefined) wardrobeDrawIdx               = d.wardrobeDrawIdx;
+    if (d.wardrobeTexIdx        !== undefined) wardrobeTexIdx                = d.wardrobeTexIdx;
+    if (d.wardrobeMaxDraw       !== undefined) wardrobeMaxDraw               = d.wardrobeMaxDraw;
+    if (d.wardrobeMaxTex        !== undefined) wardrobeMaxTex                = d.wardrobeMaxTex;
+    if (d.wardrobeTier          !== undefined) wardrobeTier                  = d.wardrobeTier;
+    if (d.wardrobeMode          !== undefined) wardrobeMode                  = d.wardrobeMode;
+    if (d.wardrobeSlotSel       !== undefined) wardrobeSlotSel               = d.wardrobeSlotSel;
+    if (d.outfitSlots           !== undefined) outfitSlots                   = d.outfitSlots;
+    if (d.localPedNames         !== undefined) localPedNames                 = d.localPedNames;
+    if (d.localPedSel           !== undefined) localPedSel                   = d.localPedSel;
+    if (d.localPedApplied       !== undefined) localPedApplied               = d.localPedApplied;
+    if (d.localPedState         !== undefined) localPedState                 = d.localPedState;
+    if (d.radarVehicles         !== undefined) radarVehicles                 = d.radarVehicles;
+    if (d.radarSelIdx           !== undefined) radarSelectedIdx              = d.radarSelIdx;
+    if (d.radarActionIdx        !== undefined) radarActionIdx                = d.radarActionIdx;
+    if (d.radarMode             !== undefined) radarMode                     = d.radarMode;
+    if (d.radarActive           !== undefined) radarActive                   = d.radarActive;
+    if (d.vehicleSpeedMult      !== undefined) window._vehicleSpeedMult      = d.vehicleSpeedMult;
+    if (d.vehicleBrakeMult      !== undefined) window._vehicleBrakeMult      = d.vehicleBrakeMult;
+    if (d.vehicleTurnMult       !== undefined) window._vehicleTurnMult       = d.vehicleTurnMult;
 
-    if (d.serverPlayerCount !== undefined) window._serverPlayerCount = d.serverPlayerCount;
-    
-    if (d.noclipMode !== undefined) window._noclipMode = d.noclipMode;
-
-    if (d.hornBoostSpeed !== undefined) window._hornBoostSpeed = d.hornBoostSpeed;
-
-    if (d.wardrobeCatIdx  !== undefined) wardrobeCatIdx  = d.wardrobeCatIdx;
-    if (d.wardrobeDrawIdx !== undefined) wardrobeDrawIdx = d.wardrobeDrawIdx;
-    if (d.wardrobeTexIdx  !== undefined) wardrobeTexIdx  = d.wardrobeTexIdx;
-    if (d.wardrobeMaxDraw !== undefined) wardrobeMaxDraw = d.wardrobeMaxDraw;
-    if (d.wardrobeMaxTex  !== undefined) wardrobeMaxTex  = d.wardrobeMaxTex;
-    if (d.wardrobeTier    !== undefined) wardrobeTier    = d.wardrobeTier;
-    if (d.wardrobeMode    !== undefined) wardrobeMode    = d.wardrobeMode;
-    if (d.wardrobeSlotSel !== undefined) wardrobeSlotSel = d.wardrobeSlotSel;
-    if (d.outfitSlots     !== undefined) outfitSlots     = d.outfitSlots;
-    if (d.localPedNames   !== undefined) localPedNames   = d.localPedNames;
-    if (d.localPedSel     !== undefined) localPedSel     = d.localPedSel;
-    if (d.localPedApplied !== undefined) localPedApplied = d.localPedApplied;
-    if (d.localPedState   !== undefined) localPedState   = d.localPedState;
-
-    if (d.radarVehicles  !== undefined) radarVehicles    = d.radarVehicles;
-    if (d.radarSelIdx    !== undefined) radarSelectedIdx = d.radarSelIdx;
-    if (d.radarActionIdx !== undefined) radarActionIdx   = d.radarActionIdx;
-    if (d.radarMode      !== undefined) radarMode        = d.radarMode;
-    if (d.radarActive    !== undefined) radarActive      = d.radarActive;
-
-    if (d.vehicleSpeedMult !== undefined) window._vehicleSpeedMult = d.vehicleSpeedMult;
-    if (d.vehicleBrakeMult !== undefined) window._vehicleBrakeMult = d.vehicleBrakeMult;
-    if (d.vehicleTurnMult  !== undefined) window._vehicleTurnMult  = d.vehicleTurnMult;
-
-    // Sub-tab from Lua (for categories where Lua drives Q/E)
     if (d.subTabIdx !== undefined) subTabIdx = d.subTabIdx;
 
     if (curCatIdx !== null && CAT_STRUCTURE[curCatIdx] && CAT_STRUCTURE[curCatIdx].name === 'Vehicle') {
-      if (subTabIdx === 3 && !radarActive) {
-        onRadarTabOpen();
-      } else if (subTabIdx !== 3 && radarActive) {
-        onRadarTabClose();
-      }
+      if (subTabIdx === 3 && !radarActive) { onRadarTabOpen(); }
+      else if (subTabIdx !== 3 && radarActive) { onRadarTabClose(); }
     }
 
-    // Online
     if (d.nearbyPlayers   !== undefined) nearbyPlayers   = d.nearbyPlayers;
     if (d.selectedPlayers !== undefined) selectedPlayers = d.selectedPlayers;
     if (d.trollSel        !== undefined) trollSel        = d.trollSel;
     if (d.playerSel       !== undefined) playerSel       = d.playerSel;
 
-    // Weapon
     if ('weaponMenuOpen' in d) weaponMenuOpen = d.weaponMenuOpen === true;
     if (d.weaponCatIdx  !== undefined) weaponCatIdx  = d.weaponCatIdx;
     if (d.weaponSelIdx  !== undefined) weaponSelIdx  = d.weaponSelIdx;
 
-    // Combat 
-    if (d.slideRunSpeed !== undefined) window._slideRunSpeed = d.slideRunSpeed;
+    if (d.slideRunSpeed   !== undefined) window._slideRunSpeed = d.slideRunSpeed;
+    if (d.searchQuery     !== undefined) searchQuery           = d.searchQuery || '';
+    if (d.searchResults   !== undefined) searchResults         = Array.isArray(d.searchResults) ? d.searchResults : [];
 
-    if (d.searchQuery !== undefined) searchQuery = d.searchQuery || '';
-    if (d.searchResults !== undefined) searchResults = Array.isArray(d.searchResults) ? d.searchResults : [];
-    
     render();
   }
 });
