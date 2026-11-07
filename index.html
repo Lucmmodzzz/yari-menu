@@ -281,36 +281,8 @@
 .spec-type.both   { color: #ff9900; background: rgba(255,153,0,0.13); }
 .spec-empty { padding: 5px 13px; font-size: 10px; color: rgba(180,180,180,0.4); background: rgba(0,0,0,0.72); border-left: 3px solid transparent; letter-spacing: 1px; }
 
-#kb-hud-wrap {
-  display: none;
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  flex-direction: column;
-  align-items: center;
-  gap: 0px;              /* on gère l'espacement avec margin sur le logo */
-  pointer-events: none;
-  z-index: 9999;
-}
-#kb-hud-wrap.visible { display: flex; }
-
-#kb-hud-logo {
-  width: 55%;                     /* moins large que le menu */
-  height: auto;
-  display: block;
-  object-fit: contain;
-  margin: 0 auto -8px auto;       /* centré + chevauchement léger vers le bas */
-  position: relative;
-  z-index: 10001;                 /* au-dessus du menu et de son blur */
-  filter: drop-shadow(0 0 8px rgba(220,30,30,0.5));
-  pointer-events: none;
-}
-
 #kb-hud {
-  display: block;
-  position: relative;
-  width: 290px;
-  z-index: 10000;                 /* sous le logo */
+  display: none; position: fixed; bottom: 24px; right: 24px; width: 250px;
   background: rgba(8, 8, 8, 0.99);
   backdrop-filter: blur(14px) saturate(1.0);
   -webkit-backdrop-filter: blur(14px) saturate(1.0);
@@ -324,7 +296,7 @@
     inset 0 1px 0 rgba(255,255,255,0.05);
   overflow: hidden;
   font-family: 'Share Tech Mono', monospace;
-  pointer-events: none;
+  z-index: 9999; pointer-events: none;
 }
 #kb-hud.visible { display: block; }
 
@@ -671,10 +643,7 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 
 <div id="spec-hud"></div>
 
-<div id="kb-hud-wrap">
-  <img id="kb-hud-logo" src="logo_rougev1.png" alt="logo" />
-  <div id="kb-hud"></div>
-</div>
+<div id="kb-hud"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════
@@ -2040,9 +2009,8 @@ window.addEventListener('message', function(e) {
 
   if (d.type === 'keybindHud') {
     const hud = document.getElementById('kb-hud');
-    const wrap = document.getElementById('kb-hud-wrap');
-    if (!d.enabled) { wrap.style.display = 'none'; hud.innerHTML = ''; return; }
-    wrap.style.display = 'flex';
+    if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
+    hud.className = 'visible';
     hud.innerHTML = '';
   
     const title = document.createElement('div');
