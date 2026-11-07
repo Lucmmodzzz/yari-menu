@@ -164,6 +164,82 @@
 }
 .fc-footer span { color: var(--accent); }
 
+/* ── KEYBINDER OVERLAY ── */
+#keybinder-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(12px);
+  z-index: 99999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Rajdhani', sans-serif;
+}
+#keybinder-overlay.show { display: flex; }
+.kbd-box {
+  width: 340px;
+  background: rgba(10,10,10,0.99);
+  border-top: 3px solid #DC1E1E;
+  border-bottom: 3px solid #DC1E1E;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05);
+  overflow: hidden;
+}
+.kbd-title {
+  padding: 14px 20px 10px;
+  font-size: 20px; font-weight: 700; letter-spacing: 5px; color: #fff;
+  text-shadow: 0 0 14px #FF3232;
+  border-bottom: 1px solid rgba(220,30,30,0.3);
+  display: flex; align-items: center; gap: 10px;
+}
+.kbd-title-dot { width: 9px; height: 9px; border-radius: 50%; background: #DC1E1E; box-shadow: 0 0 8px #FF3232; animation: blink 1s ease-in-out infinite; }
+.kbd-sub {
+  padding: 10px 20px;
+  font-size: 11px; letter-spacing: 2px; color: rgba(200,200,200,0.55);
+  font-family: 'Share Tech Mono', monospace;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.kbd-key-display {
+  margin: 20px auto;
+  width: 180px; height: 64px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid rgba(220,30,30,0.5);
+  border-radius: 8px;
+  background: rgba(220,30,30,0.07);
+  font-size: 24px; font-weight: 700; letter-spacing: 3px; color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+  box-shadow: 0 0 20px rgba(220,30,30,0.15), inset 0 0 20px rgba(0,0,0,0.3);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.kbd-key-display.has-key {
+  border-color: #DC1E1E;
+  box-shadow: 0 0 24px rgba(220,30,30,0.35), inset 0 0 20px rgba(0,0,0,0.3);
+}
+.kbd-hint {
+  text-align: center; padding: 0 20px 10px;
+  font-size: 10px; letter-spacing: 2px;
+  color: rgba(180,180,180,0.4);
+  font-family: 'Share Tech Mono', monospace;
+}
+.kbd-confirm {
+  margin: 0 20px 20px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  height: 40px;
+  background: rgba(220,30,30,0.12);
+  border: 1px solid rgba(220,30,30,0.4);
+  border-radius: 5px;
+  font-size: 12px; font-weight: 700; letter-spacing: 3px; color: #DC1E1E;
+  cursor: pointer;
+  transition: background 0.15s;
+  opacity: 0.4;
+}
+.kbd-confirm.ready {
+  opacity: 1;
+  box-shadow: 0 0 12px rgba(220,30,30,0.2);
+}
+.kbd-confirm.ready:hover { background: rgba(220,30,30,0.22); }
+
 #player-panel {
   display: none;
   position: fixed;
@@ -535,6 +611,19 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 </head>
 <body>
 
+<div id="keybinder-overlay">
+  <div class="kbd-box">
+    <div class="kbd-title">
+      <div class="kbd-title-dot"></div>
+      ASSIGN MENU KEY
+    </div>
+    <div class="kbd-sub">APPUIE SUR LA TOUCHE SOUHAITÉE POUR OUVRIR LE MENU</div>
+    <div class="kbd-key-display" id="kbd-display">— — —</div>
+    <div class="kbd-hint">APPUIE SUR ENTRÉE POUR CONFIRMER</div>
+    <div class="kbd-confirm" id="kbd-confirm">↵ &nbsp; CONFIRMER</div>
+  </div>
+</div>
+
 <div id="freecam-hud">
   <div class="fc-header">
     <div class="fc-title-row">
@@ -645,7 +734,102 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 
 <div id="kb-hud"></div>
 
+// ── KEYBINDER ────────────────────────────────────────────────────────
+(function() {
+  const overlay  = document.getElementById('keybinder-overlay');
+  const display  = document.getElementById('kbd-display');
+  const confirm  = document.getElementById('kbd-confirm');
+
+  // JS keyCode → Windows VK + friendly name
+  const KEY_MAP = {
+    112:'F1',113:'F2',114:'F3',115:'F4',116:'F5',117:'F6',
+    118:'F7',119:'F8',120:'F9',121:'F10',122:'F11',123:'F12',
+    96:'NUM 0',97:'NUM 1',98:'NUM 2',99:'NUM 3',100:'NUM 4',
+    101:'NUM 5',102:'NUM 6',103:'NUM 7',104:'NUM 8',105:'NUM 9',
+    106:'NUM *',107:'NUM +',109:'NUM -',110:'NUM .',111:'NUM /',
+    45:'INSERT',46:'DELETE',36:'HOME',35:'END',33:'PG UP',34:'PG DN',
+    19:'PAUSE',20:'CAPS',144:'NUM LOCK',
+    186:'; / ²',187:'= / +',188:', / <',189:'- / °',190:'. / >',
+    219:'[ / (',220:'\\ / !',221:'] / )',222:"' / ù",
+  };
+
+  // Reserved codes (menu navigation) — can't be used as toggle key
+  const RESERVED = new Set([13,8,38,40,37,39,81,69]);
+
+  let pendingCode = 0;
+  let pendingName = '';
+
+  function getKeyName(e) {
+    const c = e.keyCode;
+    if (KEY_MAP[c]) return KEY_MAP[c];
+    if (c >= 65 && c <= 90) return String.fromCharCode(c);
+    if (c >= 48 && c <= 57) return String.fromCharCode(c);
+    return 'KEY ' + c;
+  }
+
+  function onKeyDown(e) {
+    if (!overlay.classList.contains('show')) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    const c = e.keyCode;
+
+    // Enter = confirm if a key is selected
+    if (c === 13 && pendingCode > 0) {
+      doConfirm();
+      return;
+    }
+    // Escape = ignore (must pick something)
+    if (c === 27) return;
+    // Reserved navigation keys
+    if (RESERVED.has(c)) {
+      display.textContent = '— RÉSERVÉ —';
+      display.classList.remove('has-key');
+      confirm.classList.remove('ready');
+      pendingCode = 0;
+      return;
+    }
+
+    pendingCode = c;
+    pendingName = getKeyName(e);
+    display.textContent = pendingName;
+    display.classList.add('has-key');
+    confirm.classList.add('ready');
+  }
+
+  function doConfirm() {
+    if (!pendingCode) return;
+    overlay.classList.remove('show');
+    if (window.__yariCallback) {
+      window.__yariCallback(JSON.stringify({
+        type: 'keyBinderResult',
+        keyCode: pendingCode,
+        keyName: pendingName
+      }));
+    }
+  }
+
+  confirm.addEventListener('click', doConfirm);
+  window.addEventListener('keydown', onKeyDown, true);
+
+  // Show when Lua asks
+  window.addEventListener('message', function(e) {
+    let d = e.data;
+    if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
+    if (d && d.type === 'showKeyBinder') {
+      pendingCode = 0;
+      pendingName = '';
+      display.textContent = '— — —';
+      display.classList.remove('has-key');
+      confirm.classList.remove('ready');
+      overlay.classList.add('show');
+    }
+  });
+})();
+
 <script>
+
+  
 // ═══════════════════════════════════════════════════════════════════
 //  CATEGORY STRUCTURE — sub-tabbed
 // ═══════════════════════════════════════════════════════════════════
