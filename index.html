@@ -749,27 +749,27 @@ const CAT_STRUCTURE = [
       { name:"Cam Options",               idx:7, toggle:true  },
       { name:"Desync",                     idx:8, toggle:true  },
     ]},
-    { name:"PROTECTION", items:[
-      { name:"Anti-teleport", idx:1, toggle:false },
-      { name:"Panic Button",  idx:2, toggle:false },
-    ]},
-    { name:"DESTROYER", items:[
-      { name:"Delete All Vehicles",   idx:1, toggle:false },
-      { name:"Explode All Vehicles",  idx:2, toggle:false },
-      { name:"Cage All Players",      idx:3, toggle:false },
-      { name:"Bug All Players BMX",   idx:4, toggle:false },
-      { name:"Vehicle Chaos",         idx:5, toggle:true  },
-      { name:"Vehicle Spin Chaos",    idx:6, toggle:true  },
-      { name:"Vehicle Black Hole",    idx:7, toggle:true  },
-      { name:"Disable Map Collision", idx:8, toggle:true  },
-    ]},
-    { name:"SERVER", items:[
-      { name:"Bypass Sunlife",    idx:1, toggle:false },
-      { name:"Prime Bypass",      idx:2, toggle:false },
-      { name:"Bypass GLife",      idx:3, toggle:true  },
-      { name:"Bypass Seed",       idx:4, toggle:true  },
-      { name:"Bypass ElectronAC", idx:5, toggle:true  },
-    ]},
+    { name:"PROTECTION", cat:"Protection", items:[
+    { name:"Anti-teleport", idx:1, toggle:false },
+    { name:"Panic Button",  idx:2, toggle:false },
+  ]},
+  { name:"DESTROYER", cat:"Destroyer", items:[
+    { name:"Delete All Vehicles",   idx:1, toggle:false },
+    { name:"Explode All Vehicles",  idx:2, toggle:false },
+    { name:"Cage All Players",      idx=3, toggle:false },
+    { name:"Bug All Players BMX",   idx:4, toggle:false },
+    { name:"Vehicle Chaos",         idx:5, toggle:true  },
+    { name:"Vehicle Spin Chaos",    idx:6, toggle:true  },
+    { name:"Vehicle Black Hole",    idx:7, toggle:true  },
+    { name:"Disable Map Collision", idx:8, toggle:true  },
+  ]},
+  { name:"SERVER", cat:"Server", items:[
+    { name:"Bypass Sunlife",    idx:1, toggle:false },
+    { name:"Prime Bypass",      idx:2, toggle:false },
+    { name:"Bypass GLife",      idx:3, toggle:true  },
+    { name:"Bypass Seed",       idx:4, toggle:true  },
+    { name:"Bypass ElectronAC", idx:5, toggle:true  },
+  ]},
   ]},
   { name:"Settings", subTabs:[{ name:"SETTINGS", items:[
     { name:"Auto Load Config",     idx:1, toggle:true  },
@@ -848,10 +848,14 @@ const LUA_ACTION   = {};
 
 for (const cat of CAT_STRUCTURE) {
   for (const st of (cat.subTabs || [])) {
+    const keyCat = st.cat || cat.name;  // <-- utilise l'override si présent
     for (const item of (st.items || [])) {
       if (typeof item === 'object' && item.name && item.idx > 0) {
         LUA_ACTION[item.name] = [cat.name, item.idx];
-        if (item.toggle) TOGGLE_NAMES.add(item.name);
+        if (item.toggle) {
+          TOGGLE_NAMES.add(item.name);
+          TOGGLE_KEY[item.name] = keyCat + '_' + item.idx;
+        }
       }
     }
   }
