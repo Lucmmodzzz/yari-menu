@@ -295,10 +295,11 @@
 #kb-hud-wrap.visible { display: flex; }
 
 #kb-hud-logo {
-  width: 100%;
+  width: 60%;          /* moins large que le menu */
   height: auto;
   display: block;
   object-fit: contain;
+  margin: 0 auto;      /* centré dans le flex column */
   filter: drop-shadow(0 0 8px rgba(220,30,30,0.5));
 }
 
