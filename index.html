@@ -11,116 +11,6 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
-/* ── KEY PICKER OVERLAY ── */
-#key-picker {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  font-family: 'Rajdhani', sans-serif;
-}
-#key-picker.visible { display: flex; }
-
-#kp-box {
-  width: 340px;
-  background: rgba(8, 8, 8, 0.99);
-  border-top: 3px solid var(--accent);
-  border-bottom: 3px solid var(--accent);
-  border-radius: 7px;
-  box-shadow:
-    0 20px 60px rgba(0,0,0,0.75),
-    0 0 0 1px rgba(255,255,255,0.05),
-    inset 0 1px 0 rgba(255,255,255,0.05);
-  overflow: hidden;
-  animation: kp-in .18s ease both;
-}
-@keyframes kp-in {
-  from { transform: translateY(-18px) scale(0.97); opacity: 0; }
-  to   { transform: translateY(0)     scale(1);    opacity: 1; }
-}
-
-#kp-title {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 16px 10px;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dark) 45%, #000 100%);
-  font-size: 16px; font-weight: 700; letter-spacing: 4px; color: #fff;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-}
-#kp-title .kp-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #fff; box-shadow: 0 0 8px #fff;
-  animation: blink 1s ease-in-out infinite;
-  flex-shrink: 0;
-}
-
-#kp-sub {
-  padding: 8px 16px 4px;
-  font-size: 11px; letter-spacing: 2px;
-  color: rgba(200,200,200,0.55);
-  font-family: 'Share Tech Mono', monospace;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-
-#kp-detected {
-  margin: 20px 16px 8px;
-  min-height: 54px;
-  display: flex; align-items: center; justify-content: center;
-  border: 2px dashed rgba(255,255,255,0.1);
-  border-radius: 6px;
-  background: rgba(255,255,255,0.03);
-  transition: border-color .2s, background .2s;
-}
-#kp-detected.has-key {
-  border-color: var(--accent);
-  background: rgba(220,30,30,0.07);
-  box-shadow: 0 0 18px rgba(220,30,30,0.1);
-}
-#kp-key-label {
-  font-size: 24px; font-weight: 700; letter-spacing: 3px;
-  color: rgba(180,180,180,0.35);
-  font-family: 'Share Tech Mono', monospace;
-  transition: color .15s;
-}
-#kp-detected.has-key #kp-key-label {
-  color: #fff;
-  text-shadow: 0 0 14px var(--accent-glow), 0 0 30px rgba(220,30,30,0.3);
-}
-
-#kp-hint {
-  padding: 10px 16px 16px;
-  font-size: 11px; letter-spacing: 1.5px;
-  color: rgba(180,180,180,0.4);
-  font-family: 'Share Tech Mono', monospace;
-  text-align: center;
-  min-height: 36px;
-  transition: color .15s;
-}
-#kp-hint.ready {
-  color: #32ff6e;
-  text-shadow: 0 0 8px rgba(50,255,110,0.5);
-}
-
-#kp-footer {
-  padding: 8px 16px 10px;
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  border-top: 1px solid rgba(255,255,255,0.06);
-  font-size: 10px; letter-spacing: 1px;
-  color: rgba(160,160,160,0.5);
-  font-family: 'Share Tech Mono', monospace;
-}
-.kp-k {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 1px 6px; min-width: 24px;
-  border: 1px solid rgba(220,30,30,0.5); border-radius: 3px;
-  font-size: 10px; font-weight: 700; color: var(--accent);
-  background: rgba(220,30,30,0.07);
-}
-
 #freecam-hud {
   position: fixed;
   top: 50%;
@@ -632,59 +522,6 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
   background: rgba(220,30,30,0.07);
 }
 
-@keyframes kp-out {
-  from { opacity: 1; transform: scale(1); }
-  to   { opacity: 0; transform: scale(0.95); }
-}
-
-#key-picker {
-  display: none;
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 320px;
-  background: rgba(8,8,8,0.99);
-  backdrop-filter: blur(14px);
-  border-top: 3px solid var(--accent);
-  border-bottom: 3px solid var(--accent);
-  border-radius: 7px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.04);
-  font-family: 'Share Tech Mono', monospace;
-  z-index: 99999;
-  overflow: hidden;
-  color: #fff;
-  pointer-events: none;
-}
-#key-picker.visible { display: block; }
-#key-picker-title {
-  padding: 10px 16px 7px;
-  background: rgba(15,5,5,0.98);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 14px; font-weight: 700; letter-spacing: 3px;
-}
-#key-picker-sub {
-  padding: 6px 16px 4px;
-  font-size: 10px; letter-spacing: 1.5px;
-  color: rgba(180,180,180,0.55);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-#key-picker-detected {
-  padding: 18px 16px;
-  font-size: 22px; font-weight: 700; letter-spacing: 4px;
-  text-align: center;
-  color: var(--accent);
-  text-shadow: 0 0 14px var(--accent-glow);
-  min-height: 60px;
-}
-#key-picker-hint {
-  padding: 6px 16px 10px;
-  font-size: 9px; letter-spacing: 2px;
-  color: rgba(130,130,130,0.5);
-  text-align: center;
-  border-top: 1px solid rgba(255,255,255,0.05);
-}
-
 .color-dot {
   width: 14px; height: 14px; border-radius: 50%; cursor: pointer;
   border: 2px solid transparent; transition: border-color 0.15s, transform 0.1s; flex-shrink: 0;
@@ -697,13 +534,6 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 </style>
 </head>
 <body>
-
-<div id="key-picker">
-  <div id="key-picker-title">⌨ ATTRIBUTION TOUCHE</div>
-  <div id="key-picker-sub">APPUYEZ SUR LA TOUCHE SOUHAITÉE</div>
-  <div id="key-picker-detected" id="kp-det">—</div>
-  <div id="key-picker-hint">ENTRÉE POUR VALIDER</div>
-</div>
 
 <div id="freecam-hud">
   <div class="fc-header">
@@ -726,23 +556,6 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 <div id="fc-center-hud">
   <div id="fc-center-aimed"></div>
   <div id="fc-center-action"></div>
-</div>
-
-<div id="key-picker">
-  <div id="kp-box">
-    <div id="kp-title">
-      <div class="kp-dot"></div>
-      ASSIGN MENU KEY
-    </div>
-    <div id="kp-sub">Appuyez sur la touche souhaitée pour ouvrir le menu</div>
-    <div id="kp-detected">
-      <span id="kp-key-label">EN ATTENTE…</span>
-    </div>
-    <div id="kp-hint">—</div>
-    <div id="kp-footer">
-      <span class="kp-k">ENTER</span> Confirmer &nbsp;|&nbsp; Toute touche ou bouton souris
-    </div>
-  </div>
 </div>
   
 <div id="app" class="theme-red">
@@ -2094,18 +1907,19 @@ window.addEventListener('message', function(e) {
   }
 
   if (d.type === 'freecam') {
-    const hud       = document.getElementById('freecam-hud');
+    const hud      = document.getElementById('freecam-hud');
     const centerHud = document.getElementById('fc-center-hud');
 
     if (!d.enabled) {
-      hud.className       = '';
-      centerHud.className = '';
+      hud.className        = '';
+      centerHud.className  = '';
       return;
     }
     hud.classList.add('visible');
     centerHud.classList.add('visible');
 
-    const aimedEl     = document.getElementById('fc-aimed');
+    // Aimed player
+    const aimedEl = document.getElementById('fc-aimed');
     const centerAimed = document.getElementById('fc-center-aimed');
     if (d.aimedPlayer) {
       aimedEl.textContent     = '● ' + d.aimedPlayer;
@@ -2117,18 +1931,20 @@ window.addEventListener('message', function(e) {
       centerAimed.textContent = '';
     }
 
+    // Action courante — centre bas
     const centerAction = document.getElementById('fc-center-action');
     const actions = d.actions || [];
     const sel     = typeof d.selIdx === 'number' ? d.selIdx : 0;
     const cur     = actions[sel];
     if (cur) {
       const dimmed = cur.needsPlayer && !d.aimedPlayer;
-      centerAction.textContent       = cur.name;
-      centerAction.style.color       = dimmed ? 'rgba(160,160,160,0.4)' : '#fff';
+      centerAction.textContent    = cur.name;
+      centerAction.style.color    = dimmed ? 'rgba(160,160,160,0.4)' : '#fff';
       centerAction.style.borderColor = dimmed ? 'rgba(120,120,120,0.3)' : 'var(--accent)';
       centerAction.style.boxShadow   = dimmed ? 'none' : '0 0 12px rgba(0,0,0,0.5), 0 0 8px var(--accent-glow)';
     }
 
+    // Action list (panneau droit — inchangé)
     const listEl  = document.getElementById('fc-list');
     const VISIBLE = 8;
     const total   = actions.length;
@@ -2137,8 +1953,8 @@ window.addEventListener('message', function(e) {
     listEl.innerHTML = '';
 
     for (let i = winStart; i < Math.min(winStart + VISIBLE, total); i++) {
-      const a        = actions[i];
-      const el       = document.createElement('div');
+      const a  = actions[i];
+      const el = document.createElement('div');
       const isActive = i === sel;
       const isDimmed = a.needsPlayer && !d.aimedPlayer;
       el.className = 'fc-item' + (isActive ? ' active' : '') + (isDimmed ? ' dimmed' : '');
@@ -2158,11 +1974,12 @@ window.addEventListener('message', function(e) {
       bar.innerHTML = `<div class="fc-scrollbar-thumb" style="height:${thumbH}%;top:${thumbT}%"></div>`;
       listEl.appendChild(bar);
     }
+
     return;
   }
 
   if (d.type === 'spectatorUpdate') {
-    const hud  = document.getElementById('spec-hud');
+    const hud = document.getElementById('spec-hud');
     if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
     hud.className = 'visible';
     const list = d.list || [];
@@ -2173,16 +1990,17 @@ window.addEventListener('message', function(e) {
       const MAX_SPEC = 10;
       const overflow = list.length > MAX_SPEC;
       const visible  = list.slice(0, MAX_SPEC);
+  
       visible.forEach((p, i) => {
-        const isNoclip  = p.type.includes('Noclip');
-        const isAdmin   = p.type.includes('Admin');
-        const rowCls    = isNoclip ? 'noclip' : 'admin';
-        const typeLabel = p.type.replace(/[\[\]]/g, '');
-        const isLast    = overflow && i === MAX_SPEC - 1;
-        const extra     = isLast
-          ? `<span style="color:var(--accent);font-size:9px;font-family:'Share Tech Mono',monospace;margin-left:4px;flex-shrink:0">+${list.length - MAX_SPEC}</span>`
-          : '';
-        html += `<div class="spec-row ${rowCls}"><span class="spec-sid">${p.serverId}</span><span class="spec-name">${p.name}</span>${extra}<span class="spec-dist">${p.distance}m</span><span class="spec-type ${rowCls}">${typeLabel}</span></div>`;
+          const isNoclip  = p.type.includes('Noclip');
+          const isAdmin   = p.type.includes('Admin');
+          const rowCls    = isNoclip ? 'noclip' : 'admin';
+          const typeLabel = p.type.replace(/[\[\]]/g, '');
+          const isLast    = overflow && i === MAX_SPEC - 1;
+          const extra     = isLast
+              ? `<span style="color:var(--accent);font-size:9px;font-family:'Share Tech Mono',monospace;margin-left:4px;flex-shrink:0">+${list.length - MAX_SPEC}</span>`
+              : '';
+          html += `<div class="spec-row ${rowCls}"><span class="spec-sid">${p.serverId}</span><span class="spec-name">${p.name}</span>${extra}<span class="spec-dist">${p.distance}m</span><span class="spec-type ${rowCls}">${typeLabel}</span></div>`;
       });
     }
     hud.innerHTML = html;
@@ -2194,10 +2012,12 @@ window.addEventListener('message', function(e) {
     if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
     hud.className = 'visible';
     hud.innerHTML = '';
+  
     const title = document.createElement('div');
     title.className = 'kb-title';
     title.innerHTML = '<div class="kb-dot"></div><span>KEYBINDS</span>';
     hud.appendChild(title);
+  
     const list = Array.isArray(d.list) ? d.list : [];
     if (list.length === 0) {
       const e = document.createElement('div');
@@ -2226,8 +2046,7 @@ window.addEventListener('message', function(e) {
 
   if (d.type === 'applyTheme') {
     applyTheme(d.theme || currentTheme, d.twotone === true);
-    render();
-    return;
+    render(); return;
   }
 
   if (d.type === 'setToggleStates') {
@@ -2236,8 +2055,7 @@ window.addEventListener('message', function(e) {
       twoToneEnabled = d.states['Settings_4'] === true;
       applyTheme(currentTheme, twoToneEnabled);
     }
-    render();
-    return;
+    render(); return;
   }
 
   if (d.type === 'radarUpdate') {
@@ -2245,40 +2063,9 @@ window.addEventListener('message', function(e) {
     return;
   }
 
-  // ── KEY PICKER ───────────────────────────────────────────────────────
-  if (d.type === 'showKeyPicker') {
-    document.getElementById('key-picker').classList.add('visible');
-    document.getElementById('kp-detected').classList.remove('has-key');
-    document.getElementById('kp-key-label').textContent = 'EN ATTENTE…';
-    document.getElementById('kp-hint').textContent = '—';
-    document.getElementById('kp-hint').classList.remove('ready');
-    return;
-  }
-
-  if (d.type === 'keyPickerDetected') {
-    const box   = document.getElementById('kp-detected');
-    const label = document.getElementById('kp-key-label');
-    const hint  = document.getElementById('kp-hint');
-    box.classList.add('has-key');
-    label.textContent = d.keyName || ('0x' + (d.keyCode || 0).toString(16).toUpperCase());
-    hint.textContent  = 'Appuyez sur ENTER pour confirmer';
-    hint.classList.add('ready');
-    return;
-  }
-
-  if (d.type === 'hideKeyPicker') {
-    const picker = document.getElementById('key-picker');
-    picker.style.animation = 'kp-out .15s ease both';
-    setTimeout(() => {
-      picker.classList.remove('visible');
-      picker.style.animation = '';
-    }, 160);
-    return;
-  }
-
-  // ── SYNC ─────────────────────────────────────────────────────────────
   if (d.type === 'sync') {
     updatePlayerPanel(d.focusedPlayer || null);
+
 
     if (d.toggles) {
       Object.assign(toggleStates, d.toggles);
@@ -2288,12 +2075,17 @@ window.addEventListener('message', function(e) {
       }
     }
 
+    // Tab
     if (d.tab) {
       tab = d.tab;
       tabMainEl.className = 'tab' + (tab === 'main'   ? ' active' : '');
       tabCfgEl.className  = 'tab' + (tab === 'config' ? ' active' : '');
     }
 
+    // Handle sub-tab changes (for Radar)
+
+    // Category cursor
+    // curCatName absent from JSON means Lua sent nil → clear category
     if ('curCatName' in d || d.type === 'sync') {
       const name = d.curCatName || null;
       if (!name) {
@@ -2305,104 +2097,95 @@ window.addEventListener('message', function(e) {
       }
     }
 
+    // Check if we're opening/closing RADAR
     if ('curCatName' in d && d.curCatName === 'Vehicle' && d.subTabIdx !== undefined) {
       const oldRadar = radarActive && subTabIdx === 3;
       const newRadar = d.subTabIdx === 3;
-      if (newRadar && !oldRadar) { onRadarTabOpen(); }
-      else if (!newRadar && oldRadar) { onRadarTabClose(); }
+   
+      if (newRadar && !oldRadar) {
+        onRadarTabOpen();
+      } else if (!newRadar && oldRadar) {
+        onRadarTabClose();
+      }
+   
       subTabIdx = d.subTabIdx;
     }
 
-    if (d.selIdx    !== undefined) { if (curCatIdx !== null) itemSelIdx    = d.selIdx;    else selIdx    = d.selIdx; }
-    if (d.scrollOff !== undefined) { if (curCatIdx !== null) itemScrollOff = d.scrollOff; else scrollOff = d.scrollOff; }
+    // Indices
+    if (d.selIdx      !== undefined) { if (curCatIdx !== null) itemSelIdx   = d.selIdx;    else selIdx    = d.selIdx; }
+    if (d.scrollOff   !== undefined) { if (curCatIdx !== null) itemScrollOff= d.scrollOff; else scrollOff = d.scrollOff; }
 
     if (d.vehicleSpinSpeed      !== undefined) window._vehicleSpinSpeed      = d.vehicleSpinSpeed;
     if (d.vehicleSpinChaosSpeed !== undefined) window._vehicleSpinChaosSpeed = d.vehicleSpinChaosSpeed;
-    if (d.onlineTPMethod        !== undefined) onlineTPMethod                = d.onlineTPMethod;
-    if (d.onlineSortBy          !== undefined) onlineSortBy                  = d.onlineSortBy;
-    if (d.onlineFreezeList      !== undefined) onlineFreezeList              = d.onlineFreezeList;
-    if (d.onlineLineToSel       !== undefined) onlineLineToSel               = d.onlineLineToSel;
-    if (d.disableMapCollisionMode !== undefined) window._disableMapCollisionMode = d.disableMapCollisionMode;
-    if (d.serverPlayerCount     !== undefined) window._serverPlayerCount     = d.serverPlayerCount;
-    if (d.noclipMode            !== undefined) window._noclipMode            = d.noclipMode;
-    if (d.hornBoostSpeed        !== undefined) window._hornBoostSpeed        = d.hornBoostSpeed;
-    if (d.wardrobeCatIdx        !== undefined) wardrobeCatIdx                = d.wardrobeCatIdx;
-    if (d.wardrobeDrawIdx       !== undefined) wardrobeDrawIdx               = d.wardrobeDrawIdx;
-    if (d.wardrobeTexIdx        !== undefined) wardrobeTexIdx                = d.wardrobeTexIdx;
-    if (d.wardrobeMaxDraw       !== undefined) wardrobeMaxDraw               = d.wardrobeMaxDraw;
-    if (d.wardrobeMaxTex        !== undefined) wardrobeMaxTex                = d.wardrobeMaxTex;
-    if (d.wardrobeTier          !== undefined) wardrobeTier                  = d.wardrobeTier;
-    if (d.wardrobeMode          !== undefined) wardrobeMode                  = d.wardrobeMode;
-    if (d.wardrobeSlotSel       !== undefined) wardrobeSlotSel               = d.wardrobeSlotSel;
-    if (d.outfitSlots           !== undefined) outfitSlots                   = d.outfitSlots;
-    if (d.localPedNames         !== undefined) localPedNames                 = d.localPedNames;
-    if (d.localPedSel           !== undefined) localPedSel                   = d.localPedSel;
-    if (d.localPedApplied       !== undefined) localPedApplied               = d.localPedApplied;
-    if (d.localPedState         !== undefined) localPedState                 = d.localPedState;
-    if (d.radarVehicles         !== undefined) radarVehicles                 = d.radarVehicles;
-    if (d.radarSelIdx           !== undefined) radarSelectedIdx              = d.radarSelIdx;
-    if (d.radarActionIdx        !== undefined) radarActionIdx                = d.radarActionIdx;
-    if (d.radarMode             !== undefined) radarMode                     = d.radarMode;
-    if (d.radarActive           !== undefined) radarActive                   = d.radarActive;
-    if (d.vehicleSpeedMult      !== undefined) window._vehicleSpeedMult      = d.vehicleSpeedMult;
-    if (d.vehicleBrakeMult      !== undefined) window._vehicleBrakeMult      = d.vehicleBrakeMult;
-    if (d.vehicleTurnMult       !== undefined) window._vehicleTurnMult       = d.vehicleTurnMult;
 
+    if (d.onlineTPMethod   !== undefined) onlineTPMethod   = d.onlineTPMethod;
+    if (d.onlineSortBy     !== undefined) onlineSortBy     = d.onlineSortBy;
+    if (d.onlineFreezeList !== undefined) onlineFreezeList = d.onlineFreezeList;
+    if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
+
+    if (d.disableMapCollisionMode !== undefined) window._disableMapCollisionMode = d.disableMapCollisionMode;
+
+    if (d.serverPlayerCount !== undefined) window._serverPlayerCount = d.serverPlayerCount;
+    
+    if (d.noclipMode !== undefined) window._noclipMode = d.noclipMode;
+
+    if (d.hornBoostSpeed !== undefined) window._hornBoostSpeed = d.hornBoostSpeed;
+
+    if (d.wardrobeCatIdx  !== undefined) wardrobeCatIdx  = d.wardrobeCatIdx;
+    if (d.wardrobeDrawIdx !== undefined) wardrobeDrawIdx = d.wardrobeDrawIdx;
+    if (d.wardrobeTexIdx  !== undefined) wardrobeTexIdx  = d.wardrobeTexIdx;
+    if (d.wardrobeMaxDraw !== undefined) wardrobeMaxDraw = d.wardrobeMaxDraw;
+    if (d.wardrobeMaxTex  !== undefined) wardrobeMaxTex  = d.wardrobeMaxTex;
+    if (d.wardrobeTier    !== undefined) wardrobeTier    = d.wardrobeTier;
+    if (d.wardrobeMode    !== undefined) wardrobeMode    = d.wardrobeMode;
+    if (d.wardrobeSlotSel !== undefined) wardrobeSlotSel = d.wardrobeSlotSel;
+    if (d.outfitSlots     !== undefined) outfitSlots     = d.outfitSlots;
+    if (d.localPedNames   !== undefined) localPedNames   = d.localPedNames;
+    if (d.localPedSel     !== undefined) localPedSel     = d.localPedSel;
+    if (d.localPedApplied !== undefined) localPedApplied = d.localPedApplied;
+    if (d.localPedState   !== undefined) localPedState   = d.localPedState;
+
+    if (d.radarVehicles  !== undefined) radarVehicles    = d.radarVehicles;
+    if (d.radarSelIdx    !== undefined) radarSelectedIdx = d.radarSelIdx;
+    if (d.radarActionIdx !== undefined) radarActionIdx   = d.radarActionIdx;
+    if (d.radarMode      !== undefined) radarMode        = d.radarMode;
+    if (d.radarActive    !== undefined) radarActive      = d.radarActive;
+
+    if (d.vehicleSpeedMult !== undefined) window._vehicleSpeedMult = d.vehicleSpeedMult;
+    if (d.vehicleBrakeMult !== undefined) window._vehicleBrakeMult = d.vehicleBrakeMult;
+    if (d.vehicleTurnMult  !== undefined) window._vehicleTurnMult  = d.vehicleTurnMult;
+
+    // Sub-tab from Lua (for categories where Lua drives Q/E)
     if (d.subTabIdx !== undefined) subTabIdx = d.subTabIdx;
 
     if (curCatIdx !== null && CAT_STRUCTURE[curCatIdx] && CAT_STRUCTURE[curCatIdx].name === 'Vehicle') {
-      if (subTabIdx === 3 && !radarActive) { onRadarTabOpen(); }
-      else if (subTabIdx !== 3 && radarActive) { onRadarTabClose(); }
+      if (subTabIdx === 3 && !radarActive) {
+        onRadarTabOpen();
+      } else if (subTabIdx !== 3 && radarActive) {
+        onRadarTabClose();
+      }
     }
 
+    // Online
     if (d.nearbyPlayers   !== undefined) nearbyPlayers   = d.nearbyPlayers;
     if (d.selectedPlayers !== undefined) selectedPlayers = d.selectedPlayers;
     if (d.trollSel        !== undefined) trollSel        = d.trollSel;
     if (d.playerSel       !== undefined) playerSel       = d.playerSel;
 
+    // Weapon
     if ('weaponMenuOpen' in d) weaponMenuOpen = d.weaponMenuOpen === true;
     if (d.weaponCatIdx  !== undefined) weaponCatIdx  = d.weaponCatIdx;
     if (d.weaponSelIdx  !== undefined) weaponSelIdx  = d.weaponSelIdx;
 
-    if (d.slideRunSpeed   !== undefined) window._slideRunSpeed = d.slideRunSpeed;
-    if (d.searchQuery     !== undefined) searchQuery           = d.searchQuery || '';
-    if (d.searchResults   !== undefined) searchResults         = Array.isArray(d.searchResults) ? d.searchResults : [];
+    // Combat 
+    if (d.slideRunSpeed !== undefined) window._slideRunSpeed = d.slideRunSpeed;
 
+    if (d.searchQuery !== undefined) searchQuery = d.searchQuery || '';
+    if (d.searchResults !== undefined) searchResults = Array.isArray(d.searchResults) ? d.searchResults : [];
+    
     render();
   }
 });
-
-// ── KEY PICKER ───────────────────────────────────────────────────────
-if (d.type === 'showKeyPicker') {
-  document.getElementById('key-picker').classList.add('visible');
-  document.getElementById('kp-detected').classList.remove('has-key');
-  document.getElementById('kp-key-label').textContent = 'EN ATTENTE…';
-  document.getElementById('kp-hint').textContent = '—';
-  document.getElementById('kp-hint').classList.remove('ready');
-  return;
-}
-
-if (d.type === 'keyPickerDetected') {
-  const box   = document.getElementById('kp-detected');
-  const label = document.getElementById('kp-key-label');
-  const hint  = document.getElementById('kp-hint');
-  box.classList.add('has-key');
-  label.textContent = d.keyName || ('0x' + (d.keyCode || 0).toString(16).toUpperCase());
-  hint.textContent  = 'Appuyez sur ENTER pour confirmer';
-  hint.classList.add('ready');
-  return;
-}
-
-if (d.type === 'hideKeyPicker') {
-  const picker = document.getElementById('key-picker');
-  picker.style.animation = 'kp-out .15s ease both';
-  picker.style.setProperty('--kp-out', '1');
-  setTimeout(() => {
-    picker.classList.remove('visible');
-    picker.style.animation = '';
-  }, 160);
-  return;
-}
 
 let radarMode        = false;
 let radarVehicles    = [];
@@ -2621,132 +2404,6 @@ window.addEventListener('message', function(e) {
     }
   }
 });
-
-const kpEl    = document.getElementById('key-picker');
-const kpDet   = document.getElementById('key-picker-detected');
-
-let kpState = {
-  active:       false,
-  detectedCode: null,
-  detectedName: null,
-  cooldown:     false,   // blocks Enter from firing right after show
-};
-
-const MOUSE_BUTTON_NAMES = {
-  0: 'Mouse1 (Gauche)',
-  1: 'Mouse3 (Milieu)',
-  2: 'Mouse2 (Droit)',
-  3: 'Mouse4 (X1)',
-  4: 'Mouse5 (X2)',
-};
-
-// Key display names for common codes
-const KEY_NAMES = {
-  'F1':'F1','F2':'F2','F3':'F3','F4':'F4','F5':'F5','F6':'F6',
-  'F7':'F7','F8':'F8','F9':'F9','F10':'F10','F11':'F11','F12':'F12',
-  'Insert':'Insert','Delete':'Delete','Home':'Home','End':'End',
-  'PageUp':'Page Up','PageDown':'Page Down',
-  'Tab':'Tab','CapsLock':'Caps Lock','Escape':'Échap',
-  'NumLock':'Num Lock','ScrollLock':'Scroll Lock','Pause':'Pause',
-  'Backspace':'Retour','Space':'Espace',
-  'ArrowUp':'↑','ArrowDown':'↓','ArrowLeft':'←','ArrowRight':'→',
-};
-
-function kpKeyName(e) {
-  if (KEY_NAMES[e.code]) return KEY_NAMES[e.code];
-  if (e.code && e.code.startsWith('Numpad')) return 'Num ' + e.code.slice(6);
-  if (e.key && e.key.length === 1) return e.key.toUpperCase();
-  return e.code || e.key || '?';
-}
-
-// FORBIDDEN: Enter (validate) + Escape
-const KP_FORBIDDEN_CODES = new Set(['Enter','NumpadEnter','Escape']);
-
-function kpShow() {
-  kpState.active       = true;
-  kpState.detectedCode = null;
-  kpState.detectedName = null;
-  kpState.cooldown     = true;
-  kpEl.classList.add('visible');
-  kpDet.textContent    = '—';
-  // cooldown: ignore Enter for 400ms after showing
-  setTimeout(() => { kpState.cooldown = false; }, 400);
-}
-
-function kpHide() {
-  kpState.active = false;
-  kpEl.classList.remove('visible');
-}
-
-function kpValidate() {
-  if (!kpState.detectedCode || kpState.cooldown) return;
-  // Send choice to Lua
-  if (window.__yariCallback) {
-    window.__yariCallback(JSON.stringify({
-      type: 'keyPickerChoice',
-      code: kpState.detectedCode,
-      name: kpState.detectedName,
-    }));
-  }
-  // Brief flash then hide
-  kpDet.style.color = '#32ff6e';
-  setTimeout(() => {
-    kpDet.style.color = '';
-    kpHide();
-  }, 300);
-}
-
-document.addEventListener('keydown', function(e) {
-  if (!kpState.active) return;
-  e.preventDefault(); e.stopPropagation();
-
-  if (KP_FORBIDDEN_CODES.has(e.code)) {
-    // Enter = validate if something detected
-    if ((e.code === 'Enter' || e.code === 'NumpadEnter') && !kpState.cooldown) {
-      kpValidate();
-    }
-    return;
-  }
-
-  kpState.detectedCode = e.code || e.key;
-  kpState.detectedName = kpKeyName(e);
-  kpDet.textContent    = kpState.detectedName;
-}, true);
-
-document.addEventListener('mousedown', function(e) {
-  if (!kpState.active) return;
-  // button 0 = LMB — allow but warn; buttons 3/4 = Mouse4/5
-  const name = MOUSE_BUTTON_NAMES[e.button] || ('Mouse' + (e.button + 1));
-  kpState.detectedCode = 'MOUSE_' + e.button;
-  kpState.detectedName = name;
-  kpDet.textContent    = name;
-}, true);
-
-// Message handler extension (merged into existing listener via separate listener)
-const kpEl  = document.getElementById('key-picker');
-const kpDet = document.getElementById('key-picker-detected');
-
-window.addEventListener('message', function(e) {
-  let d = e.data;
-  if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
-  if (!d || !d.type) return;
-
-  if (d.type === 'showKeyPicker') {
-    kpDet.textContent = '—';
-    kpEl.classList.add('visible');
-  }
-  if (d.type === 'hideKeyPicker') {
-    kpEl.classList.remove('visible');
-  }
-  if (d.type === 'keyPickerDetected') {
-    kpDet.textContent    = d.name || '?';
-    kpDet.style.color    = d.confirmed ? '#32ff6e' : 'var(--accent)';
-    kpDet.style.textShadow = d.confirmed
-      ? '0 0 14px #32ff6e'
-      : '0 0 14px var(--accent-glow)';
-  }
-});
-  
 </script>
 
 </body>
