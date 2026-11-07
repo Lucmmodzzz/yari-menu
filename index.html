@@ -2723,12 +2723,28 @@ document.addEventListener('mousedown', function(e) {
 }, true);
 
 // Message handler extension (merged into existing listener via separate listener)
+const kpEl  = document.getElementById('key-picker');
+const kpDet = document.getElementById('key-picker-detected');
+
 window.addEventListener('message', function(e) {
   let d = e.data;
   if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
   if (!d || !d.type) return;
-  if (d.type === 'showKeyPicker') { kpShow(); }
-  if (d.type === 'hideKeyPicker') { kpHide(); }
+
+  if (d.type === 'showKeyPicker') {
+    kpDet.textContent = '—';
+    kpEl.classList.add('visible');
+  }
+  if (d.type === 'hideKeyPicker') {
+    kpEl.classList.remove('visible');
+  }
+  if (d.type === 'keyPickerDetected') {
+    kpDet.textContent    = d.name || '?';
+    kpDet.style.color    = d.confirmed ? '#32ff6e' : 'var(--accent)';
+    kpDet.style.textShadow = d.confirmed
+      ? '0 0 14px #32ff6e'
+      : '0 0 14px var(--accent-glow)';
+  }
 });
   
 </script>
