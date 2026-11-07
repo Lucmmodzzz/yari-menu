@@ -705,7 +705,7 @@ const CAT_STRUCTURE = [
   {
     name: "Settings",
     subTabs: [
-      { name: "SETTINGS", items: ["Auto Load Config","Change Banner","Couleur du Menu","Activer Deux Couleurs","Show Keybinds"] },
+      { name: "SETTINGS", items: ["Auto Load Config","Change Banner","Couleur du Menu","Activer Deux Couleurs","Show Keybinds","Layout Clavier"] },
     ]
   },
   {
@@ -881,6 +881,7 @@ const LUA_ACTION = {
   "Couleur du Menu":           ["Settings", 3],
   "Activer Deux Couleurs":     ["Settings", 4],
   "Show Keybinds":             ["Settings", 5],
+  "Layout Clavier":           ["Settings", 6],
 
   // Keybind
   "Delete All Keybinds":       ["Keybind", 1],
@@ -1643,6 +1644,26 @@ if (name === 'Vehicle Spin Chaos') {
     continue;
 }
 
+    if (name === 'Layout Clavier') {
+      const LAYOUTS = ['QWERTY', 'AZERTY'];
+      const layoutName = LAYOUTS[window._keyboardLayout || 0];
+      const el = document.createElement('div');
+      el.className = 'menu-item' + (isSel ? ' sel' : '');
+      el.style.cssText = 'height:30px;display:flex;align-items:center;padding:0 16px 0 28px;';
+      el.innerHTML = `
+        <div class="bar"></div>
+        <span class="item-name" style="font-size:13px;font-weight:500;">Layout Clavier</span>
+        <span style="
+          font-size:10px;
+          color:${isSel ? 'var(--accent)' : 'rgba(200,200,200,0.75)'};
+          font-family:'Share Tech Mono',monospace;
+          white-space:nowrap;
+        ">${isSel ? '← ' : ''}${layoutName}${isSel ? ' →' : ' ◈'}</span>
+      `;
+      itemsList.appendChild(el);
+      continue;
+    }
+
     if (name === 'Activer Deux Couleurs') {
       makeItem(name, isSel, null, twoToneEnabled);
       continue;
@@ -2124,6 +2145,8 @@ window.addEventListener('message', function(e) {
     if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
 
     if (d.disableMapCollisionMode !== undefined) window._disableMapCollisionMode = d.disableMapCollisionMode;
+
+    if (d.keyboardLayout !== undefined) window._keyboardLayout = d.keyboardLayout;
 
     if (d.serverPlayerCount !== undefined) window._serverPlayerCount = d.serverPlayerCount;
     
