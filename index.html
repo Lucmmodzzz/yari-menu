@@ -845,13 +845,18 @@ const GLOBAL_ACTION_MAP = {
 // We build this from CAT_STRUCTURE plus the original Lua action indices
 const TOGGLE_NAMES = new Set();
 const LUA_ACTION   = {};
+const TOGGLE_KEY   = {};   // itemName → safeKey used in toggleStates
 
 for (const cat of CAT_STRUCTURE) {
   for (const st of (cat.subTabs || [])) {
+    const stClean = (st.name || '').replace(/[^a-zA-Z0-9]/g, '');
     for (const item of (st.items || [])) {
       if (typeof item === 'object' && item.name && item.idx > 0) {
         LUA_ACTION[item.name] = [cat.name, item.idx];
-        if (item.toggle) TOGGLE_NAMES.add(item.name);
+        if (item.toggle) {
+          TOGGLE_NAMES.add(item.name);
+          TOGGLE_KEY[item.name] = cat.name + '_' + stClean + '_' + item.idx;
+        }
       }
     }
   }
@@ -859,9 +864,7 @@ for (const cat of CAT_STRUCTURE) {
 
 // LUA toggle key lookup (for toggleStates)
 function luaToggleKey(itemName) {
-  const la = LUA_ACTION[itemName];
-  if (!la) return null;
-  return la[0] + '_' + la[1];
+  return TOGGLE_KEY[itemName] || null;
 }
 
 // ── THEME ───────────────────────────────────────────────────────────
