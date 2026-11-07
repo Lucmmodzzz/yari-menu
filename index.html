@@ -662,6 +662,8 @@ function buildMenuConfig(menuData) {
   LUA_ACTION = {};
   TOGGLE_NAMES = new Set();
 
+  let globalIdx = 0;  // ← index global, incrémenté sur TOUTES les catégories
+
   for (const cat of menuData) {
     const catObj = { name: cat.name, subTabs: [] };
     if (cat.special) catObj.special = cat.special;
@@ -672,7 +674,9 @@ function buildMenuConfig(menuData) {
         if (typeof item === 'string') {
           subObj.items.push(item);
         } else {
+          globalIdx++;  // ← incrément AVANT d'enregistrer
           subObj.items.push(item.label);
+          LUA_ACTION[item.label] = [cat.name, globalIdx];  // ← vrai index global
           if (item.toggle) TOGGLE_NAMES.add(item.label);
         }
       }
@@ -680,17 +684,12 @@ function buildMenuConfig(menuData) {
     }
     CAT_STRUCTURE.push(catObj);
   }
-
-  // Reconstruire LUA_ACTION avec les index envoyés par Lua
-  // On les reçoit via setToggleStates, donc on reconstruit ici
-  // à partir de ce que Lua envoie dans menuConfig
-  // → on stocke temporairement, les index arrivent dans setToggleStates
 }
 
 function luaToggleKey(itemName) {
   const la = LUA_ACTION[itemName];
   if (!la) return null;
-  return la[0] + '_' + la[1];
+  return la[0] + '_' + la[1];  // "Player_1", "Player_2", etc. avec les VRAIS index
 }
 
 
@@ -1846,27 +1845,7 @@ window.addEventListener('message', function(e) {
 
   if (d.type === 'setToggleStates') {
     if (d.states) {
-      // Reconstruire LUA_ACTION à partir des clés "Cat_Idx"
-      LUA_ACTION = {};
-      for (const key in d.states) {
-        const [cat, idx] = key.split('_');
-        // Trouver le label correspondant
-        for (const catObj of CAT_STRUCTURE) {
-          if (catObj.name !== cat) continue;
-          for (const sub of catObj.subTabs) {
-            const itemIdx = parseInt(idx);
-            // Compter les items tables dans cette catégorie
-            let count = 0;
-            for (const item of sub.items) {
-              if (typeof item === 'string') continue;
-              count++;
-              if (count === itemIdx) {
-                LUA_ACTION[item.label] = [cat, itemIdx];
-              }
-            }
-          }
-        }
-      }
+      // NE PAS reconstruire LUA_ACTION ici — c'est déjà fait dans buildMenuConfig
       Object.assign(toggleStates, d.states);
     }
     if ('Settings_4' in (d.states || {})) {
@@ -1876,7 +1855,7 @@ window.addEventListener('message', function(e) {
     render();
     return;
   }
-
+  
   if (d.type === 'radarUpdate') {
     handleRadarUpdate(d.vehicles || []);
     return;
