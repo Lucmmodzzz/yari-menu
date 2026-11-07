@@ -661,22 +661,22 @@ function buildMenuConfig(menuData) {
   CAT_STRUCTURE = [];
   LUA_ACTION = {};
   TOGGLE_NAMES = new Set();
-
-  let globalIdx = 0;  // ← index global, incrémenté sur TOUTES les catégories
-
+  
+  let globalIdx = 0;
+  
   for (const cat of menuData) {
     const catObj = { name: cat.name, subTabs: [] };
     if (cat.special) catObj.special = cat.special;
-
+    
     for (const sub of cat.subTabs) {
       const subObj = { name: sub.name, items: [] };
       for (const item of sub.items) {
         if (typeof item === 'string') {
           subObj.items.push(item);
         } else {
-          globalIdx++;  // ← incrément AVANT d'enregistrer
+          globalIdx++;
           subObj.items.push(item.label);
-          LUA_ACTION[item.label] = [cat.name, globalIdx];  // ← vrai index global
+          LUA_ACTION[item.label] = [cat.name, globalIdx];
           if (item.toggle) TOGGLE_NAMES.add(item.label);
         }
       }
