@@ -2257,6 +2257,10 @@ window.addEventListener('message', function(e) {
   if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
   if (!d || !d.type) return;
 
+  if (e.data?.type === 'openUrl') {
+      window.open(e.data.url, '_blank');
+  }
+
   if (d.type === 'showMenu') {
     appEl.classList.remove('anim-out');
     appEl.style.display = 'flex';
