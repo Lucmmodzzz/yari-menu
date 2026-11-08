@@ -1097,9 +1097,11 @@ function applyTheme(name, twotone) {
 
 function startRainbowCycle() {
   if (rainbowTimer) return;
+  // Remove theme class so appEl no longer scopes --accent locally
+  appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green');
   rainbowTimer = setInterval(() => {
     rainbowHue = (rainbowHue + 1.2) % 360;
-    const h = rainbowHue;
+    const h      = rainbowHue;
     const accent = `hsl(${h},85%,52%)`;
     const glow   = `hsl(${h},90%,68%)`;
     const dark   = `hsl(${h},85%,27%)`;
@@ -1113,8 +1115,12 @@ function startRainbowCycle() {
   }, 20);
 }
 
+// In stopRainbowCycle(), restore the theme class:
+
 function stopRainbowCycle() {
   if (rainbowTimer) { clearInterval(rainbowTimer); rainbowTimer = null; }
+  // Restore theme class so scoped vars come back
+  appEl.classList.add('theme-' + currentTheme);
 }
 
 // Keep rainbow ring synced to app position/size
@@ -2157,17 +2163,18 @@ window.addEventListener('message', function(e) {
   if (d.type === 'rainbowMenu') {
     const mode = d.mode || 0;
     window._rainbowMode = mode;
-    stopRainbowCycle();
+    stopRainbowCycle();              // restore theme class first
     ringEl.classList.remove('visible');
     if (mode === 0) {
-      applyTheme(currentTheme, twoToneEnabled);
+      applyTheme(currentTheme, twoToneEnabled);  // re-applies class + vars
     } else if (mode === 1) {
-      startRainbowCycle();
+      startRainbowCycle();           // strips class, starts cycle
     } else if (mode === 2) {
       startRainbowCycle();
       ringEl.classList.add('visible');
     }
-    render(); return;
+    render();
+    return;
   }
 
   if (d.type === 'smoothAnimation') {
