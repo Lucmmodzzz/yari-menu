@@ -94,109 +94,6 @@
 #xh-5::before { width: 100%; height: 2px; top: 50%; left: 0; transform: translateY(-50%); }
 #xh-5::after  { width: 2px; height: 100%; left: 50%; top: 0; transform: translateX(-50%); }
 
-/* ── CROSSHAIR PANEL ── */
-#xh-panel {
-  display: none;
-  position: fixed;
-  top: 150px;
-  left: 570px;
-  width: 240px;
-  background: rgba(8, 8, 8, 0.99);
-  backdrop-filter: blur(14px) saturate(1.0);
-  -webkit-backdrop-filter: blur(14px) saturate(1.0);
-  border-top: 3px solid var(--accent);
-  border-bottom: 3px solid var(--accent);
-  border-radius: 7px;
-  box-shadow:
-    0 20px 60px rgba(0,0,0,0.65),
-    0 8px 24px rgba(0,0,0,0.5),
-    0 0 0 1px rgba(255,255,255,0.04),
-    inset 0 1px 0 rgba(255,255,255,0.05);
-  overflow: hidden;
-  font-family: 'Share Tech Mono', monospace;
-  z-index: 9998;
-  pointer-events: none;
-}
-#xh-panel.visible { display: block; }
-
-.xhp-header {
-  padding: 8px 12px 6px;
-  background: rgba(15,5,5,0.99);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  display: flex; align-items: center; gap: 8px;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 13px; font-weight: 700; letter-spacing: 3px; color: #fff;
-}
-.xhp-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--accent); box-shadow: 0 0 7px var(--accent-glow);
-  animation: blink 1s ease-in-out infinite; flex-shrink: 0;
-}
-
-.xhp-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 0 12px; height: 32px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  position: relative;
-}
-.xhp-row:last-child { border-bottom: none; }
-.xhp-row.sel {
-  background: rgba(220,30,30,0.08);
-  border-left: 3px solid var(--accent);
-  padding-left: 9px;
-}
-.xhp-row.sel .xhp-name { color: #fff; font-weight: 700; }
-.xhp-name {
-  flex: 1; font-size: 11px; letter-spacing: 1px;
-  color: rgba(200,200,200,0.65);
-}
-.xhp-preview {
-  width: 28px; height: 28px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  position: relative;
-}
-
-/* preview shapes */
-.xhp-prev-dot    { width:4px;height:4px;border-radius:50%;background:var(--xh-c,#DC1E1E);box-shadow:0 0 4px var(--xh-c,#DC1E1E); }
-.xhp-prev-cross  { width:16px;height:16px;position:relative; }
-.xhp-prev-cross::before,.xhp-prev-cross::after { content:'';position:absolute;background:var(--xh-c,#DC1E1E);box-shadow:0 0 3px var(--xh-c,#DC1E1E); }
-.xhp-prev-cross::before { width:100%;height:2px;top:50%;left:0;transform:translateY(-50%); }
-.xhp-prev-cross::after  { width:2px;height:100%;left:50%;top:0;transform:translateX(-50%); }
-.xhp-prev-gap    { width:18px;height:18px;position:relative; }
-.xhp-prev-gap::before,.xhp-prev-gap::after { content:'';position:absolute;background:var(--xh-c,#DC1E1E);box-shadow:0 0 3px var(--xh-c,#DC1E1E); }
-.xhp-prev-gap::before { width:6px;height:2px;top:50%;left:0;transform:translateY(-50%); }
-.xhp-prev-gap::after  { width:6px;height:2px;top:50%;right:0;transform:translateY(-50%); }
-.xhp-prev-circle { width:16px;height:16px;border-radius:50%;border:2px solid var(--xh-c,#DC1E1E);box-shadow:0 0 4px var(--xh-c,#DC1E1E); }
-.xhp-prev-dotcross { width:18px;height:18px;position:relative; }
-.xhp-prev-dotcross::before,.xhp-prev-dotcross::after { content:'';position:absolute;background:var(--xh-c,#DC1E1E);box-shadow:0 0 3px var(--xh-c,#DC1E1E); }
-.xhp-prev-dotcross::before { width:100%;height:2px;top:50%;left:0;transform:translateY(-50%); }
-.xhp-prev-dotcross::after  { width:2px;height:100%;left:50%;top:0;transform:translateX(-50%); }
-.xhp-prev-dotcross .dc-dot { position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:4px;height:4px;border-radius:50%;background:var(--xh-c,#DC1E1E);z-index:1;box-shadow:0 0 4px var(--xh-c,#DC1E1E); }
-
-.xhp-color-row {
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 12px; height: auto;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  flex-wrap: wrap;
-}
-.xhp-color-label {
-  font-size: 9px; letter-spacing: 2px;
-  color: rgba(180,180,180,0.5); width: 100%; margin-bottom: 4px;
-}
-.xhp-color-dot {
-  width: 16px; height: 16px; border-radius: 50%;
-  cursor: pointer; border: 2px solid transparent;
-  transition: border-color 0.15s, transform 0.1s; flex-shrink: 0;
-}
-.xhp-color-dot.active { border-color: #fff; transform: scale(1.2); }
-.xhp-color-dot.red    { background: #DC1E1E; }
-.xhp-color-dot.green  { background: #1EDC4A; }
-.xhp-color-dot.blue   { background: #1E5ADC; }
-.xhp-color-dot.yellow { background: #DCDC1E; }
-.xhp-color-dot.white  { background: #E8E8E8; }
-.xhp-color-dot.purple { background: #8B1FDC; }
-.xhp-color-dot.cyan   { background: #1EDCDC; }
-
 #freecam-hud {
   position: fixed;
   top: 50%;
@@ -504,7 +401,7 @@
 .kb-ind.on  { background: #32ff6e; box-shadow: 0 0 5px #32ff6e; }
 .kb-ind.off { background: #ff3232; box-shadow: 0 0 5px #ff3232; }
 .kb-empty { padding: 8px 12px; font-size: 10px; letter-spacing: 1px; color: rgba(180,180,180,0.4); }
-  
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -743,7 +640,7 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
   <div id="fc-center-aimed"></div>
   <div id="fc-center-action"></div>
 </div>
-  
+
 <div id="app" class="theme-red">
   <div id="top-border"></div>
   <div id="banner">
@@ -882,10 +779,12 @@ const CAT_STRUCTURE = [
   {
     name: "Misc",
     subTabs: [
-      { name: "MISC", items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim","Free Cam", "Cam Options","Desync","Crosshair"] },
+      { name: "MISC", items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim","Free Cam", "Cam Options","Desync"] },
+      { name: "PROTECTION", items: ["New Player Bypass", "Anti Freeze", "Anti Teleport", "Anti Animation", "Panic Mode"] },
       { name: "PROTECT", items: ["New Player Bypass", "Anti Freeze", "Anti Teleport", "Anti Animation", "Panic Mode"] },
       { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos", "Vehicle Spin Chaos","Vehicle Black Hole", "Disable Map Collision"] },
       { name: "SERVER",    items: ["Bypass Sunlife","Prime Bypass", "Bypass GLife", "Bypass Seed"] },
+      { name: "CROSSHAIR", items: ["CH Dot","CH Cross","CH Cross Gap","CH Circle","CH Dot Cross"] },
     ]
   },
   {
@@ -904,82 +803,6 @@ const CAT_STRUCTURE = [
 ];
 
 const CONFIG_ITEMS = ["Save Config","Load Config"];
-
-// ── CROSSHAIR PANEL ─────────────────────────────────────────────────
-const XH_COLORS = {
-  red:    '#DC1E1E',
-  green:  '#1EDC4A',
-  blue:   '#1E5ADC',
-  yellow: '#DCDC1E',
-  white:  '#E8E8E8',
-  purple: '#8B1FDC',
-  cyan:   '#1EDCDC',
-};
-let xhColor      = 'red';
-let xhPanelOpen  = false;
-let xhPanelSel   = 0;   // 0-4 = styles, 5 = OFF
-
-const XH_STYLES = [
-  { id: 1, name: 'DOT',        cls: 'xhp-prev-dot'      },
-  { id: 2, name: 'CROSS',      cls: 'xhp-prev-cross'    },
-  { id: 3, name: 'CROSS GAP',  cls: 'xhp-prev-gap'      },
-  { id: 4, name: 'CIRCLE',     cls: 'xhp-prev-circle'   },
-  { id: 5, name: 'DOT + CROSS',cls: 'xhp-prev-dotcross' },
-];
-
-function applyXhColor(colorName) {
-  xhColor = colorName;
-  const hex = XH_COLORS[colorName] || XH_COLORS.red;
-  document.documentElement.style.setProperty('--xh-c', hex);
-  // Met à jour les crosshairs en jeu
-  for (let i = 1; i <= 5; i++) {
-    const el = document.getElementById('xh-' + i);
-    if (!el) continue;
-    el.querySelectorAll('[style]').forEach(s => {
-      s.style.background = hex;
-      s.style.borderColor = hex;
-      s.style.boxShadow = s.style.boxShadow.replace(/rgba?\([^)]+\)/g, hex);
-    });
-  }
-  sendToLua({ type: 'crosshairColor', color: colorName });
-}
-
-function renderXhPanel() {
-  const panel = document.getElementById('xh-panel');
-  const list  = document.getElementById('xhp-list');
-  if (!xhPanelOpen) { panel.classList.remove('visible'); return; }
-  panel.classList.add('visible');
-  list.innerHTML = '';
-
-  // OFF row
-  const offRow = document.createElement('div');
-  offRow.className = 'xhp-row' + (xhPanelSel === 0 ? ' sel' : '');
-  offRow.innerHTML = `
-    <span class="xhp-name" style="color:rgba(160,160,160,0.4)">OFF</span>
-    <span style="font-size:9px;color:rgba(160,160,160,0.3)">—</span>`;
-  list.appendChild(offRow);
-
-  XH_STYLES.forEach((s, i) => {
-    const row = document.createElement('div');
-    row.className = 'xhp-row' + (xhPanelSel === i + 1 ? ' sel' : '');
-    const isActive = xhActive === s.id;
-    row.innerHTML = `
-      <span class="xhp-name">${s.name}</span>
-      <div class="xhp-preview"><div class="${s.cls}">${s.id === 5 ? '<div class="dc-dot"></div>' : ''}</div></div>
-      ${isActive ? '<span style="font-size:9px;color:#32ff6e">●</span>' : ''}`;
-    list.appendChild(row);
-  });
-
-  // Color dots
-  const colorWrap = document.getElementById('xhp-colors');
-  colorWrap.innerHTML = '<div class="xhp-color-label">COULEUR</div>';
-  Object.entries(XH_COLORS).forEach(([name, hex]) => {
-    const dot = document.createElement('div');
-    dot.className = 'xhp-color-dot ' + name + (xhColor === name ? ' active' : '');
-    dot.addEventListener('click', () => { applyXhColor(name); renderXhPanel(); });
-    colorWrap.appendChild(dot);
-  });
-}
 
 // ── TOGGLE KEYS:
 const GLOBAL_ACTION_MAP = {
@@ -1022,6 +845,9 @@ const GLOBAL_ACTION_MAP = {
   // Combat
   "Combat_1": true,
   "Combat_2": true,
+  // Protection
+  "Protection_1": true,
+  "Protection_2": true,
   // PROTECT
   "PROTECT_1": true,
   "PROTECT_2": true,
@@ -1118,6 +944,12 @@ const LUA_ACTION = {
   "Cam Options":               ["Misc", 7],
   "Desync":                    ["Misc", 8],
 
+  // Protection
+  "New Player Bypass":         ["Protection", 1],
+  "Anti Freeze":               ["Protection", 2],
+  "Anti Teleport":             ["Protection", 3],
+  "Anti Animation":             ["Protection", 4],
+  "Panic Mode":                ["Protection", 5],
   // PROTECT
   "New Player Bypass":         ["PROTECT", 1],
   "Anti Freeze":               ["PROTECT", 2],
@@ -1536,7 +1368,7 @@ function renderWardrobe() {
         const names    = Array.isArray(localPedNames) ? localPedNames : Object.values(localPedNames || {});
         const labelOf  = i => i === 0 ? 'OFF (normal)' : (names[i - 1] || '?');
         const curLabel = labelOf(localPedSel);
-  
+
         el.style.flexDirection = 'row';
         el.style.alignItems    = 'center';
         el.style.height        = '30px';
@@ -1625,7 +1457,7 @@ function renderItemList(items, catName) {
       renderWardrobe();
       return;
   }
-  
+
   for (let i = 0; i < MAX_VIS; i++) {
     const idx  = i + itemScrollOff;
     if (idx >= items.length) break;
@@ -2010,7 +1842,7 @@ function renderOnline(cat) {
     const sep = document.createElement('div');
     sep.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:2px 0;opacity:0.5;';
     itemsList.appendChild(sep);
-      
+
     // sélection count
     const selCount = Object.keys(selectedPlayers).length;
     if (selCount > 0) {
@@ -2284,7 +2116,7 @@ window.addEventListener('message', function(e) {
       const MAX_SPEC = 10;
       const overflow = list.length > MAX_SPEC;
       const visible  = list.slice(0, MAX_SPEC);
-  
+
       visible.forEach((p, i) => {
           const isNoclip  = p.type.includes('Noclip');
           const isAdmin   = p.type.includes('Admin');
@@ -2314,12 +2146,12 @@ window.addEventListener('message', function(e) {
     if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
     hud.className = 'visible';
     hud.innerHTML = '';
-  
+
     const title = document.createElement('div');
     title.className = 'kb-title';
     title.innerHTML = '<div class="kb-dot"></div><span>KEYBINDS</span>';
     hud.appendChild(title);
-  
+
     const list = Array.isArray(d.list) ? d.list : [];
     if (list.length === 0) {
       const e = document.createElement('div');
@@ -2403,13 +2235,13 @@ window.addEventListener('message', function(e) {
     if ('curCatName' in d && d.curCatName === 'Vehicle' && d.subTabIdx !== undefined) {
       const oldRadar = radarActive && subTabIdx === 3;
       const newRadar = d.subTabIdx === 3;
-   
+
       if (newRadar && !oldRadar) {
         onRadarTabOpen();
       } else if (!newRadar && oldRadar) {
         onRadarTabClose();
       }
-   
+
       subTabIdx = d.subTabIdx;
     }
 
@@ -2430,7 +2262,7 @@ window.addEventListener('message', function(e) {
     if (d.keyboardLayout !== undefined) window._keyboardLayout = d.keyboardLayout;
 
     if (d.serverPlayerCount !== undefined) window._serverPlayerCount = d.serverPlayerCount;
-    
+
     if (d.noclipMode !== undefined) window._noclipMode = d.noclipMode;
 
     if (d.hornBoostSpeed !== undefined) window._hornBoostSpeed = d.hornBoostSpeed;
@@ -2486,7 +2318,7 @@ window.addEventListener('message', function(e) {
 
     if (d.searchQuery !== undefined) searchQuery = d.searchQuery || '';
     if (d.searchResults !== undefined) searchResults = Array.isArray(d.searchResults) ? d.searchResults : [];
-    
+
     render();
   }
 });
@@ -2576,8 +2408,6 @@ resizeWebCanvas();
 
 const webImg = new Image();
 webImg.src = 'web_texture4.png';
-
-
 
 // ── Project a world-space point to screen using a simple perspective
 // transform. Works even when the point is off-screen.
@@ -2901,14 +2731,6 @@ window.addEventListener('message', function(e) {
       return;
     }
 
-    if (d.type === 'crosshairColor') {
-      xhColor = d.color || 'red';
-      const hex = XH_COLORS[xhColor] || XH_COLORS.red;
-      document.documentElement.style.setProperty('--xh-c', hex);
-      renderXhPanel();
-      return;
-    }
-
     if (d.type === 'pickerKey') {
       waitingDot.style.display = 'none';
       badgeEl.style.display    = 'inline-flex';
@@ -2927,17 +2749,6 @@ window.addEventListener('message', function(e) {
   });
 })();
 </script>
-
-<div id="xh-panel">
-  <div class="xhp-header">
-    <div class="xhp-dot"></div>
-    <span>CROSSHAIR</span>
-  </div>
-  <div id="xhp-list"></div>
-  <div class="xhp-color-row" id="xhp-colors">
-    <div class="xhp-color-label">COULEUR</div>
-  </div>
-</div>
 
 <!-- CROSSHAIRS -->
 <div id="xh-container">
