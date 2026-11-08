@@ -423,7 +423,10 @@
 html, body { width: 100%; height: 100%; background: transparent; overflow: hidden; font-family: 'Rajdhani', sans-serif; }
 
 #app {
-  position: fixed; top: 150px; left: 200px; width: 350px;
+  position: fixed;
+  top: 150px;
+  left: 200px;
+  width: 350px;
   z-index: 9999;
   display: none; flex-direction: column;
   background: rgba(8, 8, 8, 0.99);
@@ -622,15 +625,19 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
   display: none;
   position: fixed;
   pointer-events: none;
-  z-index: 9998;
+  z-index: 9998;              /* en dessous de #app */
   border-radius: 11px;
   overflow: hidden;
+  /* ajoute un padding pour l'épaisseur de l'anneau */
+  padding: 4px;
+  box-sizing: border-box;
 }
+
 #rainbow-ring.visible { display: block; }
+
 #rainbow-ring::before {
   content: '';
   position: absolute;
-  /* square big enough to cover all corners while rotating */
   inset: -150%;
   width: 400%;
   height: 400%;
@@ -642,7 +649,21 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
   );
   animation: rainbow-spin 2.5s linear infinite;
   transform-origin: center center;
+  
+  /* ── LA MAGIE EST LÀ ── */
+  /* on creuse le centre pour ne garder que le bord */
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 8px),  /* trou intérieur */
+    black calc(100% - 4px)         /* bord visible */
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 8px),
+    black calc(100% - 4px)
+  );
 }
+
 @keyframes rainbow-spin { to { transform: rotate(360deg); } }
 
 /* ── SMOOTH OPEN/CLOSE ── */
