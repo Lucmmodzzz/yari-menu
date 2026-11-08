@@ -1075,6 +1075,11 @@ function applyTheme(name, twotone) {
   currentTheme   = name;
   twoToneEnabled = twotone;
   appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green','twotone');
+
+  // Si rainbow cycle actif → pas de classe scoped, les vars root restent libres
+  const rainbowActive = (window._rainbowMode || 0) > 0;
+  if (rainbowActive) return;  // ← sortie propre, cycle garde la main
+
   if (twotone) {
     appEl.classList.add('twotone');
     root.style.setProperty('--accent-l',   TWOTONE_LEFT);
@@ -1119,8 +1124,7 @@ function startRainbowCycle() {
 
 function stopRainbowCycle() {
   if (rainbowTimer) { clearInterval(rainbowTimer); rainbowTimer = null; }
-  // Restore theme class so scoped vars come back
-  appEl.classList.add('theme-' + currentTheme);
+  applyTheme(currentTheme, twoToneEnabled);  // restore theme, rainbowMode déjà 0 à ce stade
 }
 
 // Keep rainbow ring synced to app position/size
@@ -1680,7 +1684,12 @@ function renderItemList(items, catName) {
         const dot = document.createElement('div');
         dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
         dot.addEventListener('click', () => {
-          applyTheme(c, false);
+          currentTheme = c;           // stocke la préférence
+          twoToneEnabled = false;
+          // N'applique le thème visuellement que si rainbow est OFF
+          if ((window._rainbowMode || 0) === 0) {
+            applyTheme(c, false);
+          }
           sendToLua({ type:'colorChange', theme:c, twotone:false });
           render();
         });
@@ -2162,13 +2171,13 @@ window.addEventListener('message', function(e) {
 
   if (d.type === 'rainbowMenu') {
     const mode = d.mode || 0;
-    window._rainbowMode = mode;
-    stopRainbowCycle();              // restore theme class first
+    window._rainbowMode = mode;         // set AVANT stop
+    stopRainbowCycle();                  // si mode 0 → restore theme; si mode>0 → strip class
     ringEl.classList.remove('visible');
     if (mode === 0) {
-      applyTheme(currentTheme, twoToneEnabled);  // re-applies class + vars
+      // stopRainbowCycle a déjà appelé applyTheme
     } else if (mode === 1) {
-      startRainbowCycle();           // strips class, starts cycle
+      startRainbowCycle();
     } else if (mode === 2) {
       startRainbowCycle();
       ringEl.classList.add('visible');
