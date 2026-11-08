@@ -1632,12 +1632,12 @@ function renderItemList(items, catName) {
       el.innerHTML = `
         <div class="bar"></div>
         <span class="item-name" style="font-size:13px;font-weight:500;">Rainbow Menu</span>
-        ${mIdx === 2 ? `<div style="width:30px;height:8px;border-radius:4px;background:${rainbowGrad};box-shadow:0 0 8px rgba(255,255,255,0.4);flex-shrink:0;margin-right:6px;"></div>` : ''}
+        ${mIdx === 1 ? `<div style="width:30px;height:8px;border-radius:4px;background:${rainbowGrad};box-shadow:0 0 8px rgba(255,255,255,0.4);flex-shrink:0;margin-right:6px;"></div>` : ''}
         <span style="
           font-size:10px;
           font-family:'Share Tech Mono',monospace;
           white-space:nowrap;
-          ${mIdx === 2 ? `background:${rainbowGrad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;` : `color:${isOn ? 'var(--accent)' : 'rgba(200,200,200,0.7)'};`}
+          ${mIdx === 1 ? `background:${rainbowGrad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;` : `color:${isOn ? 'var(--accent)' : 'rgba(200,200,200,0.7)'};`}
         ">${isSel ? '← ' : ''}${MODES[mIdx]}${isSel ? ' →' : ' ◈'}</span>
       `;
       itemsList.appendChild(el);
