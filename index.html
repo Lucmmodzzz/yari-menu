@@ -1102,27 +1102,32 @@ function applyTheme(name, twotone) {
 
 function startRainbowCycle() {
   if (rainbowTimer) return;
-  // ← AJOUT : retirer la classe de thème pour libérer les vars CSS
   appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green');
   rainbowTimer = setInterval(() => {
     rainbowHue = (rainbowHue + 1.2) % 360;
-    const h = rainbowHue;
+    const h      = rainbowHue;
     const accent = `hsl(${h},85%,52%)`;
     const glow   = `hsl(${h},90%,68%)`;
     const dark   = `hsl(${h},85%,27%)`;
     const sep    = `hsla(${h},70%,18%,0.9)`;
-    document.documentElement.style.setProperty('--accent',      accent);
-    document.documentElement.style.setProperty('--accent-glow', glow);
-    document.documentElement.style.setProperty('--accent-dark', dark);
-    document.documentElement.style.setProperty('--sep',         sep);
-    document.documentElement.style.setProperty('--accent-l',    accent);
-    document.documentElement.style.setProperty('--accent-r',    `hsl(${(h+120)%360},85%,52%)`);
+    root.style.setProperty('--accent',      accent);
+    root.style.setProperty('--accent-glow', glow);
+    root.style.setProperty('--accent-dark', dark);
+    root.style.setProperty('--sep',         sep);
+    root.style.setProperty('--accent-l',    accent);
+    root.style.setProperty('--accent-r',    `hsl(${(h+120)%360},85%,52%)`);
   }, 20);
 }
 
-function stopRainbowCycle() {
+// stopRainbowTimer  ← stoppe juste le timer, sans toucher aux classes
+function stopRainbowTimer() {
   if (rainbowTimer) { clearInterval(rainbowTimer); rainbowTimer = null; }
-  // ← AJOUT : remettre la classe de thème pour restaurer les overrides
+}
+
+// stopRainbowCycle  ← stoppe ET restaure le thème fixe (pour applyTheme)
+function stopRainbowCycle() {
+  stopRainbowTimer();
+  appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green');
   appEl.classList.add('theme-' + currentTheme);
 }
 
@@ -2166,10 +2171,20 @@ window.addEventListener('message', function(e) {
   if (d.type === 'rainbowMenu') {
     const mode = d.mode || 0;
     window._rainbowMode = mode;
-    stopRainbowCycle();
+    // ← stopRainbowTimer seulement : on ne restaure pas le thème fixe ici
+    //   car on va peut-être relancer le cycle juste après
+    stopRainbowTimer();
     ringEl.classList.remove('visible');
+    appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green');
+  
     if (mode === 0) {
-      applyTheme(currentTheme, twoToneEnabled);
+      // Retour thème fixe
+      appEl.classList.add('theme-' + currentTheme);
+      const t = THEMES[currentTheme];
+      root.style.setProperty('--accent',      t.accent);
+      root.style.setProperty('--accent-glow', t.glow);
+      root.style.setProperty('--accent-dark', t.dark);
+      root.style.setProperty('--sep',         t.sep);
     } else if (mode === 1) {
       startRainbowCycle();
     } else if (mode === 2) {
@@ -2363,7 +2378,10 @@ window.addEventListener('message', function(e) {
       Object.assign(toggleStates, d.toggles);
       if ('Settings_4' in d.toggles) {
         twoToneEnabled = d.toggles['Settings_4'] === true;
-        applyTheme(currentTheme, twoToneEnabled);
+        // N'appliquer le thème fixe que si rainbow n'est pas actif
+        if (!rainbowTimer) {
+          applyTheme(currentTheme, twoToneEnabled);
+        }
       }
     }
 
