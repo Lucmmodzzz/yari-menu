@@ -697,7 +697,7 @@ const CAT_STRUCTURE = [
     name: "Misc",
     subTabs: [
       { name: "MISC", items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim","Free Cam", "Cam Options","Desync"] },
-      { name: "PROTECTION", items: ["New Player Bypass", "Anti Freeze", "Anti Teleport", "Panic Mode"] },
+      { name: "PROTECTION", items: ["New Player Bypass", "Anti Freeze", "Anti Teleport", "Anti Animation", "Panic Mode"] },
       { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos", "Vehicle Spin Chaos","Vehicle Black Hole", "Disable Map Collision"] },
       { name: "SERVER",    items: ["Bypass Sunlife","Prime Bypass", "Bypass GLife", "Bypass Seed"] },
     ]
@@ -860,7 +860,8 @@ const LUA_ACTION = {
   "New Player Bypass":         ["Protection", 1],
   "Anti Freeze":               ["Protection", 2],
   "Anti Teleport":             ["Protection", 3],
-  "Panic Mode":                ["Protection", 4],
+  "Anti Animation":             ["Protection", 4],
+  "Panic Mode":                ["Protection", 5],
 
   // Destroyer
   "Delete All Vehicles":       ["Destroyer", 1],
@@ -896,7 +897,7 @@ const TOGGLE_NAMES = new Set([
   "Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall","Walk On Wall SM",
   "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost", "Free cam", "Cam Options",
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Spoof Weapon",
-  "Laser Eye","Fast Punch","New Player Bypass", "Anti Freeze", "Anti Teleport", "Auto Load Config","Activer Deux Couleurs",
+  "Laser Eye","Fast Punch","New Player Bypass", "Anti Freeze", "Anti Teleport", "Anti Animation", "Auto Load Config","Activer Deux Couleurs",
   "Vehicle Chaos", "Vehicle Spin Chaos","Show Keybinds","Anti Aim V2","Slide Run","Speed Multiplier", 
   "Brake Multiplier", "Turn Multiplier","Pit Mode", "Spider Man", "Walk On Water", "Vehicle Spin", "Wheelie Permanent", "Flip Recovery", "Wall Ride",
   "Vehicle Magnet", "Force Push", "Vehicle Black Hole", "Disable Map Collision", "Infinite Ammo", "No Reload", "Horn Boost"
