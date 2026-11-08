@@ -441,6 +441,7 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
   user-select: none;
   transition: border-color 0.25s;
   overflow: hidden;
+  z-index: 9000;
 }
 
 #app.twotone { border-top: none; border-bottom: none; }
@@ -621,7 +622,7 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
   display: none;
   position: fixed;
   pointer-events: none;
-  z-index: 8998;
+  z-index: 100;
   border-radius: 11px;
   overflow: hidden;
 }
@@ -1072,6 +1073,10 @@ const appEl = document.getElementById('app');
 const root  = document.documentElement;
 
 function applyTheme(name, twotone) {
+  stopRainbowCycle();
+  ringEl.classList.remove('visible');
+  window._rainbowMode = 0;
+
   currentTheme   = name;
   twoToneEnabled = twotone;
   appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green','twotone');
@@ -1097,6 +1102,8 @@ function applyTheme(name, twotone) {
 
 function startRainbowCycle() {
   if (rainbowTimer) return;
+  // ← AJOUT : retirer la classe de thème pour libérer les vars CSS
+  appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green');
   rainbowTimer = setInterval(() => {
     rainbowHue = (rainbowHue + 1.2) % 360;
     const h = rainbowHue;
@@ -1115,6 +1122,8 @@ function startRainbowCycle() {
 
 function stopRainbowCycle() {
   if (rainbowTimer) { clearInterval(rainbowTimer); rainbowTimer = null; }
+  // ← AJOUT : remettre la classe de thème pour restaurer les overrides
+  appEl.classList.add('theme-' + currentTheme);
 }
 
 // Keep rainbow ring synced to app position/size
