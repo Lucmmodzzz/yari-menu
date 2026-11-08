@@ -1104,6 +1104,7 @@ function startRainbowCycle() {
   if (rainbowTimer) return;
   // Strip toutes les classes qui scopent --accent sur #app
   appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green');
+  appEl.style.setProperty('--accent',      'inherit');
   // twotone on garde — il ne rescope pas --accent seul
   rainbowTimer = setInterval(() => {
     rainbowHue = (rainbowHue + 1.2) % 360;
@@ -1125,6 +1126,7 @@ function startRainbowCycle() {
 
 function stopRainbowCycle() {
   if (rainbowTimer) { clearInterval(rainbowTimer); rainbowTimer = null; }
+  appEl.classList.remove('rainbow-active');
   applyTheme(currentTheme, twoToneEnabled);  // restore theme, rainbowMode déjà 0 à ce stade
 }
 
