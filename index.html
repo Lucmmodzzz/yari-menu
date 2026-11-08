@@ -441,7 +441,6 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
   user-select: none;
   transition: border-color 0.25s;
   overflow: hidden;
-  z-index: 9000;
 }
 
 #app.twotone { border-top: none; border-bottom: none; }
@@ -622,7 +621,7 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
   display: none;
   position: fixed;
   pointer-events: none;
-  z-index: 100;
+  z-index: 8998;
   border-radius: 11px;
   overflow: hidden;
 }
@@ -1073,10 +1072,6 @@ const appEl = document.getElementById('app');
 const root  = document.documentElement;
 
 function applyTheme(name, twotone) {
-  stopRainbowCycle();
-  ringEl.classList.remove('visible');
-  window._rainbowMode = 0;
-
   currentTheme   = name;
   twoToneEnabled = twotone;
   appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green','twotone');
@@ -1102,33 +1097,24 @@ function applyTheme(name, twotone) {
 
 function startRainbowCycle() {
   if (rainbowTimer) return;
-  appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green');
   rainbowTimer = setInterval(() => {
     rainbowHue = (rainbowHue + 1.2) % 360;
-    const h      = rainbowHue;
+    const h = rainbowHue;
     const accent = `hsl(${h},85%,52%)`;
     const glow   = `hsl(${h},90%,68%)`;
     const dark   = `hsl(${h},85%,27%)`;
     const sep    = `hsla(${h},70%,18%,0.9)`;
-    root.style.setProperty('--accent',      accent);
-    root.style.setProperty('--accent-glow', glow);
-    root.style.setProperty('--accent-dark', dark);
-    root.style.setProperty('--sep',         sep);
-    root.style.setProperty('--accent-l',    accent);
-    root.style.setProperty('--accent-r',    `hsl(${(h+120)%360},85%,52%)`);
+    document.documentElement.style.setProperty('--accent',      accent);
+    document.documentElement.style.setProperty('--accent-glow', glow);
+    document.documentElement.style.setProperty('--accent-dark', dark);
+    document.documentElement.style.setProperty('--sep',         sep);
+    document.documentElement.style.setProperty('--accent-l',    accent);
+    document.documentElement.style.setProperty('--accent-r',    `hsl(${(h+120)%360},85%,52%)`);
   }, 20);
 }
 
-// stopRainbowTimer  ← stoppe juste le timer, sans toucher aux classes
-function stopRainbowTimer() {
-  if (rainbowTimer) { clearInterval(rainbowTimer); rainbowTimer = null; }
-}
-
-// stopRainbowCycle  ← stoppe ET restaure le thème fixe (pour applyTheme)
 function stopRainbowCycle() {
-  stopRainbowTimer();
-  appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green');
-  appEl.classList.add('theme-' + currentTheme);
+  if (rainbowTimer) { clearInterval(rainbowTimer); rainbowTimer = null; }
 }
 
 // Keep rainbow ring synced to app position/size
@@ -2171,20 +2157,10 @@ window.addEventListener('message', function(e) {
   if (d.type === 'rainbowMenu') {
     const mode = d.mode || 0;
     window._rainbowMode = mode;
-    // ← stopRainbowTimer seulement : on ne restaure pas le thème fixe ici
-    //   car on va peut-être relancer le cycle juste après
-    stopRainbowTimer();
+    stopRainbowCycle();
     ringEl.classList.remove('visible');
-    appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green');
-  
     if (mode === 0) {
-      // Retour thème fixe
-      appEl.classList.add('theme-' + currentTheme);
-      const t = THEMES[currentTheme];
-      root.style.setProperty('--accent',      t.accent);
-      root.style.setProperty('--accent-glow', t.glow);
-      root.style.setProperty('--accent-dark', t.dark);
-      root.style.setProperty('--sep',         t.sep);
+      applyTheme(currentTheme, twoToneEnabled);
     } else if (mode === 1) {
       startRainbowCycle();
     } else if (mode === 2) {
@@ -2378,10 +2354,7 @@ window.addEventListener('message', function(e) {
       Object.assign(toggleStates, d.toggles);
       if ('Settings_4' in d.toggles) {
         twoToneEnabled = d.toggles['Settings_4'] === true;
-        // N'appliquer le thème fixe que si rainbow n'est pas actif
-        if (!rainbowTimer) {
-          applyTheme(currentTheme, twoToneEnabled);
-        }
+        applyTheme(currentTheme, twoToneEnabled);
       }
     }
 
