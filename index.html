@@ -845,11 +845,10 @@ const CAT_STRUCTURE = [
   {
     name: "Misc",
     subTabs: [
-      { name: "MISC", items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim","Free Cam","Cam Options","Desync","Weather"] },
+      { name: "MISC", items: ["Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Ragdoll All Players","Anti Aim","Free Cam","Cam Options","Desync","Weather","Crosshair"] },
       { name: "PROTECT", items: ["New Player Bypass", "Anti Freeze", "Anti Teleport", "Anti Animation", "Panic Mode"] },
       { name: "DESTROYER",  items: ["Delete All Vehicles","Explode All Vehicles","Cage All Players","Bug All Players BMX","Vehicle Chaos", "Vehicle Spin Chaos","Vehicle Black Hole", "Disable Map Collision"] },
       { name: "SERVER",    items: ["Bypass Sunlife","Prime Bypass", "Bypass GLife", "Bypass Seed"] },
-      { name: "CROSSHAIR", items: ["CH Dot","CH Cross","CH Cross Gap","CH Circle","CH Dot Cross"] },
     ]
   },
   {
@@ -1232,6 +1231,11 @@ const WEATHER_ICONS = [
     "☀","🌤","☁","🌫","🌫","🌥","🌧","⛈","🌦","❄","🌨","❄","🎄","🎃"
 ];
 
+let crosshairMenuOpen = false;
+let crosshairMenuSel  = 0;
+
+const CROSSHAIR_ITEMS = ["CH Dot", "CH Cross", "CH Cross Gap", "CH Circle", "CH Dot Cross"];
+
 // Toggles
 const toggleStates = {};
 
@@ -1297,6 +1301,61 @@ function renderSubTabs(cat) {
     el.textContent = st.name;
     subTabsEl.appendChild(el);
   });
+}
+
+function renderCrosshairMenu() {
+  catHeader.textContent = 'MISC › CROSSHAIR';
+  catHeader.className   = 'show';
+
+  const rows = [
+    { type: 'sep',   label: 'STYLE' },
+    { type: 'item',  name: 'CH Dot' },
+    { type: 'item',  name: 'CH Cross' },
+    { type: 'item',  name: 'CH Cross Gap' },
+    { type: 'item',  name: 'CH Circle' },
+    { type: 'item',  name: 'CH Dot Cross' },
+    { type: 'sep',   label: 'ACTION' },
+    { type: 'close', name: '← Retour' },
+  ];
+
+  for (let i = 0; i < MAX_VIS; i++) {
+    const idx = i + itemScrollOff;
+    if (idx >= rows.length) break;
+    const row = rows[idx];
+    const isSel = idx === itemSelIdx;
+    const el = document.createElement('div');
+    el.className = 'menu-item' + (isSel ? ' sel' : '');
+
+    if (row.type === 'sep') {
+      el.style.cssText = 'display:flex;align-items:center;padding:0 14px;height:22px;gap:8px;';
+      el.innerHTML = `
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.14));"></div>
+        <span style="font-size:9px;letter-spacing:2px;color:rgba(180,180,180,0.4);font-family:'Share Tech Mono',monospace;white-space:nowrap;text-transform:uppercase;">${row.label}</span>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,0.14),transparent);"></div>
+      `;
+      itemsList.appendChild(el);
+      continue;
+    }
+
+    if (row.type === 'close') {
+      el.innerHTML = `
+        <div class="bar"></div>
+        <span class="item-name" style="font-size:12px;color:rgba(180,180,180,0.6);">${row.name}</span>
+      `;
+      itemsList.appendChild(el);
+      continue;
+    }
+
+    // Item crosshair — toggle
+    const tk = luaToggleKey(row.name);
+    const isOn = toggleStates[tk] === true;
+    el.innerHTML = `
+      <div class="bar"></div>
+      <span class="item-name" style="font-size:13px;font-weight:500;">${row.name}</span>
+      <div class="tog${isOn ? ' on' : ''}"></div>
+    `;
+    itemsList.appendChild(el);
+  }
 }
 
 // -- WEATHER
@@ -1646,6 +1705,11 @@ function renderWardrobeSlots() {
 function renderItemList(items, catName) {
   if (catName === 'Misc' && weatherMenuOpen) {
     renderWeatherMenu();
+    return;
+  }
+  
+  if (catName === 'Misc' && crosshairMenuOpen) {
+    renderCrosshairMenu();
     return;
   }
   
@@ -2529,6 +2593,8 @@ window.addEventListener('message', function(e) {
     if (d.selIdx      !== undefined) { if (curCatIdx !== null) itemSelIdx   = d.selIdx;    else selIdx    = d.selIdx; }
     if (d.scrollOff   !== undefined) { if (curCatIdx !== null) itemScrollOff= d.scrollOff; else scrollOff = d.scrollOff; }
 
+    
+
     if (d.vehicleSpinSpeed      !== undefined) window._vehicleSpinSpeed      = d.vehicleSpinSpeed;
     if (d.vehicleSpinChaosSpeed !== undefined) window._vehicleSpinChaosSpeed = d.vehicleSpinChaosSpeed;
 
@@ -2538,11 +2604,14 @@ window.addEventListener('message', function(e) {
     if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
 
     if (d.weatherMenuOpen      !== undefined) weatherMenuOpen      = d.weatherMenuOpen;
-if (d.weatherMenuSel       !== undefined) weatherMenuSel       = d.weatherMenuSel;
-if (d.weatherTimeValue     !== undefined) weatherTimeValue     = d.weatherTimeValue;
-if (d.weatherTypeIdx       !== undefined) weatherTypeIdx       = d.weatherTypeIdx;
-if (d.freezeTimeEnabled    !== undefined) freezeTimeEnabled    = d.freezeTimeEnabled;
-if (d.freezeWeatherEnabled !== undefined) freezeWeatherEnabled = d.freezeWeatherEnabled;
+    if (d.weatherMenuSel       !== undefined) weatherMenuSel       = d.weatherMenuSel;
+    if (d.weatherTimeValue     !== undefined) weatherTimeValue     = d.weatherTimeValue;
+    if (d.weatherTypeIdx       !== undefined) weatherTypeIdx       = d.weatherTypeIdx;
+    if (d.freezeTimeEnabled    !== undefined) freezeTimeEnabled    = d.freezeTimeEnabled;
+    if (d.freezeWeatherEnabled !== undefined) freezeWeatherEnabled = d.freezeWeatherEnabled;
+
+    if (d.crosshairMenuOpen !== undefined) crosshairMenuOpen = d.crosshairMenuOpen;
+    if (d.crosshairMenuSel  !== undefined) crosshairMenuSel  = d.crosshairMenuSel;
 
     if (d.disableMapCollisionMode !== undefined) window._disableMapCollisionMode = d.disableMapCollisionMode;
 
