@@ -3718,6 +3718,7 @@ body.design-active .design-draggable.dragging {
     }
 
     if (d.type === 'designMouse') {
+      console.log('[DESIGN]', d.x, d.y, d.lmb, 'active:', designActive); // ← ajoute ça
       if (!designActive) return;
 
       const sx = d.x * window.innerWidth;
