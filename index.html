@@ -2571,42 +2571,42 @@ window.addEventListener('message', function(e) {
   }
 
   if (d.type === 'spectatorUpdate') {
-  const hud = document.getElementById('spec-hud');
-  if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
-  hud.className = 'visible';
-
-  const list    = d.list || [];
-  const MAX_SPEC = 10;
-  const visible  = list.slice(0, MAX_SPEC);
-  const overflow = list.length - MAX_SPEC;
-
-  // Type helper
-  function getTypeClass(type) {
-    const hasNoclip = type.includes('Noclip');
-    const hasAdmin  = type.includes('Admin');
-    if (hasNoclip && hasAdmin) return 'both';
-    if (hasNoclip) return 'noclip';
-    return 'admin';
-  }
-  function getTypeLabel(type) {
-    return type.replace(/[\[\]]/g, '').trim() || 'SPEC';
-  }
-
-  let html = `
-    <div class="spec-header">
-      <div class="spec-dot"></div>
-      <div class="spec-title-group">
-        <div class="spec-title-row">
-          <span class="spec-label">Spectateurs</span>
-          <span class="spec-count-badge">${list.length}</span>
+    const hud = document.getElementById('spec-hud');
+    if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
+    hud.className = 'visible';
+  
+    const list    = d.list || [];
+    const MAX_SPEC = 10;
+    const visible  = list.slice(0, MAX_SPEC);
+    const overflow = list.length - MAX_SPEC;
+  
+    // Type helper
+    function getTypeClass(type) {
+      const hasNoclip = type.includes('Noclip');
+      const hasAdmin  = type.includes('Admin');
+      if (hasNoclip && hasAdmin) return 'both';
+      if (hasNoclip) return 'noclip';
+      return 'admin';
+    }
+    function getTypeLabel(type) {
+      return type.replace(/[\[\]]/g, '').trim() || 'SPEC';
+    }
+  
+    let html = `
+      <div class="spec-header">
+        <div class="spec-dot"></div>
+        <div class="spec-title-group">
+          <div class="spec-title-row">
+            <span class="spec-label">Spectateurs</span>
+            <span class="spec-count-badge">${list.length}</span>
+          </div>
+          <span class="spec-subtitle">JOUEURS EN OBSERVATION</span>
         </div>
-        <span class="spec-subtitle">JOUEURS EN OBSERVATION</span>
       </div>
-    </div>
-    <div class="spec-rows">
-  `;
-
-  if (list.length === 0) {
+      <div class="spec-rows">
+    `;
+  
+    if (list.length === 0) {
       html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
     } else {
       visible.forEach(p => {
