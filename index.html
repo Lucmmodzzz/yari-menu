@@ -3718,11 +3718,25 @@ body.design-active .design-draggable.dragging {
     }
 
     if (d.type === 'designMouse') {
-      console.log('[DESIGN]', d.x, d.y, d.lmb, 'active:', designActive); // ← ajoute ça
+      console.log('[JS DESIGN]', JSON.stringify(d), 'active:', designActive, 'lmb:', d.lmb);
       if (!designActive) return;
-
+      
       const sx = d.x;
       const sy = d.y;
+      console.log('[JS PANEL CHECK] sx:', sx, 'sy:', sy);
+      
+      // Vérifie chaque panel
+      DRAGGABLE_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const style = window.getComputedStyle(el);
+        const r = el.getBoundingClientRect();
+        console.log('[PANEL]', id, 
+          'display:', style.display, 
+          'rect:', Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom),
+          'hit:', sx >= r.left && sx <= r.right && sy >= r.top && sy <= r.bottom
+        );
+      });
 
       // Déplace le curseur custom
       cursorEl.style.left = sx + 'px';
