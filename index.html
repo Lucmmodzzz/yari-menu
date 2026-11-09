@@ -3746,6 +3746,14 @@ body.design-active .design-draggable.dragging {
   window.addEventListener('message', window.__designHandler);
 })();
 </script>
+
+window.addEventListener('message', function(e) {
+  let d = e.data;
+  if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_){ return; } }
+  if (d && d.type === 'designMouse') {
+    console.log('designMouse reçu:', d.x, d.y, d.lmb);
+  }
+});
   
 </body>
 </html>
