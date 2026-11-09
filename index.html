@@ -565,6 +565,73 @@
 }
 #kb-hud.visible { display: block; }
 
+<div id="noclip-hud"></div>
+
+#noclip-hud {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Share Tech Mono', monospace;
+  z-index: 9999;
+  pointer-events: none;
+  background: rgba(8, 8, 8, 0.97);
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  border-top: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  border-left: 1px solid rgba(255,255,255,0.05);
+  border-right: 1px solid rgba(255,255,255,0.05);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.03),
+    0 8px 28px rgba(0,0,0,0.6),
+    0 0 18px rgba(220,30,30,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+#noclip-hud.visible { display: block; }
+
+.noclip-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 16px;
+}
+
+.noclip-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 7px var(--accent-glow);
+  animation: blink 1s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.noclip-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: rgba(220,220,220,0.9);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.noclip-mode {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--accent);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.noclip-sep {
+  color: rgba(180,180,180,0.3);
+  font-size: 11px;
+}
+
 
 .kb-title {
   display: flex; align-items: center; gap: 8px; padding: 6px 12px;
@@ -2443,6 +2510,25 @@ window.addEventListener('message', function(e) {
 
   if (e.data?.type === 'openUrl') {
       window.open(e.data.url, '_blank');
+  }
+
+  if (d.type === 'noclipStatus') {
+    const hud = document.getElementById('noclip-hud');
+    if (!d.active) {
+      hud.classList.remove('visible');
+      hud.innerHTML = '';
+      return;
+    }
+    hud.classList.add('visible');
+    hud.innerHTML = `
+      <div class="noclip-inner">
+        <div class="noclip-dot"></div>
+        <span class="noclip-label">Noclip</span>
+        <span class="noclip-sep">|</span>
+        <span class="noclip-mode">${d.modeName}</span>
+      </div>
+    `;
+    return;
   }
 
   if (d.type === 'showMenu') {
