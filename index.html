@@ -2597,17 +2597,17 @@ window.addEventListener('message', function(e) {
         <div class="spec-dot"></div>
         <div class="spec-title-group">
           <div class="spec-title-row">
-            <span class="spec-label">Spectateurs</span>
+            <span class="spec-label">Spectator</span>
             <span class="spec-count-badge">${list.length}</span>
           </div>
-          <span class="spec-subtitle">JOUEURS EN OBSERVATION</span>
+          <span class="spec-subtitle">STAFFS IN SPECTATE</span>
         </div>
       </div>
       <div class="spec-rows">
     `;
   
     if (list.length === 0) {
-      html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
+      html += `<div class="spec-empty">No Spectator Detected</div>`;
     } else {
       visible.forEach(p => {
         const cls   = getTypeClass(p.type);
