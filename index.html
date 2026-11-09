@@ -3649,16 +3649,23 @@ body.design-active .design-draggable.dragging {
     endDrag();
   }
 
-  // ── FIX: ne pas cacher cursorEl du tout, juste overlay ──
+  // ── HIT-TEST MANUEL : pas de elementFromPoint, on lit les BoundingRect ──
   function panelAt(x, y) {
-    overlayEl.style.pointerEvents = 'none'; // laisse passer le hit-test
-    const hit = document.elementFromPoint(x, y);
-    overlayEl.style.pointerEvents = '';     // restore
-    if (!hit) return null;
-    let el = hit;
-    while (el && el !== document.body) {
-      if (el.classList && el.classList.contains('design-draggable')) return el;
-      el = el.parentElement;
+    // Itère en ordre inverse (dernier = plus au-dessus visuellement)
+    for (let i = DRAGGABLE_IDS.length - 1; i >= 0; i--) {
+      const el = document.getElementById(DRAGGABLE_IDS[i]);
+      if (!el) continue;
+
+      // Panel non visible → skip
+      const style = window.getComputedStyle(el);
+      if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') continue;
+
+      const r = el.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) continue;
+
+      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+        return el;
+      }
     }
     return null;
   }
@@ -3674,7 +3681,6 @@ body.design-active .design-draggable.dragging {
     panel.style.zIndex = '99997';
   }
 
-  // ── FIX: moveDrag définie ici, dans le même scope ──
   function moveDrag(x, y) {
     if (!dragTarget) return;
     const nx = x - dragOffX;
@@ -3682,7 +3688,6 @@ body.design-active .design-draggable.dragging {
     dragTarget.style.left = nx + 'px';
     dragTarget.style.top  = ny + 'px';
 
-    // badge coordonnées
     coordBadge.textContent = 'X ' + Math.round(nx) + '  Y ' + Math.round(ny);
     coordBadge.style.left  = (x + 14) + 'px';
     coordBadge.style.top   = (y - 20) + 'px';
@@ -3718,20 +3723,24 @@ body.design-active .design-draggable.dragging {
       const sx = d.x * window.innerWidth;
       const sy = d.y * window.innerHeight;
 
+      // Déplace le curseur custom
       cursorEl.style.left = sx + 'px';
       cursorEl.style.top  = sy + 'px';
 
       const lmbNow = !!d.lmb;
 
+      // LMB vient d'être pressé → cherche un panel sous le curseur
       if (lmbNow && !lmbWas) {
         const p = panelAt(sx, sy);
         if (p) startDrag(p, sx, sy);
       }
 
+      // LMB maintenu + drag en cours → déplace
       if (isDragging && lmbNow) {
         moveDrag(sx, sy);
       }
 
+      // LMB relâché → fin du drag
       if (!lmbNow && lmbWas) {
         endDrag();
       }
@@ -3744,8 +3753,10 @@ body.design-active .design-draggable.dragging {
       DRAGGABLE_IDS.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
-        el.style.left = el.style.top = '';
-        el.style.right = el.style.bottom = '';
+        el.style.left   = '';
+        el.style.top    = '';
+        el.style.right  = '';
+        el.style.bottom = '';
         el.classList.remove('design-draggable', 'dragging');
       });
       return;
@@ -3754,14 +3765,6 @@ body.design-active .design-draggable.dragging {
 
 })();
 </script>
-
-window.addEventListener('message', function(e) {
-  let d = e.data;
-  if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_){ return; } }
-  if (d && d.type === 'designMouse') {
-    console.log('designMouse reçu:', d.x, d.y, d.lmb);
-  }
-});
   
 </body>
 </html>
