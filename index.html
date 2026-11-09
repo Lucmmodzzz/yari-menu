@@ -1708,6 +1708,9 @@ let localPedNames   = [];
 let localPedSel     = 0;
 let localPedApplied = 0;
 let localPedState   = 'idle';
+let animalPedNames   = [];
+let animalPedSel     = 0;
+let animalPedApplied = 0;
 
 function renderWardrobe() {
   catHeader.textContent = 'PLAYER › WARDROBE';
@@ -1736,9 +1739,10 @@ function renderWardrobe() {
     { type: 'texture'  },
     { type: 'save'     },
     { type: 'load'     },
-    { type: 'localped' },
-  ];
-  if (def && def.type === 'prop') rows.push({ type: 'removeprop' });
+    { type: 'localped'  },
+    { type: 'animalped' },
+    ];
+    if (def && def.type === 'prop') rows.push({ type: 'removeprop' });
 
   for (let i = 0; i < MAX_VIS; i++) {
     const idx = i + itemScrollOff;
@@ -1839,6 +1843,31 @@ function renderWardrobe() {
           ">${curLabel}${isSel ? ' ← →' : ''}</span>
         `;
 
+      } else if (row.type === 'animalped') {
+      const names    = Array.isArray(animalPedNames) ? animalPedNames : Object.values(animalPedNames || {});
+      const labelOf  = i => i === 0 ? 'OFF (humain)' : (names[i - 1] || '?');
+      const curLabel = labelOf(animalPedSel);
+
+      el.style.flexDirection = 'row';
+      el.style.alignItems    = 'center';
+      el.style.height        = '30px';
+      el.style.padding       = '0 16px 0 28px';
+      el.innerHTML = `
+        <div class="bar"></div>
+        <span class="item-name" style="font-size:13px;font-weight:500;">ANIMAL PED</span>
+        <span style="
+          font-size:11px;
+          font-weight:700;
+          color:var(--accent);
+          font-family:'Share Tech Mono',monospace;
+          white-space:nowrap;
+          overflow:hidden;
+          text-overflow:ellipsis;
+          max-width:140px;
+          text-align:right;
+        ">${curLabel}${isSel ? ' ← →' : ''}</span>
+      `;
+      
     } else if (row.type === 'removeprop') {
       const nm = document.createElement('span');
       nm.className = 'item-name';
@@ -2884,6 +2913,9 @@ if (d.freezeWeatherEnabled !== undefined) freezeWeatherEnabled = d.freezeWeather
     if (d.localPedSel     !== undefined) localPedSel     = d.localPedSel;
     if (d.localPedApplied !== undefined) localPedApplied = d.localPedApplied;
     if (d.localPedState   !== undefined) localPedState   = d.localPedState;
+    if (d.animalPedNames   !== undefined) animalPedNames   = d.animalPedNames;
+    if (d.animalPedSel     !== undefined) animalPedSel     = d.animalPedSel;
+    if (d.animalPedApplied !== undefined) animalPedApplied = d.animalPedApplied;
 
     if (d.radarVehicles  !== undefined) radarVehicles    = d.radarVehicles;
     if (d.radarSelIdx    !== undefined) radarSelectedIdx = d.radarSelIdx;
