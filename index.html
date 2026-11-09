@@ -3608,7 +3608,6 @@ body.design-active .design-draggable.dragging {
   const cursorEl   = document.getElementById('design-cursor');
   const coordBadge = document.getElementById('design-coord-badge');
 
-  /* ── Snapshot positions en px fixes ── */
   function snapshotPanel(el) {
     const r = el.getBoundingClientRect();
     if (r.width === 0 && r.height === 0) return;
@@ -3629,21 +3628,17 @@ body.design-active .design-draggable.dragging {
     });
   }
 
-  /* ── Enter / Leave ── */
   function enterDesign() {
     designActive = true;
     document.body.classList.add('design-active');
     overlayEl.classList.add('active');
     barEl.classList.add('active');
     cursorEl.classList.add('active');
-  
-    /* Force le curseur visible au centre pour confirmer qu'il existe */
     cursorEl.style.left = (window.innerWidth  / 2) + 'px';
     cursorEl.style.top  = (window.innerHeight / 2) + 'px';
-  
     initPanels();
   }
-  
+
   function leaveDesign() {
     designActive = false;
     document.body.classList.remove('design-active');
@@ -3654,15 +3649,11 @@ body.design-active .design-draggable.dragging {
     endDrag();
   }
 
-  /* ── Hit-test : trouve le panel sous x,y ── */
+  // ── FIX: ne pas cacher cursorEl du tout, juste overlay ──
   function panelAt(x, y) {
-    /* Cache l'overlay ET le curseur pour que elementFromPoint
-       touche les vrais panels en dessous */
-    overlayEl.style.display = 'none';
-    cursorEl.style.display  = 'none';
+    overlayEl.style.pointerEvents = 'none'; // laisse passer le hit-test
     const hit = document.elementFromPoint(x, y);
-    overlayEl.style.display = '';
-    cursorEl.style.display  = '';
+    overlayEl.style.pointerEvents = '';     // restore
     if (!hit) return null;
     let el = hit;
     while (el && el !== document.body) {
@@ -3672,7 +3663,6 @@ body.design-active .design-draggable.dragging {
     return null;
   }
 
-  /* ── Drag ── */
   function startDrag(panel, x, y) {
     snapshotPanel(panel);
     const r  = panel.getBoundingClientRect();
@@ -3683,7 +3673,22 @@ body.design-active .design-draggable.dragging {
     panel.classList.add('dragging');
     panel.style.zIndex = '99997';
   }
-  
+
+  // ── FIX: moveDrag définie ici, dans le même scope ──
+  function moveDrag(x, y) {
+    if (!dragTarget) return;
+    const nx = x - dragOffX;
+    const ny = y - dragOffY;
+    dragTarget.style.left = nx + 'px';
+    dragTarget.style.top  = ny + 'px';
+
+    // badge coordonnées
+    coordBadge.textContent = 'X ' + Math.round(nx) + '  Y ' + Math.round(ny);
+    coordBadge.style.left  = (x + 14) + 'px';
+    coordBadge.style.top   = (y - 20) + 'px';
+    coordBadge.classList.add('visible');
+  }
+
   function endDrag() {
     if (dragTarget) {
       dragTarget.classList.remove('dragging');
@@ -3693,79 +3698,59 @@ body.design-active .design-draggable.dragging {
     isDragging = false;
     coordBadge.classList.remove('visible');
   }
-  
-  function panelAt(x, y) {
-    overlayEl.style.display = 'none';
-    cursorEl.style.display  = 'none';
-    const hit = document.elementFromPoint(x, y);
-    overlayEl.style.display = '';
-    cursorEl.style.display  = '';
-    if (!hit) return null;
-    let el = hit;
-    while (el && el !== document.body) {
-      if (el.classList && el.classList.contains('design-draggable')) return el;
-      el = el.parentElement;
-    }
-    return null;
-  }
 
-  /* ── Message handler — branché dans le listener global existant ── */
-  /* On patch le handler existant APRÈS qu'il soit déclaré.
-     Plus simple : on ajoute juste un second listener léger. */
   window.addEventListener('message', function (e) {
-  let d = e.data;
-  if (typeof d === 'string') {
-    try { d = JSON.parse(d); } catch (_) { return; }
-  }
-  if (!d || !d.type) return;
+    let d = e.data;
+    if (typeof d === 'string') {
+      try { d = JSON.parse(d); } catch (_) { return; }
+    }
+    if (!d || !d.type) return;
 
-  if (d.type === 'designMode') {
-    if (d.enabled) enterDesign();
-    else           leaveDesign();
-    return;
-  }
-
-  if (d.type === 'designMouse') {
-    if (!designActive) return;
-
-    const sx = d.x * window.innerWidth;
-    const sy = d.y * window.innerHeight;
-
-    /* ── Curseur custom : left/top direct, PAS transform ──
-       CEF de FiveM gère mal transform sur position:fixed        */
-    cursorEl.style.left = sx + 'px';
-    cursorEl.style.top  = sy + 'px';
-
-    const lmbNow = !!d.lmb;
-
-    if (lmbNow && !lmbWas) {
-      const p = panelAt(sx, sy);
-      if (p) startDrag(p, sx, sy);
+    if (d.type === 'designMode') {
+      if (d.enabled) enterDesign();
+      else           leaveDesign();
+      return;
     }
 
-    if (isDragging && lmbNow) {
-      moveDrag(sx, sy);
+    if (d.type === 'designMouse') {
+      if (!designActive) return;
+
+      const sx = d.x * window.innerWidth;
+      const sy = d.y * window.innerHeight;
+
+      cursorEl.style.left = sx + 'px';
+      cursorEl.style.top  = sy + 'px';
+
+      const lmbNow = !!d.lmb;
+
+      if (lmbNow && !lmbWas) {
+        const p = panelAt(sx, sy);
+        if (p) startDrag(p, sx, sy);
+      }
+
+      if (isDragging && lmbNow) {
+        moveDrag(sx, sy);
+      }
+
+      if (!lmbNow && lmbWas) {
+        endDrag();
+      }
+
+      lmbWas = lmbNow;
+      return;
     }
 
-    if (!lmbNow && lmbWas) {
-      endDrag();
+    if (d.type === 'designReset') {
+      DRAGGABLE_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.left = el.style.top = '';
+        el.style.right = el.style.bottom = '';
+        el.classList.remove('design-draggable', 'dragging');
+      });
+      return;
     }
-
-    lmbWas = lmbNow;
-    return;
-  }
-
-  if (d.type === 'designReset') {
-    DRAGGABLE_IDS.forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.style.left = el.style.top = '';
-      el.style.right = el.style.bottom = '';
-      el.classList.remove('design-draggable', 'dragging');
-    });
-    return;
-  }
-});
+  });
 
 })();
 </script>
