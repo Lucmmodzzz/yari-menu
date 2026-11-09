@@ -3512,18 +3512,18 @@ window.addEventListener('message', function(e) {
 
 /* Curseur custom */
 #design-cursor {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 20px;
   height: 20px;
   pointer-events: none;
   z-index: 100002;
-  /* PAS de transform ici — on bouge via left/top direct */
   display: none;
+  /* transform positionne le curseur, pas left/top */
 }
 #design-cursor.active {
-  display: block !important;
+  display: block;
 }
 #design-cursor svg { width: 20px; height: 20px; filter: drop-shadow(0 0 4px rgba(220,30,30,0.9)); }
 
@@ -3589,7 +3589,10 @@ body.design-active .design-draggable.dragging {
 
 <script>
 (function () {
-  const DRAGGABLE_IDS = ['app', 'player-panel', 'spec-hud', 'kb-hud', 'freecam-hud', 'fc-center-hud'];
+  const DRAGGABLE_IDS = [
+    'app', 'player-panel', 'spec-hud',
+    'kb-hud', 'freecam-hud', 'fc-center-hud'
+  ];
 
   let designActive = false;
   let lmbWas       = false;
@@ -3602,34 +3605,39 @@ body.design-active .design-draggable.dragging {
   const cursorEl   = document.getElementById('design-cursor');
   const coordBadge = document.getElementById('design-coord-badge');
 
-  /* ── snapshot positions en px fixes ── */
-  function initDraggablePanels() {
+  /* ── Snapshot positions en px fixes ── */
+  function snapshotPanel(el) {
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 && r.height === 0) return;
+    el.style.position = 'fixed';
+    el.style.left     = r.left + 'px';
+    el.style.top      = r.top  + 'px';
+    el.style.right    = 'auto';
+    el.style.bottom   = 'auto';
+    el.style.margin   = '0';
+  }
+
+  function initPanels() {
     DRAGGABLE_IDS.forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
-      const computed = window.getComputedStyle(el);
-      if (computed.display === 'none') return;
-      const r = el.getBoundingClientRect();
-      el.style.position = 'fixed';
-      el.style.left     = r.left + 'px';
-      el.style.top      = r.top  + 'px';
-      el.style.right    = 'auto';
-      el.style.bottom   = 'auto';
-      el.style.margin   = '0';
       el.classList.add('design-draggable');
+      snapshotPanel(el);
     });
   }
 
-  function enterDesignMode() {
+  /* ── Enter / Leave ── */
+  function enterDesign() {
     designActive = true;
     document.body.classList.add('design-active');
     overlayEl.classList.add('active');
     barEl.classList.add('active');
     cursorEl.classList.add('active');
-    initDraggablePanels();
+    initPanels();
+    console.log('[DESIGN] entered, panels snapshotted');
   }
 
-  function leaveDesignMode() {
+  function leaveDesign() {
     designActive = false;
     document.body.classList.remove('design-active');
     overlayEl.classList.remove('active');
@@ -3637,30 +3645,38 @@ body.design-active .design-draggable.dragging {
     cursorEl.classList.remove('active');
     coordBadge.classList.remove('visible');
     endDrag();
+    console.log('[DESIGN] left');
   }
 
-  /* ── hit-test panel sous le point ── */
-  function panelAtPoint(x, y) {
+  /* ── Hit-test : trouve le panel sous x,y ── */
+  function panelAt(x, y) {
+    /* Cache l'overlay ET le curseur pour que elementFromPoint
+       touche les vrais panels en dessous */
     overlayEl.style.display = 'none';
-    const el = document.elementFromPoint(x, y);
+    cursorEl.style.display  = 'none';
+    const hit = document.elementFromPoint(x, y);
     overlayEl.style.display = '';
-    if (!el) return null;
-    let cur = el;
-    while (cur && cur !== document.body) {
-      if (cur.classList && cur.classList.contains('design-draggable')) return cur;
-      cur = cur.parentElement;
+    cursorEl.style.display  = '';
+    if (!hit) return null;
+    let el = hit;
+    while (el && el !== document.body) {
+      if (el.classList && el.classList.contains('design-draggable')) return el;
+      el = el.parentElement;
     }
     return null;
   }
 
+  /* ── Drag ── */
   function startDrag(panel, x, y) {
+    snapshotPanel(panel); // re-snapshot au moment du click
+    const r  = panel.getBoundingClientRect();
     dragTarget = panel;
-    const r    = panel.getBoundingClientRect();
     dragOffX   = x - r.left;
     dragOffY   = y - r.top;
     isDragging = true;
     panel.classList.add('dragging');
     panel.style.zIndex = '99997';
+    console.log('[DESIGN] drag start', panel.id, 'offset', dragOffX, dragOffY);
   }
 
   function moveDrag(x, y) {
@@ -3680,27 +3696,28 @@ body.design-active .design-draggable.dragging {
     if (dragTarget) {
       dragTarget.classList.remove('dragging');
       dragTarget.style.zIndex = '';
+      console.log('[DESIGN] drag end', dragTarget.id,
+        'final pos', dragTarget.style.left, dragTarget.style.top);
       dragTarget = null;
     }
     isDragging = false;
     coordBadge.classList.remove('visible');
   }
 
-  /* ── listener unique — branché sur le listener EXISTANT du menu ── */
-  /* On patch window.addEventListener pour intercepter les messages
-     avant qu'ils soient ignorés, sans dupliquer de listener global */
-  const _origAddEL = window.addEventListener.bind(window);
-
-  /* Handler autonome — enregistré UNE seule fois */
-  window.__designHandler = function (e) {
+  /* ── Message handler — branché dans le listener global existant ── */
+  /* On patch le handler existant APRÈS qu'il soit déclaré.
+     Plus simple : on ajoute juste un second listener léger. */
+  window.addEventListener('message', function (e) {
     let d = e.data;
-    if (typeof d === 'string') { try { d = JSON.parse(d); } catch (_) { return; } }
+    if (typeof d === 'string') {
+      try { d = JSON.parse(d); } catch (_) { return; }
+    }
     if (!d || !d.type) return;
 
     /* ── designMode ── */
     if (d.type === 'designMode') {
-      if (d.enabled) enterDesignMode();
-      else           leaveDesignMode();
+      if (d.enabled) enterDesign();
+      else           leaveDesign();
       return;
     }
 
@@ -3708,26 +3725,29 @@ body.design-active .design-draggable.dragging {
     if (d.type === 'designMouse') {
       if (!designActive) return;
 
-      /* FiveM : x,y normalisé [0..1] → pixels écran */
       const sx = d.x * window.innerWidth;
       const sy = d.y * window.innerHeight;
 
-      /* Curseur custom */
+      /* Bouge le curseur custom via transform (GPU, pas de reflow) */
       cursorEl.style.transform = 'translate(' + sx + 'px, ' + sy + 'px)';
 
       const lmbNow = !!d.lmb;
 
+      /* LMB press */
       if (lmbNow && !lmbWas) {
-        /* Press → cherche panel */
-        const p = panelAtPoint(sx, sy);
+        const p = panelAt(sx, sy);
+        console.log('[DESIGN] LMB press at', Math.round(sx), Math.round(sy),
+          '→ panel:', p ? p.id : 'none');
         if (p) startDrag(p, sx, sy);
       }
 
-      if (isDragging) {
+      /* LMB held */
+      if (isDragging && lmbNow) {
         moveDrag(sx, sy);
       }
 
-      if (!lmbNow && lmbWas && isDragging) {
+      /* LMB release */
+      if (!lmbNow && lmbWas) {
         endDrag();
       }
 
@@ -3740,14 +3760,14 @@ body.design-active .design-draggable.dragging {
       DRAGGABLE_IDS.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
-        el.style.left = el.style.top = el.style.right = el.style.bottom = '';
+        el.style.left = el.style.top = '';
+        el.style.right = el.style.bottom = '';
         el.classList.remove('design-draggable', 'dragging');
       });
       return;
     }
-  };
+  });
 
-  window.addEventListener('message', window.__designHandler);
 })();
 </script>
 
