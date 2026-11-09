@@ -343,26 +343,208 @@
 .pp-coords { font-size: 9px; color: rgba(160,160,160,0.7); padding: 3px 10px 5px; letter-spacing: 0.5px; font-family: 'Share Tech Mono', monospace; }
 
 #spec-hud {
-  display: none; position: fixed; top: 40px; left: 18px; width: 260px;
-  font-family: 'Share Tech Mono', monospace; z-index: 9999; pointer-events: none;
+  display: none;
+  position: fixed;
+  top: 40px;
+  left: 18px;
+  width: 280px;
+  font-family: 'Share Tech Mono', monospace;
+  z-index: 9999;
+  pointer-events: none;
+  background: rgba(8, 8, 8, 0.97);
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  border-top: 3px solid var(--accent);
+  border-bottom: 3px solid var(--accent);
+  border-left: 1px solid rgba(255,255,255,0.05);
+  border-right: 1px solid rgba(255,255,255,0.04);
+  border-radius: 7px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.03),
+    0 16px 48px rgba(0,0,0,0.65),
+    0 4px 14px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.05);
 }
 #spec-hud.visible { display: block; }
-.spec-header { display: flex; align-items: center; gap: 8px; padding: 3px 10px; background: rgba(0,0,0,0.82); border-left: 3px solid var(--accent); border-bottom: 1px solid rgba(255,255,255,0.06); }
-.spec-header .spec-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); animation: blink 1.2s ease-in-out infinite; }
-.spec-header .spec-count { font-size: 11px; color: var(--accent); letter-spacing: 1px; font-weight: 700; }
-.spec-header .spec-label { font-size: 10px; color: rgba(200,200,200,0.55); letter-spacing: 2px; margin-left: auto; }
-@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
-.spec-row { display: flex; align-items: baseline; gap: 6px; padding: 3px 10px 3px 13px; background: rgba(0,0,0,0.72); border-left: 3px solid transparent; border-bottom: 1px solid rgba(255,255,255,0.04); }
-.spec-row.noclip { border-left-color: var(--accent); }
-.spec-row.admin  { border-left-color: #dcaa1e; }
-.spec-sid  { font-size: 10px; color: var(--accent); min-width: 26px; }
-.spec-name { font-size: 11px; color: #e8e8e8; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.spec-dist { font-size: 10px; color: rgba(180,180,180,0.6); white-space: nowrap; }
-.spec-type { font-size: 9px; letter-spacing: 1px; padding: 1px 4px; border-radius: 2px; white-space: nowrap; }
-.spec-type.noclip { color: var(--accent); background: rgba(220,30,30,0.15); }
-.spec-type.admin  { color: #dcaa1e; background: rgba(220,170,30,0.12); }
-.spec-type.both   { color: #ff9900; background: rgba(255,153,0,0.13); }
-.spec-empty { padding: 5px 13px; font-size: 10px; color: rgba(180,180,180,0.4); background: rgba(0,0,0,0.72); border-left: 3px solid transparent; letter-spacing: 1px; }
+
+.spec-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px 6px;
+  background: linear-gradient(90deg, rgba(30,5,5,0.98) 0%, rgba(10,10,10,0.99) 100%);
+  border-bottom: 1px solid rgba(220,30,30,0.18);
+  position: relative;
+}
+.spec-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent 70%);
+  opacity: 0.5;
+}
+
+.spec-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 7px var(--accent-glow);
+  animation: blink 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.spec-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.spec-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.spec-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(220,30,30,0.35);
+  text-transform: uppercase;
+}
+
+.spec-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 16px;
+  padding: 0 5px;
+  background: rgba(220,30,30,0.18);
+  border: 1px solid rgba(220,30,30,0.4);
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0;
+  box-shadow: 0 0 6px rgba(220,30,30,0.2);
+}
+
+.spec-subtitle {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(180,180,180,0.4);
+}
+
+.spec-rows {
+  padding: 3px 0 4px;
+}
+
+.spec-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 10px 0 12px;
+  height: 30px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  position: relative;
+  transition: background 0.08s;
+}
+.spec-row:last-child { border-bottom: none; }
+
+.spec-row-accent {
+  position: absolute;
+  left: 0; top: 4px; bottom: 4px;
+  width: 2px;
+  border-radius: 1px;
+}
+.spec-row.noclip .spec-row-accent { background: var(--accent); box-shadow: 0 0 5px var(--accent-glow); }
+.spec-row.admin  .spec-row-accent { background: #dcaa1e; box-shadow: 0 0 5px rgba(220,170,30,0.6); }
+.spec-row.both   .spec-row-accent { background: linear-gradient(180deg, var(--accent), #dcaa1e); }
+
+.spec-sid {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 28px;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+.spec-row.admin .spec-sid { color: #dcaa1e; }
+.spec-row.both  .spec-sid { color: #ff9900; }
+
+.spec-name {
+  flex: 1;
+  font-size: 11px;
+  color: rgba(220,220,220,0.85);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 6px;
+}
+
+.spec-dist-badge {
+  font-size: 9px;
+  color: rgba(160,160,160,0.6);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 3px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+  margin-right: 5px;
+  letter-spacing: 0.5px;
+}
+
+.spec-type-pill {
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.spec-type-pill.noclip {
+  color: var(--accent);
+  background: rgba(220,30,30,0.15);
+  border: 1px solid rgba(220,30,30,0.3);
+}
+.spec-type-pill.admin {
+  color: #dcaa1e;
+  background: rgba(220,170,30,0.12);
+  border: 1px solid rgba(220,170,30,0.25);
+}
+.spec-type-pill.both {
+  color: #ff9900;
+  background: rgba(255,153,0,0.12);
+  border: 1px solid rgba(255,153,0,0.25);
+}
+
+.spec-overflow-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  gap: 5px;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: rgba(160,160,160,0.4);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.spec-overflow-row span { color: var(--accent); font-weight: 700; }
+
+.spec-empty {
+  padding: 10px 14px;
+  font-size: 10px;
+  color: rgba(160,160,160,0.35);
+  letter-spacing: 1.5px;
+  text-align: center;
+}
 
 #kb-hud {
   display: none; position: fixed; bottom: 24px; right: 24px; width: 250px;
@@ -2389,30 +2571,68 @@ window.addEventListener('message', function(e) {
   }
 
   if (d.type === 'spectatorUpdate') {
-    const hud = document.getElementById('spec-hud');
-    if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
-    hud.className = 'visible';
-    const list = d.list || [];
-    let html = `<div class="spec-header"><div class="spec-dot"></div><span class="spec-count">${list.length}</span><span class="spec-label">SPECTATEURS</span></div>`;
-    if (list.length === 0) {
+  const hud = document.getElementById('spec-hud');
+  if (!d.enabled) { hud.className = ''; hud.innerHTML = ''; return; }
+  hud.className = 'visible';
+
+  const list    = d.list || [];
+  const MAX_SPEC = 10;
+  const visible  = list.slice(0, MAX_SPEC);
+  const overflow = list.length - MAX_SPEC;
+
+  // Type helper
+  function getTypeClass(type) {
+    const hasNoclip = type.includes('Noclip');
+    const hasAdmin  = type.includes('Admin');
+    if (hasNoclip && hasAdmin) return 'both';
+    if (hasNoclip) return 'noclip';
+    return 'admin';
+  }
+  function getTypeLabel(type) {
+    return type.replace(/[\[\]]/g, '').trim() || 'SPEC';
+  }
+
+  let html = `
+    <div class="spec-header">
+      <div class="spec-dot"></div>
+      <div class="spec-title-group">
+        <div class="spec-title-row">
+          <span class="spec-label">Spectateurs</span>
+          <span class="spec-count-badge">${list.length}</span>
+        </div>
+        <span class="spec-subtitle">JOUEURS EN OBSERVATION</span>
+      </div>
+    </div>
+    <div class="spec-rows">
+  `;
+
+  if (list.length === 0) {
       html += `<div class="spec-empty">Aucun spectateur détecté</div>`;
     } else {
-      const MAX_SPEC = 10;
-      const overflow = list.length > MAX_SPEC;
-      const visible  = list.slice(0, MAX_SPEC);
-
-      visible.forEach((p, i) => {
-          const isNoclip  = p.type.includes('Noclip');
-          const isAdmin   = p.type.includes('Admin');
-          const rowCls    = isNoclip ? 'noclip' : 'admin';
-          const typeLabel = p.type.replace(/[\[\]]/g, '');
-          const isLast    = overflow && i === MAX_SPEC - 1;
-          const extra     = isLast
-              ? `<span style="color:var(--accent);font-size:9px;font-family:'Share Tech Mono',monospace;margin-left:4px;flex-shrink:0">+${list.length - MAX_SPEC}</span>`
-              : '';
-          html += `<div class="spec-row ${rowCls}"><span class="spec-sid">${p.serverId}</span><span class="spec-name">${p.name}</span>${extra}<span class="spec-dist">${p.distance}m</span><span class="spec-type ${rowCls}">${typeLabel}</span></div>`;
+      visible.forEach(p => {
+        const cls   = getTypeClass(p.type);
+        const label = getTypeLabel(p.type);
+        html += `
+          <div class="spec-row ${cls}">
+            <div class="spec-row-accent"></div>
+            <span class="spec-sid">${p.serverId}</span>
+            <span class="spec-name">${p.name}</span>
+            <span class="spec-dist-badge">${p.distance}m</span>
+            <span class="spec-type-pill ${cls}">${label}</span>
+          </div>
+        `;
       });
+  
+      if (overflow > 0) {
+        html += `
+          <div class="spec-overflow-row">
+            <span>+${overflow}</span> AUTRES SPECTATEURS
+          </div>
+        `;
+      }
     }
+  
+    html += `</div>`;
     hud.innerHTML = html;
     return;
   }
