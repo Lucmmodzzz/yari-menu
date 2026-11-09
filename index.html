@@ -3520,7 +3520,10 @@ window.addEventListener('message', function(e) {
   pointer-events: none;
   z-index: 100002;
   display: none;
-  /* transform positionne le curseur, pas left/top */
+  /* zero transform, zero margin, zero padding */
+  transform: none;
+  margin: 0;
+  padding: 0;
 }
 #design-cursor.active {
   display: block;
@@ -3633,10 +3636,14 @@ body.design-active .design-draggable.dragging {
     overlayEl.classList.add('active');
     barEl.classList.add('active');
     cursorEl.classList.add('active');
+  
+    /* Force le curseur visible au centre pour confirmer qu'il existe */
+    cursorEl.style.left = (window.innerWidth  / 2) + 'px';
+    cursorEl.style.top  = (window.innerHeight / 2) + 'px';
+  
     initPanels();
-    console.log('[DESIGN] entered, panels snapshotted');
   }
-
+  
   function leaveDesign() {
     designActive = false;
     document.body.classList.remove('design-active');
@@ -3645,7 +3652,6 @@ body.design-active .design-draggable.dragging {
     cursorEl.classList.remove('active');
     coordBadge.classList.remove('visible');
     endDrag();
-    console.log('[DESIGN] left');
   }
 
   /* ── Hit-test : trouve le panel sous x,y ── */
@@ -3668,7 +3674,7 @@ body.design-active .design-draggable.dragging {
 
   /* ── Drag ── */
   function startDrag(panel, x, y) {
-    snapshotPanel(panel); // re-snapshot au moment du click
+    snapshotPanel(panel);
     const r  = panel.getBoundingClientRect();
     dragTarget = panel;
     dragOffX   = x - r.left;
@@ -3676,97 +3682,90 @@ body.design-active .design-draggable.dragging {
     isDragging = true;
     panel.classList.add('dragging');
     panel.style.zIndex = '99997';
-    console.log('[DESIGN] drag start', panel.id, 'offset', dragOffX, dragOffY);
   }
-
-  function moveDrag(x, y) {
-    if (!dragTarget) return;
-    const r  = dragTarget.getBoundingClientRect();
-    const nx = Math.max(0, Math.min(x - dragOffX, window.innerWidth  - r.width));
-    const ny = Math.max(0, Math.min(y - dragOffY, window.innerHeight - r.height));
-    dragTarget.style.left = nx + 'px';
-    dragTarget.style.top  = ny + 'px';
-    coordBadge.textContent = 'X ' + Math.round(nx) + '  Y ' + Math.round(ny);
-    coordBadge.style.left  = (x + 14) + 'px';
-    coordBadge.style.top   = (y +  4) + 'px';
-    coordBadge.classList.add('visible');
-  }
-
+  
   function endDrag() {
     if (dragTarget) {
       dragTarget.classList.remove('dragging');
       dragTarget.style.zIndex = '';
-      console.log('[DESIGN] drag end', dragTarget.id,
-        'final pos', dragTarget.style.left, dragTarget.style.top);
       dragTarget = null;
     }
     isDragging = false;
     coordBadge.classList.remove('visible');
+  }
+  
+  function panelAt(x, y) {
+    overlayEl.style.display = 'none';
+    cursorEl.style.display  = 'none';
+    const hit = document.elementFromPoint(x, y);
+    overlayEl.style.display = '';
+    cursorEl.style.display  = '';
+    if (!hit) return null;
+    let el = hit;
+    while (el && el !== document.body) {
+      if (el.classList && el.classList.contains('design-draggable')) return el;
+      el = el.parentElement;
+    }
+    return null;
   }
 
   /* ── Message handler — branché dans le listener global existant ── */
   /* On patch le handler existant APRÈS qu'il soit déclaré.
      Plus simple : on ajoute juste un second listener léger. */
   window.addEventListener('message', function (e) {
-    let d = e.data;
-    if (typeof d === 'string') {
-      try { d = JSON.parse(d); } catch (_) { return; }
-    }
-    if (!d || !d.type) return;
+  let d = e.data;
+  if (typeof d === 'string') {
+    try { d = JSON.parse(d); } catch (_) { return; }
+  }
+  if (!d || !d.type) return;
 
-    /* ── designMode ── */
-    if (d.type === 'designMode') {
-      if (d.enabled) enterDesign();
-      else           leaveDesign();
-      return;
-    }
+  if (d.type === 'designMode') {
+    if (d.enabled) enterDesign();
+    else           leaveDesign();
+    return;
+  }
 
-    /* ── designMouse ── */
-    if (d.type === 'designMouse') {
-      if (!designActive) return;
+  if (d.type === 'designMouse') {
+    if (!designActive) return;
 
-      const sx = d.x * window.innerWidth;
-      const sy = d.y * window.innerHeight;
+    const sx = d.x * window.innerWidth;
+    const sy = d.y * window.innerHeight;
 
-      /* Bouge le curseur custom via transform (GPU, pas de reflow) */
-      cursorEl.style.transform = 'translate(' + sx + 'px, ' + sy + 'px)';
+    /* ── Curseur custom : left/top direct, PAS transform ──
+       CEF de FiveM gère mal transform sur position:fixed        */
+    cursorEl.style.left = sx + 'px';
+    cursorEl.style.top  = sy + 'px';
 
-      const lmbNow = !!d.lmb;
+    const lmbNow = !!d.lmb;
 
-      /* LMB press */
-      if (lmbNow && !lmbWas) {
-        const p = panelAt(sx, sy);
-        console.log('[DESIGN] LMB press at', Math.round(sx), Math.round(sy),
-          '→ panel:', p ? p.id : 'none');
-        if (p) startDrag(p, sx, sy);
-      }
-
-      /* LMB held */
-      if (isDragging && lmbNow) {
-        moveDrag(sx, sy);
-      }
-
-      /* LMB release */
-      if (!lmbNow && lmbWas) {
-        endDrag();
-      }
-
-      lmbWas = lmbNow;
-      return;
+    if (lmbNow && !lmbWas) {
+      const p = panelAt(sx, sy);
+      if (p) startDrag(p, sx, sy);
     }
 
-    /* ── designReset ── */
-    if (d.type === 'designReset') {
-      DRAGGABLE_IDS.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.style.left = el.style.top = '';
-        el.style.right = el.style.bottom = '';
-        el.classList.remove('design-draggable', 'dragging');
-      });
-      return;
+    if (isDragging && lmbNow) {
+      moveDrag(sx, sy);
     }
-  });
+
+    if (!lmbNow && lmbWas) {
+      endDrag();
+    }
+
+    lmbWas = lmbNow;
+    return;
+  }
+
+  if (d.type === 'designReset') {
+    DRAGGABLE_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.left = el.style.top = '';
+      el.style.right = el.style.bottom = '';
+      el.classList.remove('design-draggable', 'dragging');
+    });
+    return;
+  }
+});
 
 })();
 </script>
