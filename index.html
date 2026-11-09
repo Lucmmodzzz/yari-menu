@@ -3721,8 +3721,8 @@ body.design-active .design-draggable.dragging {
       console.log('[DESIGN]', d.x, d.y, d.lmb, 'active:', designActive); // ← ajoute ça
       if (!designActive) return;
 
-      const sx = d.x * window.innerWidth;
-      const sy = d.y * window.innerHeight;
+      const sx = d.x;
+      const sy = d.y;
 
       // Déplace le curseur custom
       cursorEl.style.left = sx + 'px';
