@@ -3584,46 +3584,37 @@ body.design-active .design-draggable.dragging {
 
 <script>
 (function () {
-  /* ── PANELS DRAGGABLES ── */
-  /* On marque les éléments UI qui peuvent être bougés */
   const DRAGGABLE_IDS = ['app', 'player-panel', 'spec-hud', 'kb-hud', 'freecam-hud', 'fc-center-hud'];
 
-  /* Applique la classe + fixe la position initiale en px si elle est en fixed */
-  function initDraggablePanels() {
-    DRAGGABLE_IDS.forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.classList.add('design-draggable');
-      /* snapshot la position courante en computed px */
-      const r = el.getBoundingClientRect();
-      /* On ne touche que si l'élément est visible */
-      if (r.width === 0 && r.height === 0) return;
-      el.style.left = r.left + 'px';
-      el.style.top  = r.top  + 'px';
-      /* Retire right/bottom si définis pour éviter les conflits */
-      el.style.right  = 'auto';
-      el.style.bottom = 'auto';
-    });
-  }
-
-  /* ── STATE ── */
   let designActive = false;
-  let cursorX = 0, cursorY = 0;
-  let lmbWas  = false;
-
-  /* Drag state */
+  let lmbWas       = false;
   let dragTarget   = null;
   let dragOffX     = 0, dragOffY = 0;
-  let dragStartX   = 0, dragStartY = 0;
   let isDragging   = false;
 
-  /* DOM refs */
   const overlayEl  = document.getElementById('design-overlay');
   const barEl      = document.getElementById('design-bar');
   const cursorEl   = document.getElementById('design-cursor');
   const coordBadge = document.getElementById('design-coord-badge');
 
-  /* ── ENTER / LEAVE ── */
+  /* ── snapshot positions en px fixes ── */
+  function initDraggablePanels() {
+    DRAGGABLE_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const computed = window.getComputedStyle(el);
+      if (computed.display === 'none') return;
+      const r = el.getBoundingClientRect();
+      el.style.position = 'fixed';
+      el.style.left     = r.left + 'px';
+      el.style.top      = r.top  + 'px';
+      el.style.right    = 'auto';
+      el.style.bottom   = 'auto';
+      el.style.margin   = '0';
+      el.classList.add('design-draggable');
+    });
+  }
+
   function enterDesignMode() {
     designActive = true;
     document.body.classList.add('design-active');
@@ -3640,17 +3631,15 @@ body.design-active .design-draggable.dragging {
     barEl.classList.remove('active');
     cursorEl.classList.remove('active');
     coordBadge.classList.remove('visible');
-    if (dragTarget) endDrag();
+    endDrag();
   }
 
-  /* ── FIND PANEL UNDER CURSOR ── */
+  /* ── hit-test panel sous le point ── */
   function panelAtPoint(x, y) {
-    /* Désactive temporairement l'overlay pour que elementFromPoint touche les vrais panels */
-    overlayEl.style.pointerEvents = 'none';
+    overlayEl.style.display = 'none';
     const el = document.elementFromPoint(x, y);
-    overlayEl.style.pointerEvents = '';
+    overlayEl.style.display = '';
     if (!el) return null;
-    /* Remonte jusqu'au panel draggable */
     let cur = el;
     while (cur && cur !== document.body) {
       if (cur.classList && cur.classList.contains('design-draggable')) return cur;
@@ -3659,35 +3648,26 @@ body.design-active .design-draggable.dragging {
     return null;
   }
 
-  /* ── DRAG ── */
   function startDrag(panel, x, y) {
     dragTarget = panel;
-    const r = panel.getBoundingClientRect();
-    dragOffX = x - r.left;
-    dragOffY = y - r.top;
-    dragStartX = x;
-    dragStartY = y;
+    const r    = panel.getBoundingClientRect();
+    dragOffX   = x - r.left;
+    dragOffY   = y - r.top;
     isDragging = true;
     panel.classList.add('dragging');
-    /* Pousse le panel au-dessus des autres */
     panel.style.zIndex = '99997';
   }
 
   function moveDrag(x, y) {
-    if (!dragTarget || !isDragging) return;
-    const nx = x - dragOffX;
-    const ny = y - dragOffY;
-    /* Clamp dans la fenêtre */
+    if (!dragTarget) return;
     const r  = dragTarget.getBoundingClientRect();
-    const cx = Math.max(0, Math.min(nx, window.innerWidth  - r.width));
-    const cy = Math.max(0, Math.min(ny, window.innerHeight - r.height));
-    dragTarget.style.left = cx + 'px';
-    dragTarget.style.top  = cy + 'px';
-
-    /* Badge coordonnées */
-    coordBadge.textContent  = 'X ' + Math.round(cx) + '  Y ' + Math.round(cy);
-    coordBadge.style.left   = (x + 14) + 'px';
-    coordBadge.style.top    = (y + 4)  + 'px';
+    const nx = Math.max(0, Math.min(x - dragOffX, window.innerWidth  - r.width));
+    const ny = Math.max(0, Math.min(y - dragOffY, window.innerHeight - r.height));
+    dragTarget.style.left = nx + 'px';
+    dragTarget.style.top  = ny + 'px';
+    coordBadge.textContent = 'X ' + Math.round(nx) + '  Y ' + Math.round(ny);
+    coordBadge.style.left  = (x + 14) + 'px';
+    coordBadge.style.top   = (y +  4) + 'px';
     coordBadge.classList.add('visible');
   }
 
@@ -3695,88 +3675,75 @@ body.design-active .design-draggable.dragging {
     if (dragTarget) {
       dragTarget.classList.remove('dragging');
       dragTarget.style.zIndex = '';
+      dragTarget = null;
     }
-    dragTarget  = null;
-    isDragging  = false;
+    isDragging = false;
     coordBadge.classList.remove('visible');
   }
 
-  /* ── HOVER HIGHLIGHT ── */
-  let lastHovered = null;
-  function updateHover(x, y) {
-    if (isDragging) return;
-    const p = panelAtPoint(x, y);
-    if (p !== lastHovered) {
-      lastHovered = p;
-    }
-  }
+  /* ── listener unique — branché sur le listener EXISTANT du menu ── */
+  /* On patch window.addEventListener pour intercepter les messages
+     avant qu'ils soient ignorés, sans dupliquer de listener global */
+  const _origAddEL = window.addEventListener.bind(window);
 
-  /* ── MESSAGE HANDLER ── */
-  window.addEventListener('message', function (e) {
+  /* Handler autonome — enregistré UNE seule fois */
+  window.__designHandler = function (e) {
     let d = e.data;
     if (typeof d === 'string') { try { d = JSON.parse(d); } catch (_) { return; } }
     if (!d || !d.type) return;
 
+    /* ── designMode ── */
     if (d.type === 'designMode') {
       if (d.enabled) enterDesignMode();
       else           leaveDesignMode();
       return;
     }
 
+    /* ── designMouse ── */
     if (d.type === 'designMouse') {
       if (!designActive) return;
 
-      /* FiveM envoie x,y normalisé [0..1] */
+      /* FiveM : x,y normalisé [0..1] → pixels écran */
       const sx = d.x * window.innerWidth;
       const sy = d.y * window.innerHeight;
-      cursorX = sx;
-      cursorY = sy;
 
-      /* Déplace le curseur custom */
+      /* Curseur custom */
       cursorEl.style.left = sx + 'px';
       cursorEl.style.top  = sy + 'px';
 
-      /* Hover */
-      updateHover(sx, sy);
-
       const lmbNow = !!d.lmb;
 
-      /* LMB press → start drag */
       if (lmbNow && !lmbWas) {
+        /* Press → cherche panel */
         const p = panelAtPoint(sx, sy);
         if (p) startDrag(p, sx, sy);
       }
 
-      /* LMB held → move drag */
-      if (lmbNow && isDragging) {
+      if (isDragging) {
         moveDrag(sx, sy);
       }
 
-      /* LMB release → end drag */
       if (!lmbNow && lmbWas && isDragging) {
         endDrag();
       }
 
       lmbWas = lmbNow;
+      return;
     }
-  });
 
-  /* ── RESET positions (double-clic sur un panel en design mode) ── */
-  /* Envoyé via message depuis Lua si tu veux un "reset layout" */
-  window.addEventListener('message', function (e) {
-    let d = e.data;
-    if (typeof d === 'string') { try { d = JSON.parse(d); } catch (_) { return; } }
-    if (!d || d.type !== 'designReset') return;
-    DRAGGABLE_IDS.forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.style.left = '';
-      el.style.top  = '';
-      el.style.right  = '';
-      el.style.bottom = '';
-    });
-  });
+    /* ── designReset ── */
+    if (d.type === 'designReset') {
+      DRAGGABLE_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.left = el.style.top = el.style.right = el.style.bottom = '';
+        el.classList.remove('design-draggable', 'dragging');
+      });
+      return;
+    }
+  };
 
+  window.addEventListener('message', window.__designHandler);
 })();
 </script>
   
