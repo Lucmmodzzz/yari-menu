@@ -1037,7 +1037,7 @@ const CAT_STRUCTURE = [
   {
     name: "Settings",
     subTabs: [
-      { name: "SETTINGS", items: ["Auto Load Config","Change Banner","Couleur du Menu","Activer Deux Couleurs","Show Keybinds","Layout Clavier","Rainbow Menu","Smooth Animation"] },
+      { name: "SETTINGS", items: ["Auto Load Config","Change Banner","Couleur du Menu","Activer Deux Couleurs","Show Keybinds","Layout Clavier","Rainbow Menu","Smooth Animation", "Design Mode"] },
     ]
   },
   {
@@ -1104,6 +1104,7 @@ const GLOBAL_ACTION_MAP = {
   "Settings_5": true,
   "Settings_7": true,
   "Settings_8": true,
+  "Settings_9": true,
   // Destroyer
   "Destroyer_5": true,
   "Destroyer_8": true,
@@ -1233,6 +1234,7 @@ const LUA_ACTION = {
   "Layout Clavier":            ["Settings", 6],
   "Rainbow Menu":              ["Settings", 7],
   "Smooth Animation":          ["Settings", 8],
+  "Design Mode":          ["Settings", 9],
 
   // Keybind
   "Delete All Keybinds":       ["Keybind", 1],
@@ -1247,7 +1249,7 @@ const TOGGLE_NAMES = new Set([
   "Laser Eye","Fast Punch","New Player Bypass", "Anti Freeze", "Anti Teleport", "Anti Animation", "Auto Load Config","Activer Deux Couleurs",
   "Vehicle Chaos", "Vehicle Spin Chaos","Show Keybinds","Anti Aim V2","Slide Run","Speed Multiplier", 
   "Brake Multiplier", "Turn Multiplier","Pit Mode", "Spider Man", "Walk On Water", "Vehicle Spin", "Wheelie Permanent", "Flip Recovery", "Wall Ride",
-  "Vehicle Magnet", "Force Push", "Vehicle Black Hole", "Disable Map Collision", "Infinite Ammo", "No Reload", "Horn Boost"
+  "Vehicle Magnet", "Force Push", "Vehicle Black Hole", "Disable Map Collision", "Infinite Ammo", "No Reload", "Horn Boost", "Design Mode"
 ]);
 
 // LUA toggle key lookup (for toggleStates)
