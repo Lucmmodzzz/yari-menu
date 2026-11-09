@@ -3512,14 +3512,19 @@ window.addEventListener('message', function(e) {
 
 /* Curseur custom */
 #design-cursor {
-  display: none;
-  position: fixed;
-  width: 20px; height: 20px;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 20px;
+  height: 20px;
   pointer-events: none;
   z-index: 100002;
-  transform: translate(-2px, -2px);
+  /* PAS de transform ici — on bouge via left/top direct */
+  display: none;
 }
-#design-cursor.active { display: block; }
+#design-cursor.active {
+  display: block !important;
+}
 #design-cursor svg { width: 20px; height: 20px; filter: drop-shadow(0 0 4px rgba(220,30,30,0.9)); }
 
 /* Outline sur les panneaux draggables en design mode */
@@ -3708,8 +3713,7 @@ body.design-active .design-draggable.dragging {
       const sy = d.y * window.innerHeight;
 
       /* Curseur custom */
-      cursorEl.style.left = sx + 'px';
-      cursorEl.style.top  = sy + 'px';
+      cursorEl.style.transform = 'translate(' + sx + 'px, ' + sy + 'px)';
 
       const lmbNow = !!d.lmb;
 
