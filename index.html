@@ -3472,9 +3472,13 @@ window.addEventListener('message', function(e) {
   position: fixed;
   inset: 0;
   z-index: 99998;
-  cursor: none; /* on dessine notre propre cursor */
 }
 #design-overlay.active { display: block; }
+
+body.design-active,
+body.design-active * {
+  cursor: none !important;
+}
 
 /* Bandeau top */
 #design-bar {
@@ -3630,6 +3634,7 @@ body.design-active .design-draggable.dragging {
 
   function enterDesign() {
     designActive = true;
+    document.documentElement.style.cursor = 'none';  // ← AJOUTE
     document.body.classList.add('design-active');
     overlayEl.classList.add('active');
     barEl.classList.add('active');
@@ -3638,9 +3643,10 @@ body.design-active .design-draggable.dragging {
     cursorEl.style.top  = (window.innerHeight / 2) + 'px';
     initPanels();
   }
-
+  
   function leaveDesign() {
     designActive = false;
+    document.documentElement.style.cursor = '';  // ← AJOUTE
     document.body.classList.remove('design-active');
     overlayEl.classList.remove('active');
     barEl.classList.remove('active');
