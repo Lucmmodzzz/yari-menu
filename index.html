@@ -3465,6 +3465,196 @@ window.addEventListener('message', function(e) {
 })();
 </script>
 
+<script>
+// ═══════════════════════════════════════
+// YARI DESIGN MODE — drag & drop panels
+// ═══════════════════════════════════════
+(function() {
+    window.__yariDesignPositions = {};
+    let _designActive = false;
+    let _dragging     = null;
+    let _offsetX = 0, _offsetY = 0;
+
+    const PANELS = [
+        { id: 'app',         label: 'MENU'      },
+        { id: 'freecam-hud', label: 'FREECAM'   },
+        { id: 'player-panel',label: 'PLAYER'    },
+        { id: 'spec-hud',    label: 'SPECTATOR' },
+        { id: 'kb-hud',      label: 'KEYBINDS'  },
+        { id: 'fc-center-hud', label: 'FC CENTER'},
+        { id: 'xh-container',  label: 'CROSSHAIR'},
+    ];
+
+    // ── Overlay badge affiché sur chaque panel draggable ──
+    function addBadge(el, label) {
+        if (el.querySelector('.__dm-badge')) return;
+        const b = document.createElement('div');
+        b.className = '__dm-badge';
+        b.textContent = '✥ ' + label;
+        b.style.cssText = `
+            position:absolute; top:0; left:0; right:0;
+            background:rgba(220,30,30,0.85);
+            color:#fff; font-size:10px; font-weight:700;
+            letter-spacing:2px; text-align:center;
+            padding:3px 0; z-index:99999;
+            font-family:'Share Tech Mono',monospace;
+            cursor:grab; pointer-events:auto;
+            border-radius:inherit;
+            user-select:none;
+        `;
+        el.style.position = 'fixed';
+        el.appendChild(b);
+    }
+
+    function removeBadge(el) {
+        const b = el.querySelector('.__dm-badge');
+        if (b) b.remove();
+    }
+
+    // ── Applique / restaure une position ──
+    function applyPos(el, x, y) {
+        el.style.left   = x + 'px';
+        el.style.top    = y + 'px';
+        el.style.right  = 'auto';
+        el.style.bottom = 'auto';
+        el.style.transform = 'none';
+    }
+
+    // ── Activation ──
+    function enterDesignMode() {
+        _designActive = true;
+        PANELS.forEach(({ id, label }) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.style.pointerEvents = 'auto';
+            el.style.outline = '1.5px dashed rgba(220,30,30,0.7)';
+            el.style.boxSizing = 'border-box';
+            addBadge(el, label);
+        });
+        document.addEventListener('mousedown', onMouseDown, true);
+        document.addEventListener('mousemove', onMouseMove, true);
+        document.addEventListener('mouseup',   onMouseUp,   true);
+
+        // Bannière globale
+        let banner = document.getElementById('__dm-banner');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = '__dm-banner';
+            banner.style.cssText = `
+                position:fixed; bottom:12px; left:50%;
+                transform:translateX(-50%);
+                background:rgba(8,8,8,0.97);
+                border:1px solid rgba(220,30,30,0.6);
+                border-top:3px solid #DC1E1E;
+                color:#fff; font-size:11px; font-weight:700;
+                letter-spacing:3px; padding:6px 20px;
+                font-family:'Share Tech Mono',monospace;
+                z-index:999999; pointer-events:none;
+                border-radius:5px;
+                box-shadow:0 0 20px rgba(220,30,30,0.3);
+            `;
+            banner.textContent = '✥ DESIGN MODE — DRAG PANELS — TOGGLE OFF TO SAVE';
+            document.body.appendChild(banner);
+        }
+        banner.style.display = 'block';
+    }
+
+    // ── Désactivation ──
+    function exitDesignMode() {
+        _designActive = false;
+        PANELS.forEach(({ id }) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.style.outline = '';
+            el.style.pointerEvents = '';
+            removeBadge(el);
+        });
+        document.removeEventListener('mousedown', onMouseDown, true);
+        document.removeEventListener('mousemove', onMouseMove, true);
+        document.removeEventListener('mouseup',   onMouseUp,   true);
+
+        const banner = document.getElementById('__dm-banner');
+        if (banner) banner.style.display = 'none';
+
+        // Sauvegarde positions → clipboard → Lua la récupère
+        const pos = {};
+        PANELS.forEach(({ id }) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const r = el.getBoundingClientRect();
+            pos[id] = { x: Math.round(r.left), y: Math.round(r.top) };
+        });
+        window.__yariDesignPositions = pos;
+        try {
+            navigator.clipboard.writeText('YARI_DESIGN:' + JSON.stringify(pos));
+        } catch(e) {}
+    }
+
+    // ── Mouse events ──
+    function onMouseDown(e) {
+        if (!_designActive) return;
+        for (const { id } of PANELS) {
+            const el = document.getElementById(id);
+            if (!el) continue;
+            const badge = el.querySelector('.__dm-badge');
+            if (badge && badge.contains(e.target)) {
+                e.preventDefault(); e.stopPropagation();
+                const r = el.getBoundingClientRect();
+                _dragging = el;
+                _offsetX  = e.clientX - r.left;
+                _offsetY  = e.clientY - r.top;
+                el.style.zIndex   = '999998';
+                badge.style.cursor = 'grabbing';
+                return;
+            }
+        }
+    }
+
+    function onMouseMove(e) {
+        if (!_dragging) return;
+        e.preventDefault(); e.stopPropagation();
+        const x = e.clientX - _offsetX;
+        const y = e.clientY - _offsetY;
+        // Clamp dans la fenêtre
+        const w = _dragging.offsetWidth;
+        const h = _dragging.offsetHeight;
+        applyPos(
+            _dragging,
+            Math.max(0, Math.min(window.innerWidth  - w, x)),
+            Math.max(0, Math.min(window.innerHeight - h, y))
+        );
+    }
+
+    function onMouseUp(e) {
+        if (!_dragging) return;
+        const badge = _dragging.querySelector('.__dm-badge');
+        if (badge) badge.style.cursor = 'grab';
+        _dragging.style.zIndex = '';
+        _dragging = null;
+    }
+
+    // ── Écoute messages Lua ──
+    window.addEventListener('message', function(e) {
+        let d = e.data;
+        if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
+        if (!d || !d.type) return;
+
+        if (d.type === 'designMode') {
+            if (d.enabled) enterDesignMode();
+            else           exitDesignMode();
+        }
+
+        if (d.type === 'designRestore' && d.positions) {
+            window.__yariDesignPositions = d.positions;
+            for (const [id, pos] of Object.entries(d.positions)) {
+                const el = document.getElementById(id);
+                if (el && pos) applyPos(el, pos.x, pos.y);
+            }
+        }
+    });
+})();
+</script>
+
 </body>
 </html>
 </body></html>
