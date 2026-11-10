@@ -25,11 +25,9 @@
 .menu-sep-line {
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(220,30,30,0.35), transparent);
+  background: var(--accent);
+  opacity: 0.35;
 }
-#app.theme-purple .menu-sep-line { background: linear-gradient(90deg, transparent, rgba(139,31,220,0.35), transparent); }
-#app.theme-blue   .menu-sep-line { background: linear-gradient(90deg, transparent, rgba(30,90,220,0.35),  transparent); }
-#app.theme-green  .menu-sep-line { background: linear-gradient(90deg, transparent, rgba(30,220,74,0.35),  transparent); }
 .menu-sep-label {
   font-family: 'Share Tech Mono', monospace;
   font-size: 9px;
