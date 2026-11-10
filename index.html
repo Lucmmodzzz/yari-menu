@@ -47,7 +47,7 @@
 }
 .xh-shape { display: none; position: absolute; top: 50%; left: 50%; }
 
-/* 1 — D0t */
+/* 1 — Dot */
 #xh-1 {
   width: 4px; height: 4px;
   background: rgba(255, 60, 60, 0.95);
@@ -1425,7 +1425,7 @@ const THEMES = {
 const TWOTONE_LEFT  = '#DC1E1E';
 const TWOTONE_RIGHT = '#8B1FDC';
 
-let currentTheme = data.theme
+let currentTheme   = 'red';
 let twoToneEnabled = false;
 let rainbowTimer  = null;
 let rainbowHue    = 0;
@@ -3152,7 +3152,6 @@ if (d.freezeWeatherEnabled !== undefined) freezeWeatherEnabled = d.freezeWeather
 
     if (d.searchQuery !== undefined) searchQuery = d.searchQuery || '';
     if (d.searchResults !== undefined) searchResults = Array.isArray(d.searchResults) ? d.searchResults : [];
-
 
     render();
   }
