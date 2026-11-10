@@ -1434,16 +1434,30 @@ const ringEl      = document.getElementById('rainbow-ring');
 const appEl = document.getElementById('app');
 const root  = document.documentElement;
 
-function applyTheme(name, twotone) {
-  currentTheme   = name;
+function applyTheme(nameOrHex, twotone) {
+  currentTheme   = nameOrHex;
   twoToneEnabled = twotone;
   appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green','twotone');
+  if ((window._rainbowMode || 0) > 0) return;
 
-  // Si rainbow cycle actif → pas de classe scoped, les vars root restent libres
-  const rainbowActive = (window._rainbowMode || 0) > 0;
-  if (rainbowActive) return;  // ← sortie propre, cycle garde la main
+  const isHex = nameOrHex && nameOrHex.startsWith('#');
 
-  if (twotone) {
+  if (isHex) {
+    // Hex libre — dérive glow et dark automatiquement
+    const hex = nameOrHex.replace('#','');
+    const [r, g, b] = hex.match(/.{2}/g).map(c => parseInt(c, 16));
+    const lighter = c => Math.min(255, c + 40).toString(16).padStart(2,'0');
+    const darker  = c => Math.max(0,   c - 40).toString(16).padStart(2,'0');
+    const glow = '#' + lighter(r) + lighter(g) + lighter(b);
+    const dark = '#' + darker(r)  + darker(g)  + darker(b);
+    const r4 = Math.min(255, r + 10), g4 = g >> 2, b4 = b >> 2;
+    root.style.setProperty('--accent',      nameOrHex);
+    root.style.setProperty('--accent-glow', glow);
+    root.style.setProperty('--accent-dark', dark);
+    root.style.setProperty('--accent-l',    nameOrHex);
+    root.style.setProperty('--accent-r',    nameOrHex);
+    root.style.setProperty('--sep',         `rgba(${r4},${g4},${b4},0.9)`);
+  } else if (twotone) {
     appEl.classList.add('twotone');
     root.style.setProperty('--accent-l',   TWOTONE_LEFT);
     root.style.setProperty('--accent-r',   TWOTONE_RIGHT);
@@ -1452,14 +1466,16 @@ function applyTheme(name, twotone) {
     root.style.setProperty('--accent-dark', '#8C0A0A');
     root.style.setProperty('--sep', 'rgba(50,10,40,0.9)');
   } else {
-    appEl.classList.add('theme-' + name);
-    const t = THEMES[name];
-    root.style.setProperty('--accent',      t.accent);
-    root.style.setProperty('--accent-glow', t.glow);
-    root.style.setProperty('--accent-dark', t.dark);
-    root.style.setProperty('--sep',         t.sep);
-    root.style.setProperty('--accent-l',    t.accent);
-    root.style.setProperty('--accent-r',    t.accent);
+    appEl.classList.add('theme-' + nameOrHex);
+    const t = THEMES[nameOrHex];
+    if (t) {
+      root.style.setProperty('--accent',      t.accent);
+      root.style.setProperty('--accent-glow', t.glow);
+      root.style.setProperty('--accent-dark', t.dark);
+      root.style.setProperty('--sep',         t.sep);
+      root.style.setProperty('--accent-l',    t.accent);
+      root.style.setProperty('--accent-r',    t.accent);
+    }
   }
 }
 
@@ -2252,25 +2268,22 @@ function renderItemList(items, catName) {
     if (name === 'Couleur du Menu') {
       const el = document.createElement('div');
       el.className = 'menu-item' + (isSel ? ' sel' : '');
-      el.style.height = 'auto'; el.style.padding = '4px 14px 4px 28px';
-      el.innerHTML = `<div class="bar"></div><span class="item-name" style="font-size:12px">Couleur</span>`;
-      const strip = document.createElement('div');
-      strip.style.cssText = 'display:flex;gap:6px;align-items:center;margin-left:auto;';
-      ['red','purple','blue','green'].forEach(c => {
-        const dot = document.createElement('div');
-        dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
-        dot.addEventListener('click', () => {
-          currentTheme = c; twoToneEnabled = false;
-          if ((window._rainbowMode || 0) === 0) applyTheme(c, false);
-          sendToLua({ type:'colorChange', theme:c, twotone:false });
-          render();
-        });
-        strip.appendChild(dot);
-      });
-      el.appendChild(strip);
-      itemsList.appendChild(el);
-      itemsRendered++;
-      continue;
+      el.style.height = '30px';
+      const bar = document.createElement('div'); bar.className = 'bar'; el.appendChild(bar);
+      const nm = document.createElement('span'); nm.className = 'item-name'; nm.textContent = 'Couleur du Menu'; el.appendChild(nm);
+      const swatch = document.createElement('div');
+      swatch.style.cssText = 'width:18px;height:18px;border-radius:4px;flex-shrink:0;margin-right:4px;background:var(--accent);border:1px solid rgba(255,255,255,0.15);box-shadow:0 0 6px var(--accent-glow);';
+      el.appendChild(swatch);
+      const hexSpan = document.createElement('span');
+      hexSpan.style.cssText = 'font-size:10px;color:var(--accent);font-family:"Share Tech Mono",monospace;letter-spacing:1px;white-space:nowrap;';
+      hexSpan.textContent = (getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#DC1E1E').toUpperCase();
+      el.appendChild(hexSpan);
+      if (isSel) {
+        const hint = document.createElement('span');
+        hint.style.cssText = 'font-size:9px;color:rgba(180,180,180,0.4);font-family:"Share Tech Mono",monospace;white-space:nowrap;margin-left:6px;';
+        hint.textContent = '↵ OUVRIR'; el.appendChild(hint);
+      }
+      itemsList.appendChild(el); itemsRendered++; continue;
     }
 
     if (name === 'Speed Multiplier') {
@@ -3028,6 +3041,10 @@ window.addEventListener('message', function(e) {
     if (d.onlineFreezeList !== undefined) onlineFreezeList = d.onlineFreezeList;
     if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
 
+    if (d.type === 'colorPickerMouse') { handleColorPickerMouse(d.x, d.y, !!d.lmb); return; }
+    if (d.type === 'colorPickerOpen')  { openColorPicker(d.hex || null); return; }
+    if (d.type === 'colorPickerClose') { closeColorPicker(false); return; }
+
     if (d.weatherMenuOpen      !== undefined) weatherMenuOpen      = d.weatherMenuOpen;
 if (d.weatherMenuSel       !== undefined) weatherMenuSel       = d.weatherMenuSel;
 if (d.weatherTimeValue     !== undefined) weatherTimeValue     = d.weatherTimeValue;
@@ -3684,6 +3701,31 @@ window.addEventListener('message', function(e) {
 
 <div id="yari-notif-stack"></div>
 
+<div id="color-picker-hud">
+  <div class="cp-header">
+    <div class="cp-dot"></div>
+    <span class="cp-title">MENU COLOR</span>
+    <span class="cp-hex-display" id="cp-hex-header">#DC1E1E</span>
+  </div>
+  <div class="cp-sv-wrap" id="cp-sv-wrap">
+    <canvas id="cp-sv-canvas" width="290" height="160"></canvas>
+    <div id="cp-sv-cursor"></div>
+  </div>
+  <div class="cp-hue-wrap" id="cp-hue-wrap">
+    <canvas id="cp-hue-canvas" width="262" height="14"></canvas>
+    <div id="cp-hue-cursor"></div>
+  </div>
+  <div class="cp-presets" id="cp-presets"></div>
+  <div class="cp-bottom">
+    <div class="cp-preview-swatch" id="cp-swatch"></div>
+    <div class="cp-hex-input-wrap">
+      <div class="cp-hex-label">HEX COLOR</div>
+      <div class="cp-hex-val" id="cp-hex-val">#DC1E1E</div>
+    </div>
+  </div>
+  <div class="cp-footer"><span>↵</span> CONFIRMER&nbsp;&nbsp;<span>⌫</span> ANNULER</div>
+</div>
+
 <script>
 (function(){
   const stack = document.getElementById('yari-notif-stack');
@@ -3840,6 +3882,46 @@ body.design-active .design-draggable.dragging {
   white-space: nowrap;
 }
 #design-coord-badge.visible { display: block; }
+
+/* ─── COLOR PICKER HUD ─────────────────────────────────── */
+#color-picker-hud {
+  display: none; position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%); width: 290px;
+  background: rgba(8,8,8,0.99);
+  border-top: 3px solid var(--accent); border-bottom: 3px solid var(--accent);
+  border-left: 1px solid rgba(255,255,255,0.06); border-right: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.75), 0 0 20px rgba(220,30,30,0.15);
+  overflow: hidden; font-family: 'Share Tech Mono', monospace; z-index: 100000;
+  backdrop-filter: blur(14px) saturate(1.1); -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  pointer-events: none;
+}
+#color-picker-hud.visible { display: block; }
+.cp-header {
+  display: flex; align-items: center; gap: 8px; padding: 8px 14px 7px;
+  background: rgba(18,4,4,0.98); border-bottom: 1px solid rgba(255,255,255,0.07); position: relative;
+}
+.cp-header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(90deg,var(--accent),transparent 70%); opacity:0.5; }
+.cp-dot { width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 7px var(--accent-glow); animation:cp-blink 1s ease-in-out infinite; flex-shrink:0; }
+@keyframes cp-blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.cp-title { font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:700; letter-spacing:3px; color:#fff; flex:1; }
+.cp-hex-display { font-size:12px; font-weight:700; letter-spacing:2px; color:var(--accent); min-width:72px; text-align:right; }
+.cp-sv-wrap { position:relative; width:100%; height:160px; cursor:none; }
+#cp-sv-canvas { display:block; width:100%; height:160px; }
+#cp-sv-cursor { position:absolute; width:14px; height:14px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 6px rgba(0,0,0,0.8),0 0 0 1px rgba(0,0,0,0.4); transform:translate(-50%,-50%); pointer-events:none; }
+.cp-hue-wrap { padding:8px 14px 4px; position:relative; }
+#cp-hue-canvas { display:block; width:100%; height:14px; border-radius:7px; cursor:none; }
+#cp-hue-cursor { position:absolute; width:18px; height:18px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 6px rgba(0,0,0,0.6),0 0 0 1px rgba(0,0,0,0.3); top:50%; transform:translate(-50%,-50%); pointer-events:none; }
+.cp-presets { display:flex; align-items:center; gap:6px; padding:0 14px 8px; }
+.cp-preset { width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,0.1); flex-shrink:0; cursor:none; transition:transform 0.1s,border-color 0.1s; }
+.cp-preset.hovered { transform:scale(1.3); border-color:#fff; }
+.cp-bottom { display:flex; align-items:center; gap:10px; padding:6px 14px 10px; border-top:1px solid rgba(255,255,255,0.06); }
+.cp-preview-swatch { width:36px; height:36px; border-radius:6px; border:1px solid rgba(255,255,255,0.12); flex-shrink:0; transition:background 0.05s; }
+.cp-hex-input-wrap { flex:1; display:flex; flex-direction:column; gap:3px; }
+.cp-hex-label { font-size:9px; letter-spacing:2px; color:rgba(180,180,180,0.4); }
+.cp-hex-val { font-size:15px; font-weight:700; letter-spacing:2px; color:#fff; }
+.cp-footer { display:flex; align-items:center; justify-content:center; gap:12px; padding:6px 14px 8px; border-top:1px solid rgba(255,255,255,0.06); font-size:10px; letter-spacing:2px; color:rgba(180,180,180,0.5); }
+.cp-footer span { color:var(--accent); }
 </style>
 
 <!-- Design mode overlay (intercepte les clics pour le drag) -->
@@ -4055,6 +4137,113 @@ body.design-active .design-draggable.dragging {
   });
 
 })();
+</script>
+
+<script>
+/* ═══════════════════ COLOR PICKER ENGINE ═══════════════════ */
+function hsvToRgb(h,s,v){const f=(n,k=(n+h/60)%6)=>v-v*s*Math.max(0,Math.min(k,4-k,1));return[Math.round(f(5)*255),Math.round(f(3)*255),Math.round(f(1)*255)];}
+function rgbToHex(r,g,b){return'#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase();}
+function hexToHsv(hex){hex=hex.replace('#','');const r=parseInt(hex.substring(0,2),16)/255,g=parseInt(hex.substring(2,4),16)/255,b=parseInt(hex.substring(4,6),16)/255;const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;let h=0,s=max===0?0:d/max,v=max;if(d!==0){switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break;}}return{h:h*360,s,v};}
+
+const CP={
+  open:false, hue:0, sat:0.85, val:0.85, drag:null, lmbWas:false,
+  svRect:null, hueRect:null, presetsRect:[],
+  PRESETS:['#DC1E1E','#8B1FDC','#1E5ADC','#1EDC4A','#DC8C1E','#1EDCDC','#DC1E8C','#FFFFFF'],
+  get hex(){const[r,g,b]=hsvToRgb(this.hue,this.sat,this.val);return rgbToHex(r,g,b);},
+  get accentGlow(){return'#'+this.hex.replace('#','').match(/.{2}/g).map(c=>Math.min(255,parseInt(c,16)+40).toString(16).padStart(2,'0')).join('').toUpperCase();}
+};
+
+const cpHud=document.getElementById('color-picker-hud');
+const cpSvCanvas=document.getElementById('cp-sv-canvas');
+const cpHueCanvas=document.getElementById('cp-hue-canvas');
+const cpSvCursor=document.getElementById('cp-sv-cursor');
+const cpHueCursor=document.getElementById('cp-hue-cursor');
+const cpSwatch=document.getElementById('cp-swatch');
+const cpHexVal=document.getElementById('cp-hex-val');
+const cpHexHeader=document.getElementById('cp-hex-header');
+const cpPresets=document.getElementById('cp-presets');
+
+function drawSVCanvas(){
+  const W=cpSvCanvas.width,H=cpSvCanvas.height,ctx=cpSvCanvas.getContext('2d');
+  const[hr,hg,hb]=hsvToRgb(CP.hue,1,1);
+  ctx.fillStyle=`rgb(${hr},${hg},${hb})`;ctx.fillRect(0,0,W,H);
+  const gW=ctx.createLinearGradient(0,0,W,0);gW.addColorStop(0,'rgba(255,255,255,1)');gW.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=gW;ctx.fillRect(0,0,W,H);
+  const gB=ctx.createLinearGradient(0,H,0,0);gB.addColorStop(0,'rgba(0,0,0,1)');gB.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=gB;ctx.fillRect(0,0,W,H);
+}
+function drawHueCanvas(){
+  const W=cpHueCanvas.width,H=cpHueCanvas.height,ctx=cpHueCanvas.getContext('2d');
+  const g=ctx.createLinearGradient(0,0,W,0);
+  for(let i=0;i<=360;i+=30){const[r,g2,b]=hsvToRgb(i,1,1);g.addColorStop(i/360,`rgb(${r},${g2},${b})`);}
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+}
+function drawPresets(){
+  cpPresets.innerHTML='';CP.presetsRect=[];
+  CP.PRESETS.forEach(hex=>{const el=document.createElement('div');el.className='cp-preset';el.style.background=hex;cpPresets.appendChild(el);});
+}
+function cpUpdateUI(redrawSV){
+  if(redrawSV)drawSVCanvas();
+  const W=cpSvCanvas.width,H=cpSvCanvas.height;
+  cpSvCursor.style.left=(CP.sat*W)+'px';cpSvCursor.style.top=((1-CP.val)*H)+'px';
+  cpHueCursor.style.left=(14+(CP.hue/360)*cpHueCanvas.width)+'px';
+  const hex=CP.hex;
+  cpSwatch.style.background=hex;cpHexVal.textContent=hex;cpHexHeader.textContent=hex;cpHexHeader.style.color=hex;
+  document.documentElement.style.setProperty('--accent',hex);
+  document.documentElement.style.setProperty('--accent-glow',CP.accentGlow);
+  const presetEls=cpPresets.querySelectorAll('.cp-preset');
+  presetEls.forEach((el,i)=>{el.classList.toggle('hovered',CP.PRESETS[i].toUpperCase()===hex.toUpperCase());});
+}
+function cpCacheRects(){
+  CP.svRect=cpSvCanvas.getBoundingClientRect();CP.hueRect=cpHueCanvas.getBoundingClientRect();
+  CP.presetsRect=[];cpPresets.querySelectorAll('.cp-preset').forEach(el=>CP.presetsRect.push(el.getBoundingClientRect()));
+}
+
+function openColorPicker(initialHex){
+  if(initialHex){const{h,s,v}=hexToHsv(initialHex);CP.hue=h;CP.sat=s;CP.val=v;}
+  CP.open=true;CP.drag=null;CP.lmbWas=false;
+  cpHud.classList.add('visible');
+  drawSVCanvas();drawHueCanvas();drawPresets();cpUpdateUI(false);
+  requestAnimationFrame(cpCacheRects);
+}
+function closeColorPicker(confirm){
+  CP.open=false;cpHud.classList.remove('visible');
+  if(confirm){
+    const hex=CP.hex;
+    applyTheme(hex,twoToneEnabled);
+    sendToLua({type:'colorChange',theme:hex,twotone:twoToneEnabled});
+  }
+}
+function handleColorPickerMouse(sx,sy,lmb){
+  if(!CP.open)return;
+  cpCacheRects();
+  const lmbDown=!!lmb,justDown=lmbDown&&!CP.lmbWas,justUp=!lmbDown&&CP.lmbWas;
+  CP.lmbWas=lmbDown;
+  if(justDown){
+    const svR=CP.svRect;
+    if(sx>=svR.left&&sx<=svR.right&&sy>=svR.top&&sy<=svR.bottom){CP.drag='sv';}
+    else{
+      const hR=CP.hueRect;
+      if(sx>=hR.left&&sx<=hR.right&&sy>=hR.top&&sy<=hR.bottom){CP.drag='hue';}
+      else{
+        CP.presetsRect.forEach((r,i)=>{if(sx>=r.left&&sx<=r.right&&sy>=r.top&&sy<=r.bottom){const{h,s,v}=hexToHsv(CP.PRESETS[i]);CP.hue=h;CP.sat=s;CP.val=v;cpUpdateUI(true);}});
+        const hudR=cpHud.getBoundingClientRect(),footerY=hudR.bottom-32;
+        if(sy>footerY&&sx>=hudR.left&&sx<=hudR.right){closeColorPicker(sx<(hudR.left+hudR.right)/2);}
+      }
+    }
+  }
+  if(lmbDown&&CP.drag==='sv'&&CP.svRect){const r=CP.svRect;CP.sat=Math.max(0,Math.min(1,(sx-r.left)/(r.right-r.left)));CP.val=Math.max(0,Math.min(1,1-(sy-r.top)/(r.bottom-r.top)));cpUpdateUI(false);}
+  if(lmbDown&&CP.drag==='hue'&&CP.hueRect){const r=CP.hueRect;CP.hue=Math.max(0,Math.min(360,((sx-r.left)/(r.right-r.left))*360));cpUpdateUI(true);}
+  if(justUp)CP.drag=null;
+}
+function handleColorPickerKey(key){
+  if(!CP.open)return false;
+  if(key==='enter'||key==='confirm'){closeColorPicker(true);return true;}
+  if(key==='esc'||key==='cancel'){closeColorPicker(false);return true;}
+  return false;
+}
+window.openColorPicker=openColorPicker;
+window.closeColorPicker=closeColorPicker;
+window.handleColorPickerMouse=handleColorPickerMouse;
+window.handleColorPickerKey=handleColorPickerKey;
 </script>
   
 </body>
