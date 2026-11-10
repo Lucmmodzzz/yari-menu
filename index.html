@@ -1425,7 +1425,7 @@ const THEMES = {
 const TWOTONE_LEFT  = '#DC1E1E';
 const TWOTONE_RIGHT = '#8B1FDC';
 
-let currentTheme   = 'red';
+let currentTheme = data.theme
 let twoToneEnabled = false;
 let rainbowTimer  = null;
 let rainbowHue    = 0;
@@ -3152,6 +3152,12 @@ if (d.freezeWeatherEnabled !== undefined) freezeWeatherEnabled = d.freezeWeather
 
     if (d.searchQuery !== undefined) searchQuery = d.searchQuery || '';
     if (d.searchResults !== undefined) searchResults = Array.isArray(d.searchResults) ? d.searchResults : [];
+
+    if (d.menuAccentHex && typeof d.menuAccentHex === 'string' && d.menuAccentHex.startsWith('#')) {
+    if (d.menuAccentHex.toUpperCase() !== currentTheme.toUpperCase()) {
+      applyTheme(d.menuAccentHex, twoToneEnabled);
+    }
+  }
 
     render();
   }
