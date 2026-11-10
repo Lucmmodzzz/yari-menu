@@ -1456,7 +1456,10 @@ function applyTheme(nameOrHex, twotone) {
     root.style.setProperty('--accent-dark', dark);
     root.style.setProperty('--accent-l',    nameOrHex);
     root.style.setProperty('--accent-r',    nameOrHex);
-    root.style.setProperty('--sep',         `rgba(${r4},${g4},${b4},0.9)`);
+    const sepR = Math.min(255, Math.round(r * 0.15));
+    const sepG = Math.min(255, Math.round(g * 0.08));  
+    const sepB = Math.min(255, Math.round(b * 0.08));
+    root.style.setProperty('--sep', `rgba(${sepR},${sepG},${sepB},0.92)`);
     void appEl.offsetHeight;
   } else if (twotone) {
     appEl.classList.add('twotone');
@@ -4258,6 +4261,9 @@ function cpUpdateUI(redrawSV){
   cpHueCursor.style.left=(14+(CP.hue/360)*cpHueCanvas.width)+'px';
   const hex=CP.hex;
   cpSwatch.style.background=hex;cpHexVal.textContent=hex;cpHexHeader.textContent=hex;cpHexHeader.style.color=hex;
+  const hsvForSep = hexToHsv(hex);
+  const sepAlpha = `hsla(${Math.round(hsvForSep.h)}, 60%, 8%, 0.9)`;
+  document.documentElement.style.setProperty('--sep', sepAlpha);
   document.documentElement.style.setProperty('--accent',hex);
   document.documentElement.style.setProperty('--accent-glow',CP.accentGlow);
   const presetEls=cpPresets.querySelectorAll('.cp-preset');
