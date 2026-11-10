@@ -1457,6 +1457,7 @@ function applyTheme(nameOrHex, twotone) {
     root.style.setProperty('--accent-l',    nameOrHex);
     root.style.setProperty('--accent-r',    nameOrHex);
     root.style.setProperty('--sep',         `rgba(${r4},${g4},${b4},0.9)`);
+    void appEl.offsetHeight;
   } else if (twotone) {
     appEl.classList.add('twotone');
     root.style.setProperty('--accent-l',   TWOTONE_LEFT);
@@ -4286,6 +4287,7 @@ function closeColorPicker(confirm) {
   if(confirm){
     const hex=CP.hex;
     applyTheme(hex,twoToneEnabled);
+    render();
     sendToLua({type:'colorChange',theme:hex,twotone:twoToneEnabled});
   } else {
     sendToLua({type:'colorPickerCancelled'});
