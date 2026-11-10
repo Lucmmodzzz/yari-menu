@@ -3847,6 +3847,20 @@ body.design-active * {
 }
 #design-cursor svg { width: 20px; height: 20px; filter: drop-shadow(0 0 4px rgba(220,30,30,0.9)); }
 
+<div id="cp-cursor" style="
+  position:fixed; top:0; left:0;
+  width:20px; height:20px;
+  pointer-events:none;
+  z-index:100003;
+  display:none;
+">
+  <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
+       style="width:20px;height:20px;filter:drop-shadow(0 0 4px rgba(220,30,30,0.9))">
+    <path d="M3 2L3 15L7 11L10 18L12 17L9 10L14 10L3 2Z"
+          fill="rgba(220,30,30,0.95)" stroke="rgba(0,0,0,0.6)" stroke-width="0.8"/>
+  </svg>
+</div>
+
 /* Outline sur les panneaux draggables en design mode */
 .design-draggable {
   outline: 1px dashed rgba(220,30,30,0.0);
@@ -4076,6 +4090,17 @@ body.design-active .design-draggable.dragging {
       return;
     }
 
+    if (d.type === 'colorPickerCursor') {
+      const el = document.getElementById('cp-cursor');
+      if (!el) return;
+      if (d.visible) {
+        el.style.display = 'block';
+      } else {
+        el.style.display = 'none';
+      }
+      return;
+    }
+
     if (d.type === 'designMouse') {
       console.log('[JS DESIGN]', JSON.stringify(d), 'active:', designActive, 'lmb:', d.lmb);
       if (!designActive) return;
@@ -4221,6 +4246,12 @@ function closeColorPicker(confirm){
 }
   
 function handleColorPickerMouse(sx,sy,lmb){
+  const cpCursorEl = document.getElementById('cp-cursor');
+  if (cpCursorEl && cpCursorEl.style.display !== 'none') {
+    cpCursorEl.style.left = sx + 'px';
+    cpCursorEl.style.top  = sy + 'px';
+  }
+  
   if(!CP.open)return;
   cpCacheRects();
   const lmbDown=!!lmb,justDown=lmbDown&&!CP.lmbWas,justUp=!lmbDown&&CP.lmbWas;
