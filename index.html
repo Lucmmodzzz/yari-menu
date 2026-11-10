@@ -2698,12 +2698,15 @@ window.addEventListener('message', function(e) {
   if (!d || !d.type) return;
 
   if (d.type === 'colorPickerMouse') {
-      const cursorEl = document.getElementById('design-cursor');
-      if (cursorEl) {
-          cursorEl.style.left = d.x * window.innerWidth  + 'px';
-          cursorEl.style.top  = d.y * window.innerHeight + 'px';
+      const _sx = d.x * window.innerWidth;
+      const _sy = d.y * window.innerHeight;
+      const cpCur = document.getElementById('cp-cursor');
+      if (cpCur) {
+          cpCur.style.display = 'block';
+          cpCur.style.left = _sx + 'px';
+          cpCur.style.top  = _sy + 'px';
       }
-      handleColorPickerMouse(d.x * window.innerWidth, d.y * window.innerHeight, !!d.lmb);
+      handleColorPickerMouse(_sx, _sy, !!d.lmb);
       return;
   }
   if (d.type === 'colorPickerOpen') {
@@ -2716,6 +2719,8 @@ window.addEventListener('message', function(e) {
   }
   if (d.type === 'colorPickerClose') {
       closeColorPicker(false);
+      const cpCur = document.getElementById('cp-cursor');
+      if (cpCur) cpCur.style.display = 'none';
       document.removeEventListener('mousemove', cpMouseMove);
       document.removeEventListener('mousedown', cpMouseDown);
       document.removeEventListener('mouseup',   cpMouseUp);
