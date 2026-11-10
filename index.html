@@ -11,6 +11,34 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
+/* ── SEPARATEURS ── */
+.menu-sep {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  height: 20px;
+  pointer-events: none;
+  user-select: none;
+  flex-shrink: 0;
+}
+.menu-sep-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(220,30,30,0.35), transparent);
+}
+#app.theme-purple .menu-sep-line { background: linear-gradient(90deg, transparent, rgba(139,31,220,0.35), transparent); }
+#app.theme-blue   .menu-sep-line { background: linear-gradient(90deg, transparent, rgba(30,90,220,0.35),  transparent); }
+#app.theme-green  .menu-sep-line { background: linear-gradient(90deg, transparent, rgba(30,220,74,0.35),  transparent); }
+.menu-sep-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(180,180,180,0.38);
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
 /* ── CROSSHAIRS ── */
 #xh-container {
   position: fixed;
@@ -1319,6 +1347,69 @@ const TOGGLE_NAMES = new Set([
   "Vehicle Magnet", "Force Push", "Vehicle Black Hole", "Disable Map Collision", "Infinite Ammo", "No Reload", "Super Punch", "Horn Boost", "Design Mode"
 ]);
 
+const SEP_MAP = {
+  "Player|SELF": {
+    0: "Protection",
+    4: "Santé & Armure",
+    6: "Capacités",
+    9: "Anti-Aim",
+  },
+  "Player|MOVEMENT": {
+    0: "Déplacement",
+    3: "Stamina & Vitesse",
+    6: "Spécial",
+  },
+  "Vehicle|PHYSICS": {
+    0: "Résistance",
+    3: "Boosts",
+    6: "Multiplicateurs",
+    9: "Effets",
+  },
+  "Vehicle|CONTROL": {
+    0: "Gestion",
+    3: "Verrouillage",
+    5: "Gadget",
+  },
+  "Combat|COMBAT": {
+    0: "Corps à Corps",
+    3: "Munitions",
+  },
+  "Misc|MISC": {
+    0: "Téléportation",
+    3: "Joueurs",
+    5: "Outils",
+    7: "Avancé",
+  },
+  "Misc|PROTECT": {
+    0: "Anti-Cheat",
+    2: "Anti-Effects",
+    4: "Urgence",
+  },
+  "Misc|DESTROYER": {
+    0: "Véhicules",
+    3: "Joueurs",
+    5: "Chaos",
+    7: "Monde",
+  },
+  "Settings|SETTINGS": {
+    0: "Chargement",
+    1: "Apparence",
+    4: "Interface",
+    6: "Animation",
+  },
+};
+
+function renderSeparator(label) {
+  const el = document.createElement('div');
+  el.className = 'menu-sep';
+  el.innerHTML = `
+    <div class="menu-sep-line"></div>
+    <span class="menu-sep-label">${label}</span>
+    <div class="menu-sep-line"></div>
+  `;
+  itemsList.appendChild(el);
+}
+
 // LUA toggle key lookup (for toggleStates)
 function luaToggleKey(itemName) {
   const la = LUA_ACTION[itemName];
@@ -1928,7 +2019,7 @@ function renderItemList(items, catName) {
     renderWeatherMenu();
     return;
   }
-  
+
   if (!items || items.length === 0) {
     const d = document.createElement('div');
     d.className = 'menu-item';
@@ -1938,29 +2029,50 @@ function renderItemList(items, catName) {
   }
 
   if (items.length === 1 && items[0] === '__wardrobe__') {
-      renderWardrobe();
-      return;
+    renderWardrobe();
+    return;
   }
 
-  for (let i = 0; i < MAX_VIS; i++) {
-    const idx  = i + itemScrollOff;
-    if (idx >= items.length) break;
-    const name = items[idx];
-    const isSel = idx === itemSelIdx;
+  // ── Récupère les séparateurs pour ce sous-onglet ──────────────
+  const cat  = curCatIdx !== null ? CAT_STRUCTURE[curCatIdx] : null;
+  const stab = cat ? cat.subTabs[subTabIdx] : null;
+  const sepKey = cat && stab ? cat.name + '|' + stab.name : null;
+  const seps   = (sepKey && SEP_MAP[sepKey]) ? SEP_MAP[sepKey] : {};
 
-    if (name.startsWith('__sep:')) {
-      const label = name.slice(6);
-      const el = document.createElement('div');
-      el.style.cssText = 'display:flex;align-items:center;padding:0 14px;height:22px;gap:8px;';
-      el.innerHTML = `
-        <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.14));"></div>
-        <span style="font-size:9px;letter-spacing:2px;color:rgba(180,180,180,0.4);font-family:'Share Tech Mono',monospace;white-space:nowrap;text-transform:uppercase;">${label}</span>
-        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,0.14),transparent);"></div>
-      `;
-      itemsList.appendChild(el);
+  // ── Construit la liste visuelle (items + séps entrelacés) ─────
+  // Les séps ne comptent PAS dans les indices → scroll/sel inchangés
+  const visualRows = [];
+  for (let i = 0; i < items.length; i++) {
+    if (seps[i] !== undefined) visualRows.push({ type: 'sep', label: seps[i] });
+    visualRows.push({ type: 'item', idx: i });
+  }
+
+  // Trouve la première ligne visuelle correspondant à itemScrollOff
+  let visStart = 0;
+  let counted  = 0;
+  for (let r = 0; r < visualRows.length; r++) {
+    if (visualRows[r].type === 'item') {
+      if (counted === itemScrollOff) { visStart = r; break; }
+      counted++;
+    }
+  }
+
+  // ── Rendu ─────────────────────────────────────────────────────
+  let itemsRendered = 0;
+  for (let r = visStart; r < visualRows.length && itemsRendered < MAX_VIS; r++) {
+    const row = visualRows[r];
+
+    if (row.type === 'sep') {
+      renderSeparator(row.label);
       continue;
     }
 
+    // ── Item normal ──────────────────────────────────────────────
+    const idx  = row.idx;
+    const name = items[idx];
+    const isSel = idx === itemSelIdx;
+
+    // ── Items spéciaux (inchangés) ───────────────────────────────
     if (name === 'Disable Map Collision') {
       const MODES = ['Smoke', 'Coffee', 'Clipboard', 'Hammer', 'Broom', 'Rod', 'Racket'];
       const modeIdx = window._disableMapCollisionMode || 0;
@@ -1976,16 +2088,11 @@ function renderItemList(items, catName) {
       el.innerHTML = `
         <div class="bar"></div>
         <span class="item-name" style="font-size:13px;font-weight:500;">Disable Map Collision</span>
-        <span style="
-          font-size:10px;
-          color:rgba(180,180,180,0.55);
-          font-family:'Share Tech Mono',monospace;
-          margin-right:8px;
-          white-space:nowrap;
-        ">${isSel ? '← ' : ''}${modeName}${isSel ? ' →' : ' ◈'}</span>
+        <span style="font-size:10px;color:rgba(180,180,180,0.55);font-family:'Share Tech Mono',monospace;margin-right:8px;white-space:nowrap;">${isSel ? '← ' : ''}${modeName}${isSel ? ' →' : ' ◈'}</span>
         <div class="tog${isOn ? ' on' : ''}"></div>
       `;
       itemsList.appendChild(el);
+      itemsRendered++;
       continue;
     }
 
@@ -1996,28 +2103,21 @@ function renderItemList(items, catName) {
       const el = document.createElement('div');
       el.className = 'menu-item' + (isSel ? ' sel' : '');
       el.style.cssText = 'height:30px;display:flex;align-items:center;padding:0 16px 0 28px;';
-
       const rainbowGrad = 'linear-gradient(90deg,hsl(0,90%,55%),hsl(60,90%,55%),hsl(120,90%,55%),hsl(180,90%,55%),hsl(240,90%,55%),hsl(300,90%,55%))';
-
       el.innerHTML = `
         <div class="bar"></div>
         <span class="item-name" style="font-size:13px;font-weight:500;">Rainbow Menu</span>
         ${mIdx === 1 ? `<div style="width:30px;height:8px;border-radius:4px;background:${rainbowGrad};box-shadow:0 0 8px rgba(255,255,255,0.4);flex-shrink:0;margin-right:6px;"></div>` : ''}
-        <span style="
-          font-size:10px;
-          font-family:'Share Tech Mono',monospace;
-          white-space:nowrap;
-          ${mIdx === 1 ? `background:${rainbowGrad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;` : `color:${isOn ? 'var(--accent)' : 'rgba(200,200,200,0.7)'};`}
-        ">${isSel ? '← ' : ''}${MODES[mIdx]}${isSel ? ' →' : ' ◈'}</span>
+        <span style="font-size:10px;font-family:'Share Tech Mono',monospace;white-space:nowrap;${mIdx === 1 ? `background:${rainbowGrad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;` : `color:${isOn ? 'var(--accent)' : 'rgba(200,200,200,0.7)'};`}">${isSel ? '← ' : ''}${MODES[mIdx]}${isSel ? ' →' : ' ◈'}</span>
       `;
       itemsList.appendChild(el);
+      itemsRendered++;
       continue;
     }
 
     if (name === 'Noclip') {
       const MODES = ['Normal', 'Desync', 'Solo'];
       const modeIdx = window._noclipMode || 0;
-      const modeName = MODES[modeIdx];
       const tk = 'Player_1';
       const isOn = toggleStates[tk] === true;
       const el = document.createElement('div');
@@ -2029,16 +2129,11 @@ function renderItemList(items, catName) {
       el.innerHTML = `
         <div class="bar"></div>
         <span class="item-name" style="font-size:13px;font-weight:500;">Noclip</span>
-        <span style="
-          font-size:10px;
-          color:${isSel ? 'var(--accent)' : 'rgba(200,200,200,0.75)'};
-          font-family:'Share Tech Mono',monospace;
-          margin-right:8px;
-          white-space:nowrap;
-        ">← ${modeName} →</span>
+        <span style="font-size:10px;color:${isSel ? 'var(--accent)' : 'rgba(200,200,200,0.75)'};font-family:'Share Tech Mono',monospace;margin-right:8px;white-space:nowrap;">← ${MODES[modeIdx]} →</span>
         <div class="tog${isOn ? ' on' : ''}"></div>
       `;
       itemsList.appendChild(el);
+      itemsRendered++;
       continue;
     }
 
@@ -2047,13 +2142,9 @@ function renderItemList(items, catName) {
       const pct = ((spd - 5) / (250 - 5)) * 100;
       const el  = document.createElement('div');
       el.className = 'menu-item' + (isSel ? ' sel' : '');
-      el.style.height = 'auto';
-      el.style.flexDirection = 'column';
-      el.style.alignItems    = 'flex-start';
-      el.style.padding       = '5px 14px 5px 28px';
-      el.style.gap           = '4px';
-      el.innerHTML = `
-        <div class="bar"></div>
+      el.style.height = 'auto'; el.style.flexDirection = 'column';
+      el.style.alignItems = 'flex-start'; el.style.padding = '5px 14px 5px 28px'; el.style.gap = '4px';
+      el.innerHTML = `<div class="bar"></div>
         <div style="display:flex;align-items:center;width:100%;gap:8px;">
           <span class="item-name" style="font-size:12px">SLIDE SPEED</span>
           <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:52px;text-align:right">${spd} m/s</span>
@@ -2061,13 +2152,12 @@ function renderItemList(items, catName) {
         <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
           <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
         </div>
-        ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">← → AJUSTER</div>' : ''}
-      `;
+        ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">← → AJUSTER</div>' : ''}`;
       itemsList.appendChild(el);
+      itemsRendered++;
       continue;
     }
 
-    // ── Couleur du Menu ───────────────────────────────────────────
     if (name === 'Couleur du Menu') {
       const el = document.createElement('div');
       el.className = 'menu-item' + (isSel ? ' sel' : '');
@@ -2079,12 +2169,8 @@ function renderItemList(items, catName) {
         const dot = document.createElement('div');
         dot.className = 'color-dot ' + c + (currentTheme === c && !twoToneEnabled ? ' active' : '');
         dot.addEventListener('click', () => {
-          currentTheme = c;           // stocke la préférence
-          twoToneEnabled = false;
-          // N'applique le thème visuellement que si rainbow est OFF
-          if ((window._rainbowMode || 0) === 0) {
-            applyTheme(c, false);
-          }
+          currentTheme = c; twoToneEnabled = false;
+          if ((window._rainbowMode || 0) === 0) applyTheme(c, false);
           sendToLua({ type:'colorChange', theme:c, twotone:false });
           render();
         });
@@ -2092,135 +2178,111 @@ function renderItemList(items, catName) {
       });
       el.appendChild(strip);
       itemsList.appendChild(el);
+      itemsRendered++;
       continue;
     }
 
     if (name === 'Speed Multiplier') {
-    const val = window._vehicleSpeedMult || 1.0;
-    const pct = ((val - 0.5) / (5.0 - 0.5)) * 100;
-    const el  = document.createElement('div');
-    el.className = 'menu-item' + (isSel ? ' sel' : '');
-    el.style.height = 'auto';
-    el.style.flexDirection = 'column';
-    el.style.alignItems    = 'flex-start';
-    el.style.padding       = '5px 14px 5px 28px';
-    el.style.gap           = '4px';
-    const togKey = 'Vehicle_12';
-    const isOn   = toggleStates[togKey] === true;
-    el.innerHTML = `
-      <div class="bar"></div>
-      <div style="display:flex;align-items:center;width:100%;gap:8px;">
-        <span class="item-name" style="font-size:12px">SPEED</span>
-        <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
-        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:44px;text-align:right">${val.toFixed(2)}x</span>
-      </div>
-      <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
-      </div>
-      ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (0.5×→5.0×)</div>' : ''}
-    `;
-    itemsList.appendChild(el);
-    continue;
-}
+      const val = window._vehicleSpeedMult || 1.0;
+      const pct = ((val - 0.5) / (5.0 - 0.5)) * 100;
+      const isOn = toggleStates['Vehicle_12'] === true;
+      const el = document.createElement('div');
+      el.className = 'menu-item' + (isSel ? ' sel' : '');
+      el.style.height = 'auto'; el.style.flexDirection = 'column';
+      el.style.alignItems = 'flex-start'; el.style.padding = '5px 14px 5px 28px'; el.style.gap = '4px';
+      el.innerHTML = `<div class="bar"></div>
+        <div style="display:flex;align-items:center;width:100%;gap:8px;">
+          <span class="item-name" style="font-size:12px">SPEED</span>
+          <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
+          <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:44px;text-align:right">${val.toFixed(2)}x</span>
+        </div>
+        <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
+        </div>
+        ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (0.5×→5.0×)</div>' : ''}`;
+      itemsList.appendChild(el);
+      itemsRendered++;
+      continue;
+    }
 
-if (name === 'Brake Multiplier') {
-    const val = window._vehicleBrakeMult || 1.0;
-    const pct = ((val - 0.1) / (5.0 - 0.1)) * 100;
-    const el  = document.createElement('div');
-    el.className = 'menu-item' + (isSel ? ' sel' : '');
-    el.style.height = 'auto';
-    el.style.flexDirection = 'column';
-    el.style.alignItems    = 'flex-start';
-    el.style.padding       = '5px 14px 5px 28px';
-    el.style.gap           = '4px';
-    const togKey = 'Vehicle_13';
-    const isOn   = toggleStates[togKey] === true;
-    el.innerHTML = `
-      <div class="bar"></div>
-      <div style="display:flex;align-items:center;width:100%;gap:8px;">
-        <span class="item-name" style="font-size:12px">BRAKE</span>
-        <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
-        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:44px;text-align:right">${val.toFixed(2)}x</span>
-      </div>
-      <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
-      </div>
-      ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (0.1×→5.0×)</div>' : ''}
-    `;
-    itemsList.appendChild(el);
-    continue;
-}
+    if (name === 'Brake Multiplier') {
+      const val = window._vehicleBrakeMult || 1.0;
+      const pct = ((val - 0.1) / (5.0 - 0.1)) * 100;
+      const isOn = toggleStates['Vehicle_13'] === true;
+      const el = document.createElement('div');
+      el.className = 'menu-item' + (isSel ? ' sel' : '');
+      el.style.height = 'auto'; el.style.flexDirection = 'column';
+      el.style.alignItems = 'flex-start'; el.style.padding = '5px 14px 5px 28px'; el.style.gap = '4px';
+      el.innerHTML = `<div class="bar"></div>
+        <div style="display:flex;align-items:center;width:100%;gap:8px;">
+          <span class="item-name" style="font-size:12px">BRAKE</span>
+          <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
+          <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:44px;text-align:right">${val.toFixed(2)}x</span>
+        </div>
+        <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
+        </div>
+        ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (0.1×→5.0×)</div>' : ''}`;
+      itemsList.appendChild(el);
+      itemsRendered++;
+      continue;
+    }
 
-if (name === 'Turn Multiplier') {
-    const val = window._vehicleTurnMult || 1.0;
-    const pct = ((val - 0.1) / (3.0 - 0.1)) * 100;
-    const el  = document.createElement('div');
-    el.className = 'menu-item' + (isSel ? ' sel' : '');
-    el.style.height = 'auto';
-    el.style.flexDirection = 'column';
-    el.style.alignItems    = 'flex-start';
-    el.style.padding       = '5px 14px 5px 28px';
-    el.style.gap           = '4px';
-    const togKey = 'Vehicle_14';
-    const isOn   = toggleStates[togKey] === true;
-    el.innerHTML = `
-      <div class="bar"></div>
-      <div style="display:flex;align-items:center;width:100%;gap:8px;">
-        <span class="item-name" style="font-size:12px">TURN</span>
-        <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
-        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:44px;text-align:right">${val.toFixed(2)}x</span>
-      </div>
-      <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
-      </div>
-      ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (0.1×→3.0×)</div>' : ''}
-    `;
-    itemsList.appendChild(el);
-    continue;
-}
+    if (name === 'Turn Multiplier') {
+      const val = window._vehicleTurnMult || 1.0;
+      const pct = ((val - 0.1) / (3.0 - 0.1)) * 100;
+      const isOn = toggleStates['Vehicle_14'] === true;
+      const el = document.createElement('div');
+      el.className = 'menu-item' + (isSel ? ' sel' : '');
+      el.style.height = 'auto'; el.style.flexDirection = 'column';
+      el.style.alignItems = 'flex-start'; el.style.padding = '5px 14px 5px 28px'; el.style.gap = '4px';
+      el.innerHTML = `<div class="bar"></div>
+        <div style="display:flex;align-items:center;width:100%;gap:8px;">
+          <span class="item-name" style="font-size:12px">TURN</span>
+          <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
+          <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:44px;text-align:right">${val.toFixed(2)}x</span>
+        </div>
+        <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
+        </div>
+        ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (0.1×→3.0×)</div>' : ''}`;
+      itemsList.appendChild(el);
+      itemsRendered++;
+      continue;
+    }
 
-  if (name === 'Vehicle Spin') {
-    const val  = window._vehicleSpinSpeed || 15;
-    const pct  = ((val - 1) / (60 - 1)) * 100;
-    const togKey = 'Vehicle_16';
-    const isOn   = toggleStates[togKey] === true;
-    const el   = document.createElement('div');
-    el.className = 'menu-item' + (isSel ? ' sel' : '');
-    el.style.height        = 'auto';
-    el.style.flexDirection = 'column';
-    el.style.alignItems    = 'flex-start';
-    el.style.padding       = '5px 14px 5px 28px';
-    el.style.gap           = '4px';
-    el.innerHTML = `
-      <div class="bar"></div>
-      <div style="display:flex;align-items:center;width:100%;gap:8px;">
-        <span class="item-name" style="font-size:12px">VEHICLE SPIN</span>
-        <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
-        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:48px;text-align:right">${val.toFixed(1)}°/f</span>
-      </div>
-      <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
-      </div>
-      ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → VITESSE (1→60)</div>' : ''}
-    `;
-    itemsList.appendChild(el);
-    continue;
-}
+    if (name === 'Vehicle Spin') {
+      const val = window._vehicleSpinSpeed || 15;
+      const pct = ((val - 1) / (60 - 1)) * 100;
+      const isOn = toggleStates['Vehicle_16'] === true;
+      const el = document.createElement('div');
+      el.className = 'menu-item' + (isSel ? ' sel' : '');
+      el.style.height = 'auto'; el.style.flexDirection = 'column';
+      el.style.alignItems = 'flex-start'; el.style.padding = '5px 14px 5px 28px'; el.style.gap = '4px';
+      el.innerHTML = `<div class="bar"></div>
+        <div style="display:flex;align-items:center;width:100%;gap:8px;">
+          <span class="item-name" style="font-size:12px">VEHICLE SPIN</span>
+          <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
+          <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:48px;text-align:right">${val.toFixed(1)}°/f</span>
+        </div>
+        <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
+        </div>
+        ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → VITESSE (1→60)</div>' : ''}`;
+      itemsList.appendChild(el);
+      itemsRendered++;
+      continue;
+    }
 
     if (name === 'Horn Boost') {
-      const val  = window._hornBoostSpeed || 100;
-      const pct  = ((val - 1) / (300 - 1)) * 100;
-      const togKey = 'Vehicle_8';
-      const isOn   = toggleStates[togKey] === true;
-      const el   = document.createElement('div');
+      const val = window._hornBoostSpeed || 100;
+      const pct = ((val - 1) / (300 - 1)) * 100;
+      const isOn = toggleStates['Vehicle_8'] === true;
+      const el = document.createElement('div');
       el.className = 'menu-item' + (isSel ? ' sel' : '');
-      el.style.height        = 'auto';
-      el.style.flexDirection = 'column';
-      el.style.alignItems    = 'flex-start';
-      el.style.padding       = '5px 14px 5px 28px';
-      el.style.gap           = '4px';
-      el.innerHTML = `
-        <div class="bar"></div>
+      el.style.height = 'auto'; el.style.flexDirection = 'column';
+      el.style.alignItems = 'flex-start'; el.style.padding = '5px 14px 5px 28px'; el.style.gap = '4px';
+      el.innerHTML = `<div class="bar"></div>
         <div style="display:flex;align-items:center;width:100%;gap:8px;">
           <span class="item-name" style="font-size:12px">HORN BOOST</span>
           <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
@@ -2229,39 +2291,34 @@ if (name === 'Turn Multiplier') {
         <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
           <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
         </div>
-        ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (1→300 m/s)</div>' : ''}
-      `;
+        ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → AJUSTER (1→300 m/s)</div>' : ''}`;
       itemsList.appendChild(el);
+      itemsRendered++;
       continue;
     }
 
-if (name === 'Vehicle Spin Chaos') {
-    const val  = window._vehicleSpinChaosSpeed || 45;
-    const pct  = ((val - 1) / (120 - 1)) * 100;
-    const togKey = 'Destroyer_6';
-    const isOn   = toggleStates[togKey] === true;
-    const el   = document.createElement('div');
-    el.className = 'menu-item' + (isSel ? ' sel' : '');
-    el.style.height        = 'auto';
-    el.style.flexDirection = 'column';
-    el.style.alignItems    = 'flex-start';
-    el.style.padding       = '5px 14px 5px 28px';
-    el.style.gap           = '4px';
-    el.innerHTML = `
-      <div class="bar"></div>
-      <div style="display:flex;align-items:center;width:100%;gap:8px;">
-        <span class="item-name" style="font-size:12px">SPIN CHAOS</span>
-        <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
-        <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:48px;text-align:right">${val.toFixed(1)}°/f</span>
-      </div>
-      <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
-      </div>
-      ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → VITESSE (1→120)</div>' : ''}
-    `;
-    itemsList.appendChild(el);
-    continue;
-}
+    if (name === 'Vehicle Spin Chaos') {
+      const val = window._vehicleSpinChaosSpeed || 45;
+      const pct = ((val - 1) / (120 - 1)) * 100;
+      const isOn = toggleStates['Destroyer_6'] === true;
+      const el = document.createElement('div');
+      el.className = 'menu-item' + (isSel ? ' sel' : '');
+      el.style.height = 'auto'; el.style.flexDirection = 'column';
+      el.style.alignItems = 'flex-start'; el.style.padding = '5px 14px 5px 28px'; el.style.gap = '4px';
+      el.innerHTML = `<div class="bar"></div>
+        <div style="display:flex;align-items:center;width:100%;gap:8px;">
+          <span class="item-name" style="font-size:12px">SPIN CHAOS</span>
+          <div class="tog${isOn ? ' on' : ''}" style="transform:scale(0.85)"></div>
+          <span style="font-size:12px;font-weight:700;color:var(--accent);font-family:'Share Tech Mono',monospace;min-width:48px;text-align:right">${val.toFixed(1)}°/f</span>
+        </div>
+        <div style="width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px;box-shadow:0 0 6px var(--accent-glow);transition:width 0.1s;"></div>
+        </div>
+        ${isSel ? '<div style="font-size:9px;color:rgba(180,180,180,0.5);letter-spacing:1px;font-family:\'Share Tech Mono\',monospace;">↵ TOGGLE   ← → VITESSE (1→120)</div>' : ''}`;
+      itemsList.appendChild(el);
+      itemsRendered++;
+      continue;
+    }
 
     if (name === 'Layout Clavier') {
       const LAYOUTS = ['QWERTY', 'AZERTY'];
@@ -2272,26 +2329,25 @@ if (name === 'Vehicle Spin Chaos') {
       el.innerHTML = `
         <div class="bar"></div>
         <span class="item-name" style="font-size:13px;font-weight:500;">Layout Clavier</span>
-        <span style="
-          font-size:10px;
-          color:${isSel ? 'var(--accent)' : 'rgba(200,200,200,0.75)'};
-          font-family:'Share Tech Mono',monospace;
-          white-space:nowrap;
-        ">${isSel ? '← ' : ''}${layoutName}${isSel ? ' →' : ' ◈'}</span>
+        <span style="font-size:10px;color:${isSel ? 'var(--accent)' : 'rgba(200,200,200,0.75)'};font-family:'Share Tech Mono',monospace;white-space:nowrap;">${isSel ? '← ' : ''}${layoutName}${isSel ? ' →' : ' ◈'}</span>
       `;
       itemsList.appendChild(el);
+      itemsRendered++;
       continue;
     }
 
     if (name === 'Activer Deux Couleurs') {
       makeItem(name, isSel, null, twoToneEnabled);
+      itemsRendered++;
       continue;
     }
 
-    const isTog = TOGGLE_NAMES.has(name);
-    const tk    = luaToggleKey(name);
+    // ── Item générique ───────────────────────────────────────────
+    const isTog  = TOGGLE_NAMES.has(name);
+    const tk     = luaToggleKey(name);
     const togVal = isTog ? (toggleStates[tk] === true) : null;
     makeItem(name, isSel, isTog ? null : '+', togVal);
+    itemsRendered++;
   }
 }
 
