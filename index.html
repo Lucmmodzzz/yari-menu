@@ -2159,6 +2159,15 @@ function renderItemList(items, catName) {
         const sepLine = document.createElement('div');
         sepLine.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:2px 0;opacity:0.3;';
         itemsList.appendChild(sepLine);
+
+        const sepLabel = document.createElement('div');
+        sepLabel.className = 'menu-sep';
+        sepLabel.innerHTML = `
+          <div class="menu-sep-line"></div>
+          <span class="menu-sep-label">BYPASS</span>
+          <div class="menu-sep-line"></div>
+        `;
+        itemsList.appendChild(sepLabel);
     
         // ── Items normaux (Bypass Sunlife, Prime, GLife, Seed, ElectronAC) ──
         // Les indices itemSelIdx 2+ correspondent aux bypass existants
