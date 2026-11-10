@@ -2697,7 +2697,15 @@ window.addEventListener('message', function(e) {
   if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
   if (!d || !d.type) return;
 
-  if (d.type === 'colorPickerMouse') { handleColorPickerMouse(d.x, d.y, !!d.lmb); return; }
+  if (d.type === 'colorPickerMouse') {
+      const cursorEl = document.getElementById('design-cursor');
+      if (cursorEl) {
+          cursorEl.style.left = d.x * window.innerWidth  + 'px';
+          cursorEl.style.top  = d.y * window.innerHeight + 'px';
+      }
+      handleColorPickerMouse(d.x * window.innerWidth, d.y * window.innerHeight, !!d.lmb);
+      return;
+  }
   if (d.type === 'colorPickerOpen') {
       openColorPicker(d.hex || null);
       // Activer le tracker souris JS natif
@@ -4121,12 +4129,14 @@ body.design-active .design-draggable.dragging {
     }
 
     if (d.type === 'colorPickerCursor') {
-        const el = document.getElementById('cp-cursor');
-        if (!el) return;
-        el.style.display = d.visible ? 'block' : 'none';
+        const cursorEl = document.getElementById('design-cursor');
+        if (!cursorEl) return;
         if (d.visible) {
-            el.style.left = (window.innerWidth  / 2) + 'px';
-            el.style.top  = (window.innerHeight / 2) + 'px';
+            cursorEl.classList.add('active');
+            cursorEl.style.left = (window.innerWidth  / 2) + 'px';
+            cursorEl.style.top  = (window.innerHeight / 2) + 'px';
+        } else {
+            cursorEl.classList.remove('active');
         }
         return;
     }
