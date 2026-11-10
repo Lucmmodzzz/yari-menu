@@ -4092,14 +4092,14 @@ body.design-active .design-draggable.dragging {
     }
 
     if (d.type === 'colorPickerCursor') {
-      const el = document.getElementById('cp-cursor');
-      if (!el) return;
-      if (d.visible) {
-        el.style.display = 'block';
-      } else {
-        el.style.display = 'none';
-      }
-      return;
+        const el = document.getElementById('cp-cursor');
+        if (!el) return;
+        el.style.display = d.visible ? 'block' : 'none';
+        if (d.visible) {
+            el.style.left = (window.innerWidth  / 2) + 'px';
+            el.style.top  = (window.innerHeight / 2) + 'px';
+        }
+        return;
     }
 
     if (d.type === 'designMouse') {
@@ -4250,12 +4250,11 @@ function closeColorPicker(confirm) {
 }
   
 function handleColorPickerMouse(sx, sy, lmb) {
-  const cpCursorEl = document.getElementById('cp-cursor');
-  if (cpCursorEl) {
-    cpCursorEl.style.display = 'block';  // toujours visible dès qu'on reçoit coords
-    cpCursorEl.style.left = sx + 'px';
-    cpCursorEl.style.top  = sy + 'px';
-  }
+    const cpCursorEl = document.getElementById('cp-cursor');
+    if (cpCursorEl && cpCursorEl.style.display !== 'none') {
+        cpCursorEl.style.left = sx + 'px';
+        cpCursorEl.style.top  = sy + 'px';
+    }
   
   if(!CP.open)return;
   cpCacheRects();
