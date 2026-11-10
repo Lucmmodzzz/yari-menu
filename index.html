@@ -1202,6 +1202,10 @@ const GLOBAL_ACTION_MAP = {
   "Destroyer_8": true,
   // Server
   "Server_3": true,
+  "Server_4": true,
+  "Server_5": true,
+  "Server_6": true,
+  "Server_7": true,
 };
 
 // Mapping from display item name → Lua (category, index)
@@ -1313,10 +1317,13 @@ const LUA_ACTION = {
   "CH Dot Cross": ["Crosshair", 5],
 
   // Server
-  "Bypass Sunlife":            ["Server", 1],
-  "Prime Bypass":              ["Server", 2],
-  "Bypass GLife":              ["Server", 3],
-  "Bypass Seed":               ["Server", 4],
+  "Auto Detect Server":    ["Server", 1],
+  "Load Detected Bypass":  ["Server", 2],
+  "Bypass Sunlife":        ["Server", 3],
+  "Prime Bypass":          ["Server", 4],
+  "Bypass GLife":          ["Server", 5],
+  "Bypass Seed":           ["Server", 6],
+  "Bypass ElectronAC":     ["Server", 7],
 
   // Settings
   "Auto Load Config":          ["Settings", 1],
@@ -2012,6 +2019,8 @@ function renderItemList(items, catName) {
     return;
   }
 
+  
+
   if (!items || items.length === 0) {
     const d = document.createElement('div');
     d.className = 'menu-item';
@@ -2086,6 +2095,83 @@ function renderItemList(items, catName) {
       itemsList.appendChild(el);
       itemsRendered++;
       continue;
+    }
+
+    if (cat && cat.name === 'Misc' && stab && stab.name === 'SERVER') {
+        // Items spéciaux injectés virtuellement en index 0 et 1,
+        // le reste (Bypass X) décale d'autant dans ITEM_TO_LUA côté Lua
+        const acName   = window._detectedAC       || '';
+        const acActive = window._detectedACActive === true;
+    
+        // ── Bouton 1 : Détecteur ────────────────────────────────────
+        const isSel0 = itemSelIdx === 0;
+        const el0 = document.createElement('div');
+        el0.className = 'menu-item' + (isSel0 ? ' sel' : '');
+        el0.style.cssText = 'height:34px;display:flex;align-items:center;padding:0 14px 0 28px;gap:8px;';
+        el0.innerHTML = `
+            <div class="bar"></div>
+            <span class="item-name" style="font-size:12px;font-weight:600;">Detected AC</span>
+            <span style="
+                font-size:11px;font-weight:700;letter-spacing:1px;
+                font-family:'Share Tech Mono',monospace;
+                color:${acName ? 'var(--accent)' : 'rgba(160,160,160,0.4)'};
+                white-space:nowrap;
+            ">${acName || 'None'}</span>
+            <span style="
+                font-size:9px;font-weight:700;letter-spacing:1.5px;
+                font-family:'Share Tech Mono',monospace;
+                padding:2px 7px;border-radius:3px;
+                white-space:nowrap;flex-shrink:0;
+                ${acName
+                    ? acActive
+                        ? 'color:#32ff6e;background:rgba(50,255,110,0.1);border:1px solid rgba(50,255,110,0.3);'
+                        : 'color:#ff4444;background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.3);'
+                    : 'color:rgba(140,140,140,0.35);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);'
+                }
+            ">${acName ? (acActive ? 'Bypassed' : 'Not Bypassed') : '—'}</span>
+        `;
+        itemsList.appendChild(el0);
+    
+        // ── Bouton 2 : Load bypass ──────────────────────────────────
+        const isSel1 = itemSelIdx === 1;
+        const canLoad = !!acName && !acActive;
+        const el1 = document.createElement('div');
+        el1.className = 'menu-item' + (isSel1 ? ' sel' : '');
+        el1.style.cssText = 'height:34px;display:flex;align-items:center;padding:0 14px 0 28px;gap:8px;';
+        el1.innerHTML = `
+            <div class="bar"></div>
+            <span class="item-name" style="font-size:12px;font-weight:600;${!acName ? 'color:rgba(160,160,160,0.35);' : ''}">
+                Load Bypass${acName ? ' (' + acName + ')' : ''}
+            </span>
+            <span style="
+                font-size:10px;font-weight:700;letter-spacing:1px;
+                font-family:'Share Tech Mono',monospace;
+                color:${acActive ? 'rgba(140,140,140,0.35)' : (acName ? '#ffaa32' : 'rgba(140,140,140,0.3)')};
+            ">${acActive ? '✓ ACTIVE' : (acName ? '▶ LOAD' : '—')}</span>
+        `;
+        itemsList.appendChild(el1);
+    
+        // séparateur
+        const sepLine = document.createElement('div');
+        sepLine.style.cssText = 'height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:2px 0;opacity:0.3;';
+        itemsList.appendChild(sepLine);
+    
+        // ── Items normaux (Bypass Sunlife, Prime, GLife, Seed, ElectronAC) ──
+        // Les indices itemSelIdx 2+ correspondent aux bypass existants
+        // On réutilise le loop normal mais avec offset -2 sur itemScrollOff
+        // Pour simplifier : on render les bypass items directement ici
+        const bypassItems = stab.items; // ["Bypass Sunlife","Prime Bypass","Bypass GLife","Bypass Seed","Bypass ElectronAC"]
+        // On les render à partir de itemScrollOff > 1
+        const startBp = Math.max(0, itemScrollOff - 2);
+        for (let bi = startBp; bi < bypassItems.length && (3 + bi - startBp) < MAX_VIS; bi++) {
+            const bname  = bypassItems[bi];
+            const biSel  = (bi + 2) === itemSelIdx;
+            const isTog  = TOGGLE_NAMES.has(bname);
+            const tk     = luaToggleKey(bname);
+            const togVal = isTog ? (toggleStates[tk] === true) : null;
+            makeItem(bname, biSel, isTog ? null : '+', togVal);
+        }
+        return; // ← sort du renderItemList normal pour ce sous-tab
     }
 
     if (name === 'Rainbow Menu') {
@@ -2920,6 +3006,9 @@ window.addEventListener('message', function(e) {
 
     if (d.vehicleSpinSpeed      !== undefined) window._vehicleSpinSpeed      = d.vehicleSpinSpeed;
     if (d.vehicleSpinChaosSpeed !== undefined) window._vehicleSpinChaosSpeed = d.vehicleSpinChaosSpeed;
+
+    if (d.detectedAC       !== undefined) window._detectedAC       = d.detectedAC;
+    if (d.detectedACActive !== undefined) window._detectedACActive  = d.detectedACActive;
 
     if (d.onlineTPMethod   !== undefined) onlineTPMethod   = d.onlineTPMethod;
     if (d.onlineSortBy     !== undefined) onlineSortBy     = d.onlineSortBy;
