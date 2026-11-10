@@ -4246,10 +4246,13 @@ function openColorPicker(initialHex){
   drawSVCanvas();drawHueCanvas();drawPresets();cpUpdateUI(false);
   requestAnimationFrame(cpCacheRects);
 }
-function closeColorPicker(confirm){
-  CP.open=false;
-  cpHud.style.display='none';
+function closeColorPicker(confirm) {
+  CP.open = false;
+  cpHud.style.display = 'none';
   cpHud.classList.remove('visible');
+  // Cacher le curseur
+  const cpCursorEl = document.getElementById('cp-cursor');
+  if (cpCursorEl) cpCursorEl.style.display = 'none';
   if(confirm){
     const hex=CP.hex;
     applyTheme(hex,twoToneEnabled);
@@ -4261,7 +4264,8 @@ function closeColorPicker(confirm){
   
 function handleColorPickerMouse(sx, sy, lmb) {
   const cpCursorEl = document.getElementById('cp-cursor');
-  if (cpCursorEl && cpCursorEl.style.display !== 'none') {
+  if (cpCursorEl) {
+    cpCursorEl.style.display = 'block';  // toujours visible dès qu'on reçoit coords
     cpCursorEl.style.left = sx + 'px';
     cpCursorEl.style.top  = sy + 'px';
   }
