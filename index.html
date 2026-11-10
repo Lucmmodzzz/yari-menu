@@ -1075,7 +1075,7 @@ const CAT_STRUCTURE = [
   {
       name: "Player",
       subTabs: [
-        { name: "SELF", items: [ "God Mode", "Tiny God Mode", "No Ragdoll","No Collision", "Max Heal","Max Armor", "Invisible","Super Jump","Walk On Wall","Walk On Wall SM","Anti Aim V2"] },
+        { name: "SELF", items: [ "God Mode", "Tiny God Mode", "No Ragdoll","No Collision", "Max Heal / God Mode M2","Max Armor", "Invisible","Super Jump","Walk On Wall","Walk On Wall SM","Anti Aim V2"] },
         { name: "MOVEMENT", items: ["Noclip","Fast Run","Revive","Teleporte To Waypoint","Infinite Stamina","Slide Run","Slide Speed","Spider Man", "Walk On Water"] },
         { name: "WARDROBE", items: ["__wardrobe__"] },
       ]
@@ -1148,7 +1148,7 @@ const GLOBAL_ACTION_MAP = {
   "Player_3":  true,  // Tiny God Mode
   "Player_4":  true,  // No Ragdoll
   "Player_5":  true,  // No Collision
-  "Player_9":  true,  // Max Heal
+  "Player_9":  true,  // Max Heal / God Mode M2
   "Player_10": true,  // Max Armor
   "Player_11": true,  // Invisible
   "Player_12": true,  // Super Jump
@@ -1219,7 +1219,7 @@ const LUA_ACTION = {
   "Fast Run":                 ["Player",  6],
   "Revive":                   ["Player",  7],
   "Teleporte To Waypoint":    ["Player",  8],
-  "Max Heal":                 ["Player",  9],
+  "Max Heal / God Mode M2":                 ["Player",  9],
   "Max Armor":                ["Player", 10],
   "Invisible":                ["Player", 11],
   "Super Jump":               ["Player", 12],
@@ -1342,7 +1342,7 @@ const LUA_ACTION = {
 // Toggle item names
 const TOGGLE_NAMES = new Set([
   "Noclip","God Mode", "Tiny God Mode", "No Ragdoll","No Collision","Fast Run",
-  "Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall","Walk On Wall SM",
+  "Max Heal / God Mode M2","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall","Walk On Wall SM",
   "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost", "CH Dot","CH Cross","CH Cross Gap","CH Circle","CH Dot Cross", "Free cam", "Cam Options",
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Spoof Weapon",
   "Laser Eye","Fast Punch","New Player Bypass", "Anti Freeze", "Anti Teleport", "Anti Animation", "Auto Load Config","Activer Deux Couleurs",
