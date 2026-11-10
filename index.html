@@ -2698,8 +2698,21 @@ window.addEventListener('message', function(e) {
   if (!d || !d.type) return;
 
   if (d.type === 'colorPickerMouse') { handleColorPickerMouse(d.x, d.y, !!d.lmb); return; }
-  if (d.type === 'colorPickerOpen')  { openColorPicker(d.hex || null); return; }
-  if (d.type === 'colorPickerClose') { closeColorPicker(false); return; }
+  if (d.type === 'colorPickerOpen') {
+      openColorPicker(d.hex || null);
+      // Activer le tracker souris JS natif
+      document.addEventListener('mousemove', cpMouseMove);
+      document.addEventListener('mousedown', cpMouseDown);
+      document.addEventListener('mouseup',   cpMouseUp);
+      return;
+  }
+  if (d.type === 'colorPickerClose') {
+      closeColorPicker(false);
+      document.removeEventListener('mousemove', cpMouseMove);
+      document.removeEventListener('mousedown', cpMouseDown);
+      document.removeEventListener('mouseup',   cpMouseUp);
+      return;
+  }
   if (d.type === 'colorPickerKey') { handleColorPickerKey(d.key); return; }
 
   if (e.data?.type === 'openUrl') {
@@ -3673,6 +3686,22 @@ window.addEventListener('message', function(e) {
     }
   });
 })();
+
+function cpMouseMove(e) {
+    const el = document.getElementById('cp-cursor');
+    if (el) {
+        el.style.display = 'block';
+        el.style.left = e.clientX + 'px';
+        el.style.top  = e.clientY + 'px';
+    }
+    handleColorPickerMouse(e.clientX, e.clientY, e.buttons === 1);
+}
+function cpMouseDown(e) {
+    handleColorPickerMouse(e.clientX, e.clientY, true);
+}
+function cpMouseUp(e) {
+    handleColorPickerMouse(e.clientX, e.clientY, false);
+}
 </script>
 
 <!-- CROSSHAIRS -->
