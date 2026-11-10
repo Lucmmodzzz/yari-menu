@@ -1443,6 +1443,7 @@ function applyTheme(nameOrHex, twotone) {
   const isHex = nameOrHex && nameOrHex.startsWith('#');
 
   if (isHex) {
+    // Hex libre — dérive glow et dark automatiquement
     const hex = nameOrHex.replace('#','');
     const [r, g, b] = hex.match(/.{2}/g).map(c => parseInt(c, 16));
     const lighter = c => Math.min(255, c + 40).toString(16).padStart(2,'0');
@@ -1450,17 +1451,13 @@ function applyTheme(nameOrHex, twotone) {
     const glow = '#' + lighter(r) + lighter(g) + lighter(b);
     const dark = '#' + darker(r)  + darker(g)  + darker(b);
     const r4 = Math.min(255, r + 10), g4 = g >> 2, b4 = b >> 2;
-    
-    // Set sur root ET directement sur appEl pour écraser les classes theme
-    [document.documentElement, appEl].forEach(el => {
-        el.style.setProperty('--accent',      nameOrHex);
-        el.style.setProperty('--accent-glow', glow);
-        el.style.setProperty('--accent-dark', dark);
-        el.style.setProperty('--accent-l',    nameOrHex);
-        el.style.setProperty('--accent-r',    nameOrHex);
-        el.style.setProperty('--sep',         `rgba(${r4},${g4},${b4},0.9)`);
-    });
-} else if (twotone) {
+    root.style.setProperty('--accent',      nameOrHex);
+    root.style.setProperty('--accent-glow', glow);
+    root.style.setProperty('--accent-dark', dark);
+    root.style.setProperty('--accent-l',    nameOrHex);
+    root.style.setProperty('--accent-r',    nameOrHex);
+    root.style.setProperty('--sep',         `rgba(${r4},${g4},${b4},0.9)`);
+  } else if (twotone) {
     appEl.classList.add('twotone');
     root.style.setProperty('--accent-l',   TWOTONE_LEFT);
     root.style.setProperty('--accent-r',   TWOTONE_RIGHT);
@@ -4274,14 +4271,11 @@ function openColorPicker(initialHex){
   cpHud.classList.add('visible');
   drawSVCanvas();drawHueCanvas();drawPresets();cpUpdateUI(false);
   requestAnimationFrame(cpCacheRects);
-  document.addEventListener('keydown', cpKeyHandler);
 }
 function closeColorPicker(confirm) {
   CP.open = false;
   cpHud.style.display = 'none';
   cpHud.classList.remove('visible');
-
-  document.removeEventListener('keydown', cpKeyHandler);
   // Cacher le curseur
   const cpCursorEl = document.getElementById('cp-cursor');
   if (cpCursorEl) cpCursorEl.style.display = 'none';
@@ -4292,14 +4286,6 @@ function closeColorPicker(confirm) {
   } else {
     sendToLua({type:'colorPickerCancelled'});
   }
-}
-
-function cpKeyHandler(e) {
-    if (e.key === 'Enter') {
-        closeColorPicker(true);
-    } else if (e.key === 'Backspace' || e.key === 'Escape') {
-        closeColorPicker(false);
-    }
 }
   
 function handleColorPickerMouse(sx, sy, lmb) {
