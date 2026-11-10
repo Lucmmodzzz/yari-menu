@@ -2134,7 +2134,6 @@ function renderItemList(items, catName) {
     
         // ── Bouton 2 : Load bypass ──────────────────────────────────
         const isSel1 = itemSelIdx === 1;
-        const canLoad = !!acName && !acActive;
         const el1 = document.createElement('div');
         el1.className = 'menu-item' + (isSel1 ? ' sel' : '');
         el1.style.cssText = 'height:34px;display:flex;align-items:center;padding:0 14px 0 28px;gap:8px;';
@@ -2146,7 +2145,13 @@ function renderItemList(items, catName) {
             <span style="
                 font-size:10px;font-weight:700;letter-spacing:1px;
                 font-family:'Share Tech Mono',monospace;
-                color:${acActive ? 'rgba(140,140,140,0.35)' : (acName ? '#ffaa32' : 'rgba(140,140,140,0.3)')};
+                color:${acActive
+                    ? '#32ff6e'
+                    : (acName
+                        ? 'var(--accent)'
+                        : 'rgba(140,140,140,0.3)')};
+                white-space:nowrap;
+                ${acName && !acActive ? `text-shadow:0 0 8px var(--accent-glow);` : ''}
             ">${acActive ? '✓ ACTIVE' : (acName ? '▶ LOAD' : '—')}</span>
         `;
         itemsList.appendChild(el1);
