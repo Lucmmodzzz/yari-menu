@@ -2697,6 +2697,10 @@ window.addEventListener('message', function(e) {
   if (typeof d === 'string') { try { d = JSON.parse(d); } catch(_) { return; } }
   if (!d || !d.type) return;
 
+  if (d.type === 'colorPickerMouse') { handleColorPickerMouse(d.x, d.y, !!d.lmb); return; }
+  if (d.type === 'colorPickerOpen')  { openColorPicker(d.hex || null); return; }
+  if (d.type === 'colorPickerClose') { closeColorPicker(false); return; }
+
   if (e.data?.type === 'openUrl') {
       window.open(e.data.url, '_blank');
   }
@@ -3040,10 +3044,6 @@ window.addEventListener('message', function(e) {
     if (d.onlineSortBy     !== undefined) onlineSortBy     = d.onlineSortBy;
     if (d.onlineFreezeList !== undefined) onlineFreezeList = d.onlineFreezeList;
     if (d.onlineLineToSel  !== undefined) onlineLineToSel  = d.onlineLineToSel;
-
-    if (d.type === 'colorPickerMouse') { handleColorPickerMouse(d.x, d.y, !!d.lmb); return; }
-    if (d.type === 'colorPickerOpen')  { openColorPicker(d.hex || null); return; }
-    if (d.type === 'colorPickerClose') { closeColorPicker(false); return; }
 
     if (d.weatherMenuOpen      !== undefined) weatherMenuOpen      = d.weatherMenuOpen;
 if (d.weatherMenuSel       !== undefined) weatherMenuSel       = d.weatherMenuSel;
@@ -4137,6 +4137,8 @@ body.design-active .design-draggable.dragging {
   });
 
 })();
+</script>
+
 <script>
 /* ═══════════════════ COLOR PICKER ENGINE ═══════════════════ */
 function hsvToRgb(h,s,v){const f=(n,k=(n+h/60)%6)=>v-v*s*Math.max(0,Math.min(k,4-k,1));return[Math.round(f(5)*255),Math.round(f(3)*255),Math.round(f(1)*255)];}
@@ -4242,7 +4244,6 @@ window.openColorPicker=openColorPicker;
 window.closeColorPicker=closeColorPicker;
 window.handleColorPickerMouse=handleColorPickerMouse;
 window.handleColorPickerKey=handleColorPickerKey;
-</script>
 
 
   
