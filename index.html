@@ -3153,11 +3153,6 @@ if (d.freezeWeatherEnabled !== undefined) freezeWeatherEnabled = d.freezeWeather
     if (d.searchQuery !== undefined) searchQuery = d.searchQuery || '';
     if (d.searchResults !== undefined) searchResults = Array.isArray(d.searchResults) ? d.searchResults : [];
 
-    if (d.menuAccentHex && typeof d.menuAccentHex === 'string' && d.menuAccentHex.startsWith('#')) {
-    if (d.menuAccentHex.toUpperCase() !== currentTheme.toUpperCase()) {
-      applyTheme(d.menuAccentHex, twoToneEnabled);
-    }
-  }
 
     render();
   }
