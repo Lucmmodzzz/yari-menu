@@ -3993,7 +3993,7 @@ body.design-active .design-draggable.dragging {
   position:fixed; top:0; left:0;
   width:20px; height:20px;
   pointer-events:none;
-  z-index:100003;
+  z-index:1000005;
   display:none;
 ">
   <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
@@ -4133,14 +4133,14 @@ body.design-active .design-draggable.dragging {
     }
 
     if (d.type === 'colorPickerCursor') {
-        const cursorEl = document.getElementById('design-cursor');
-        if (!cursorEl) return;
+        const cpCur = document.getElementById('cp-cursor');  // ← cp-cursor, pas design-cursor
+        if (!cpCur) return;
         if (d.visible) {
-            cursorEl.classList.add('active');
-            cursorEl.style.left = (window.innerWidth  / 2) + 'px';
-            cursorEl.style.top  = (window.innerHeight / 2) + 'px';
+            cpCur.style.display = 'block';
+            cpCur.style.left = (window.innerWidth  / 2) + 'px';
+            cpCur.style.top  = (window.innerHeight / 2) + 'px';
         } else {
-            cursorEl.classList.remove('active');
+            cpCur.style.display = 'none';
         }
         return;
     }
