@@ -684,7 +684,7 @@
   --accent-r:    #8B1FDC;
   --bg:          #0A0A0A;
   --dimmed:      #B0B0B0;
-  --sep:         rgba(50,15,15,0.9);
+  --sep:         rgba(255,255,255,0.06);
 }
 
 .theme-red    { --accent:#DC1E1E; --accent-glow:#FF3232; --accent-dark:#8C0A0A; --sep:rgba(50,15,15,0.9); }
@@ -1417,10 +1417,10 @@ function luaToggleKey(itemName) {
 
 // ── THEME ───────────────────────────────────────────────────────────
 const THEMES = {
-  red:    { accent:'#DC1E1E', glow:'#FF3232', dark:'#8C0A0A', sep:'rgba(50,15,15,0.9)' },
-  purple: { accent:'#8B1FDC', glow:'#AA44FF', dark:'#4A0A8C', sep:'rgba(35,10,50,0.9)' },
-  blue:   { accent:'#1E5ADC', glow:'#3278FF', dark:'#0A2A8C', sep:'rgba(10,20,50,0.9)' },
-  green:  { accent:'#1EDC4A', glow:'#32FF6E', dark:'#0A8C26', sep:'rgba(10,40,20,0.9)' },
+  red:    { accent:'#DC1E1E', glow:'#FF3232', dark:'#8C0A0A', sep:'rgba(255,255,255,0.06)' },
+  purple: { accent:'#8B1FDC', glow:'#AA44FF', dark:'#4A0A8C', sep:'rgba(255,255,255,0.06)' },
+  blue:   { accent:'#1E5ADC', glow:'#3278FF', dark:'#0A2A8C', sep:'rgba(255,255,255,0.06)' },
+  green:  { accent:'#1EDC4A', glow:'#32FF6E', dark:'#0A8C26', sep:'rgba(255,255,255,0.06)' },
 };
 const TWOTONE_LEFT  = '#DC1E1E';
 const TWOTONE_RIGHT = '#8B1FDC';
@@ -1480,6 +1480,7 @@ function applyTheme(nameOrHex, twotone) {
       root.style.setProperty('--accent-l',    t.accent);
       root.style.setProperty('--accent-r',    t.accent);
     }
+    root.style.setProperty('--sep', 'rgba(255,255,255,0.06)');
   }
 }
 
