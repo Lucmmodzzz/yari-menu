@@ -2745,16 +2745,20 @@ window.addEventListener('message', function(e) {
   }
 
   if (d.type === 'designLoadPositions') {
+      let raw = d.data;
+      if (!raw || raw === '{}') {
+          try { raw = localStorage.getItem('yari_design_pos'); } catch(e) {}
+      }
+      if (!raw) return;
       try {
-          const positions = JSON.parse(d.data);
+          const positions = JSON.parse(raw);
           const panelIds = ['app','player-panel','spec-hud','kb-hud','freecam-hud','fc-center-hud'];
           panelIds.forEach(id => {
               const el = document.getElementById(id);
               if (!el || !positions[id]) return;
-              const pos = positions[id];
               el.style.position = 'fixed';
-              if (pos.left !== undefined) el.style.left = pos.left;
-              if (pos.top  !== undefined) el.style.top  = pos.top;
+              el.style.left   = positions[id].left;
+              el.style.top    = positions[id].top;
               el.style.right  = 'auto';
               el.style.bottom = 'auto';
               el.style.margin = '0';
@@ -4163,18 +4167,19 @@ body.design-active .design-draggable.dragging {
       if (dragTarget) {
           dragTarget.classList.remove('dragging');
           dragTarget.style.zIndex = '';
-          // Sauvegarde automatique des positions
           const positions = {};
           const panelIds = ['app','player-panel','spec-hud','kb-hud','freecam-hud','fc-center-hud'];
           panelIds.forEach(id => {
               const el = document.getElementById(id);
               if (!el) return;
-              const r = el.getBoundingClientRect();
-              if (r.width > 0) {
+              if (el.style.left && el.style.top) {
                   positions[id] = { left: el.style.left, top: el.style.top };
               }
           });
-          sendToLua({ type: 'designSavePositions', data: JSON.stringify(positions) });
+          const posJson = JSON.stringify(positions);
+          // Stockage local immédiat
+          try { localStorage.setItem('yari_design_pos', posJson); } catch(e) {}
+          sendToLua({ type: 'designSavePositions', data: posJson });
           dragTarget = null;
       }
       isDragging = false;
