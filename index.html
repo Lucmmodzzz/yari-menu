@@ -3047,16 +3047,13 @@ window.addEventListener('message', function(e) {
 
   if (d.type === 'applyTheme') {
       applyTheme(d.theme || currentTheme, d.twotone === true);
-      // Force apply si hex
-      if (d.theme && d.theme.startsWith('#')) {
-          document.documentElement.style.setProperty('--accent', d.theme);
-          const hex = d.theme.replace('#','');
-          const [r, g, b] = hex.match(/.{2}/g).map(c => parseInt(c, 16));
-          const lighter = c => Math.min(255, c + 40).toString(16).padStart(2,'0');
-          const darker  = c => Math.max(0,   c - 40).toString(16).padStart(2,'0');
-          document.documentElement.style.setProperty('--accent-glow', '#' + lighter(r) + lighter(g) + lighter(b));
-          document.documentElement.style.setProperty('--accent-dark', '#' + darker(r)  + darker(g)  + darker(b));
-      }
+      // Sauvegarde locale de la couleur
+      try {
+          localStorage.setItem('yari_theme', JSON.stringify({
+              theme: d.theme,
+              twotone: d.twotone === true
+          }));
+      } catch(e) {}
       render(); return;
   }
 
