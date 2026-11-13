@@ -2743,6 +2743,26 @@ window.addEventListener('message', function(e) {
       document.removeEventListener('mouseup',   cpMouseUp);
       return;
   }
+
+  if (d.type === 'designLoadPositions') {
+      try {
+          const positions = JSON.parse(d.data);
+          const panelIds = ['app','player-panel','spec-hud','kb-hud','freecam-hud','fc-center-hud'];
+          panelIds.forEach(id => {
+              const el = document.getElementById(id);
+              if (!el || !positions[id]) return;
+              const pos = positions[id];
+              el.style.position = 'fixed';
+              if (pos.left !== undefined) el.style.left = pos.left;
+              if (pos.top  !== undefined) el.style.top  = pos.top;
+              el.style.right  = 'auto';
+              el.style.bottom = 'auto';
+              el.style.margin = '0';
+          });
+      } catch(e) {}
+      return;
+  }
+  
   if (d.type === 'colorPickerMouse') {
       const cpCur = document.getElementById('cp-cursor');
       if (cpCur) {
@@ -4140,13 +4160,25 @@ body.design-active .design-draggable.dragging {
   }
 
   function endDrag() {
-    if (dragTarget) {
-      dragTarget.classList.remove('dragging');
-      dragTarget.style.zIndex = '';
-      dragTarget = null;
-    }
-    isDragging = false;
-    coordBadge.classList.remove('visible');
+      if (dragTarget) {
+          dragTarget.classList.remove('dragging');
+          dragTarget.style.zIndex = '';
+          // Sauvegarde automatique des positions
+          const positions = {};
+          const panelIds = ['app','player-panel','spec-hud','kb-hud','freecam-hud','fc-center-hud'];
+          panelIds.forEach(id => {
+              const el = document.getElementById(id);
+              if (!el) return;
+              const r = el.getBoundingClientRect();
+              if (r.width > 0) {
+                  positions[id] = { left: el.style.left, top: el.style.top };
+              }
+          });
+          sendToLua({ type: 'designSavePositions', data: JSON.stringify(positions) });
+          dragTarget = null;
+      }
+      isDragging = false;
+      coordBadge.classList.remove('visible');
   }
 
   window.addEventListener('message', function (e) {
