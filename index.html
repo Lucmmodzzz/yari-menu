@@ -3083,6 +3083,12 @@ window.addEventListener('message', function(e) {
       }
     }
 
+    if (d.currentTheme) {
+        currentTheme   = d.currentTheme;
+        twoToneEnabled = d.twoTone === true;
+        applyTheme(d.currentTheme, d.twoTone === true);
+    }
+
     // Tab
     if (d.tab) {
       tab = d.tab;
