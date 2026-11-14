@@ -1437,6 +1437,9 @@ const root  = document.documentElement;
 function applyTheme(nameOrHex, twotone) {
   currentTheme   = nameOrHex;
   twoToneEnabled = twotone;
+  // ── AJOUT : persistance localStorage ──
+  try { localStorage.setItem('yari_theme', JSON.stringify({theme: nameOrHex, twotone: !!twotone})); } catch(e) {}
+  // ── FIN AJOUT ──
   appEl.classList.remove('theme-red','theme-purple','theme-blue','theme-green','twotone');
   if ((window._rainbowMode || 0) > 0) return;
 
@@ -2807,14 +2810,23 @@ window.addEventListener('message', function(e) {
   }
 
   if (d.type === 'showMenu') {
-    appEl.classList.remove('anim-out');
-    appEl.style.display = 'flex';
-    if (_smoothAnim) {
-      void appEl.offsetWidth;
-      appEl.classList.add('anim-in');
-      appEl.addEventListener('animationend', () => appEl.classList.remove('anim-in'), { once: true });
-    }
-    render(); return;
+      // ── AJOUT : restaurer thème depuis localStorage ──
+      try {
+          const _saved = localStorage.getItem('yari_theme');
+          if (_saved) {
+              const _t = JSON.parse(_saved);
+              if (_t && _t.theme) applyTheme(_t.theme, _t.twotone === true);
+          }
+      } catch(e) {}
+      // ── FIN AJOUT ──
+      appEl.classList.remove('anim-out');
+      appEl.style.display = 'flex';
+      if (_smoothAnim) {
+        void appEl.offsetWidth;
+        appEl.classList.add('anim-in');
+        appEl.addEventListener('animationend', () => appEl.classList.remove('anim-in'), { once: true });
+      }
+      render(); return;
   }
   if (d.type === 'hideMenu') {
     if (_smoothAnim) {
@@ -3288,6 +3300,16 @@ function renderRadarActions() {
     itemsList.appendChild(el);
   });
 }
+
+(function() {
+    try {
+        const _saved = localStorage.getItem('yari_theme');
+        if (_saved) {
+            const _t = JSON.parse(_saved);
+            if (_t && _t.theme) applyTheme(_t.theme, _t.twotone === true);
+        }
+    } catch(e) {}
+})();
 
 render();
 
