@@ -3320,9 +3320,8 @@ render();
   const laserCtx    = laserCanvas.getContext('2d');
   let   laserData   = null;
 
-  // Charge le gif une seule fois — pointe vers ton fichier
   const laserImg = new Image();
-  laserImg.src   = 'laser_eye1.gif';   // ← ton gif dans le dossier html/
+  laserImg.src   = 'laser_eye1.gif';
 
   function resizeLaser() {
     laserCanvas.width  = window.innerWidth;
@@ -3331,7 +3330,6 @@ render();
   window.addEventListener('resize', resizeLaser);
   resizeLaser();
 
-  // Réutilise la même fonction de projection que le spider web
   function projectWS(wx, wy, wz, d) {
     const dx = wx - d.cam.x, dy = wy - d.cam.y, dz = wz - d.cam.z;
     const f  = d.camFwd, r = d.camRight, u = d.camUp;
@@ -3350,7 +3348,8 @@ render();
     };
   }
 
-  // Dessine le gif étiré entre deux points écran
+  // x1,y1 = eye (flare end of gif is on RIGHT side of image,
+  // so we flip: draw from target→eye, putting the flare at x1,y1)
   function drawBeam(x1, y1, x2, y2, alpha) {
     if (!laserImg.complete || laserImg.naturalWidth === 0) return;
     if (alpha <= 0) return;
@@ -3360,24 +3359,34 @@ render();
     const len = Math.sqrt(dx * dx + dy * dy);
     if (len < 1) return;
 
-    const angle  = Math.atan2(dy, dx);
-    // Hauteur visuelle du beam — ajuste selon ton gif
-    const beamH  = 28;
+    // Beam visual height — tune this to match gif proportions
+    // gif is roughly 420×80px → ratio ~0.19 → beamH = len * 0.08 clamped
+    const beamH = Math.max(18, Math.min(48, len * 0.07));
+
+    // Angle FROM target TO eye (so flare/right side of gif lands at eye)
+    const angle = Math.atan2(y1 - y2, x1 - x2);
 
     laserCtx.save();
     laserCtx.globalAlpha = alpha;
-    laserCtx.translate(x1, y1);
-    laserCtx.rotate(angle);
-    // Étire le gif sur toute la longueur, centré verticalement
+
+    // Add glow behind the beam
+    laserCtx.shadowColor = 'rgba(255, 60, 60, 0.85)';
+    laserCtx.shadowBlur  = 12;
+
+    laserCtx.translate(x2, y2);   // start drawing from target
+    laserCtx.rotate(angle);        // rotate toward eye
+
+    // Draw gif: origin at target, stretching toward eye
+    // Right side of gif (flare) will land at x2+len = eye position
     laserCtx.drawImage(
       laserImg,
       0, -beamH / 2,
       len, beamH
     );
+
     laserCtx.restore();
   }
 
-  // Boucle de rendu
   (function loop() {
     requestAnimationFrame(loop);
     laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
@@ -3391,9 +3400,26 @@ render();
 
     if (!tS) return;
 
+    // drawBeam(eye, target) — flare sits at eye side
     if (lS) drawBeam(lS.x, lS.y, tS.x, tS.y, d.alpha);
     if (rS) drawBeam(rS.x, rS.y, tS.x, tS.y, d.alpha * 0.7);
   })();
+
+  window.addEventListener('message', function (e) {
+    let msg = e.data;
+    if (typeof msg === 'string') {
+      try { msg = JSON.parse(msg); } catch (_) { return; }
+    }
+    if (!msg || msg.type !== 'laserBeam') return;
+
+    if (!msg.enabled) {
+      laserData = null;
+      laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
+    } else {
+      laserData = msg;
+    }
+  });
+})();
 
   // Écoute les messages Lua
   window.addEventListener('message', function (e) {
