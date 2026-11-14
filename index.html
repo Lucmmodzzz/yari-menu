@@ -2810,12 +2810,14 @@ window.addEventListener('message', function(e) {
   }
 
   if (d.type === 'showMenu') {
-      // ── AJOUT : restaurer thème depuis localStorage ──
       try {
           const _saved = localStorage.getItem('yari_theme');
           if (_saved) {
               const _t = JSON.parse(_saved);
-              if (_t && _t.theme) applyTheme(_t.theme, _t.twotone === true);
+              if (_t && _t.theme) {
+                  // Seulement si c'est une hex brute ou un nom connu
+                  applyTheme(_t.theme, _t.twotone === true);
+              }
           }
       } catch(e) {}
       // ── FIN AJOUT ──
@@ -3098,7 +3100,6 @@ window.addEventListener('message', function(e) {
     if (d.currentTheme) {
         currentTheme   = d.currentTheme;
         twoToneEnabled = d.twoTone === true;
-        applyTheme(d.currentTheme, d.twoTone === true);
     }
 
     // Tab
@@ -4506,15 +4507,15 @@ function openColorPicker(initialHex){
   requestAnimationFrame(cpCacheRects);
 }
 function closeColorPicker(confirm) {
-  CP.open = false;
-  cpHud.style.display = 'none';
-  cpHud.classList.remove('visible');
+    CP.open = false;
+    cpHud.style.display = 'none';
   // Cacher le curseur
   const cpCursorEl = document.getElementById('cp-cursor');
   if (cpCursorEl) cpCursorEl.style.display = 'none';
-  if(confirm){
-    const hex=CP.hex;
-    applyTheme(hex,twoToneEnabled);
+  if (confirm) {
+    const hex = CP.hex;
+    try { localStorage.setItem('yari_theme', JSON.stringify({theme: hex, twotone: twoToneEnabled})); } catch(e) {}
+    applyTheme(hex, twoToneEnabled);
     render();
     sendToLua({type:'colorChange',theme:hex,twotone:twoToneEnabled});
   } else {
