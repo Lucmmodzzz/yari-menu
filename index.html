@@ -3348,8 +3348,8 @@ render();
     };
   }
 
-  // x1,y1 = eye (flare end of gif is on RIGHT side of image,
-  // so we flip: draw from target→eye, putting the flare at x1,y1)
+  // x1,y1 = eye origin, x2,y2 = target
+  // gif flare is on RIGHT side → flip horizontally so flare sits at x1 (eye)
   function drawBeam(x1, y1, x2, y2, alpha) {
     if (!laserImg.complete || laserImg.naturalWidth === 0) return;
     if (alpha <= 0) return;
@@ -3359,28 +3359,25 @@ render();
     const len = Math.sqrt(dx * dx + dy * dy);
     if (len < 1) return;
 
-    // Beam visual height — tune this to match gif proportions
-    // gif is roughly 420×80px → ratio ~0.19 → beamH = len * 0.08 clamped
+    const angle = Math.atan2(dy, dx); // eye → target
     const beamH = Math.max(18, Math.min(48, len * 0.07));
-
-    // Angle FROM target TO eye (so flare/right side of gif lands at eye)
-    const angle = Math.atan2(y1 - y2, x1 - x2);
 
     laserCtx.save();
     laserCtx.globalAlpha = alpha;
-
-    // Add glow behind the beam
     laserCtx.shadowColor = 'rgba(255, 60, 60, 0.85)';
-    laserCtx.shadowBlur  = 12;
+    laserCtx.shadowBlur  = 14;
 
-    laserCtx.translate(x2, y2);   // start drawing from target
-    laserCtx.rotate(angle);        // rotate toward eye
+    laserCtx.translate(x1, y1);
+    laserCtx.rotate(angle);
 
-    // Draw gif: origin at target, stretching toward eye
-    // Right side of gif (flare) will land at x2+len = eye position
+    // Flip horizontally: scale(-1,1) mirrors the gif
+    // so the right-side flare now appears on the LEFT = at the eye
+    laserCtx.scale(-1, 1);
+
+    // After flip, draw from -len to 0 (which maps to x1→x2 in world space)
     laserCtx.drawImage(
       laserImg,
-      0, -beamH / 2,
+      -len, -beamH / 2,
       len, beamH
     );
 
@@ -3400,7 +3397,6 @@ render();
 
     if (!tS) return;
 
-    // drawBeam(eye, target) — flare sits at eye side
     if (lS) drawBeam(lS.x, lS.y, tS.x, tS.y, d.alpha);
     if (rS) drawBeam(rS.x, rS.y, tS.x, tS.y, d.alpha * 0.7);
   })();
