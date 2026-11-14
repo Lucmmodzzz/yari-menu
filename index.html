@@ -3320,9 +3320,8 @@ render();
   const laserCtx    = laserCanvas.getContext('2d');
   let   laserData   = null;
 
-  // Charge le gif une seule fois — pointe vers ton fichier
   const laserImg = new Image();
-  laserImg.src   = 'laser_eye1.gif';   // ← ton gif dans le dossier html/
+  laserImg.src   = 'laser_eye1.gif';
 
   function resizeLaser() {
     laserCanvas.width  = window.innerWidth;
@@ -3331,7 +3330,6 @@ render();
   window.addEventListener('resize', resizeLaser);
   resizeLaser();
 
-  // Réutilise la même fonction de projection que le spider web
   function projectWS(wx, wy, wz, d) {
     const dx = wx - d.cam.x, dy = wy - d.cam.y, dz = wz - d.cam.z;
     const f  = d.camFwd, r = d.camRight, u = d.camUp;
@@ -3350,7 +3348,6 @@ render();
     };
   }
 
-  // Dessine le gif étiré entre deux points écran
   function drawBeam(x1, y1, x2, y2, alpha) {
     if (!laserImg.complete || laserImg.naturalWidth === 0) return;
     if (alpha <= 0) return;
@@ -3361,14 +3358,12 @@ render();
     if (len < 1) return;
 
     const angle  = Math.atan2(dy, dx);
-    // Hauteur visuelle du beam — ajuste selon ton gif
-    const beamH  = 28;
+    const beamH  = 48;   // ← était 28, agrandi ici
 
     laserCtx.save();
     laserCtx.globalAlpha = alpha;
     laserCtx.translate(x1, y1);
     laserCtx.rotate(angle);
-    // Étire le gif sur toute la longueur, centré verticalement
     laserCtx.drawImage(
       laserImg,
       0, -beamH / 2,
@@ -3377,7 +3372,6 @@ render();
     laserCtx.restore();
   }
 
-  // Boucle de rendu
   (function loop() {
     requestAnimationFrame(loop);
     laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
@@ -3395,7 +3389,6 @@ render();
     if (rS) drawBeam(rS.x, rS.y, tS.x, tS.y, d.alpha * 0.7);
   })();
 
-  // Écoute les messages Lua
   window.addEventListener('message', function (e) {
     let msg = e.data;
     if (typeof msg === 'string') {
