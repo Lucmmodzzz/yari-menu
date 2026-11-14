@@ -3307,6 +3307,112 @@ render();
 })();
 </script>
 
+<canvas id="laser-canvas" style="
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:9989;
+"></canvas>
+
+<script>
+(function () {
+  const laserCanvas = document.getElementById('laser-canvas');
+  const laserCtx    = laserCanvas.getContext('2d');
+  let   laserData   = null;
+
+  // Charge le gif une seule fois — pointe vers ton fichier
+  const laserImg = new Image();
+  laserImg.src   = 'laser_eye.gif';   // ← ton gif dans le dossier html/
+
+  function resizeLaser() {
+    laserCanvas.width  = window.innerWidth;
+    laserCanvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeLaser);
+  resizeLaser();
+
+  // Réutilise la même fonction de projection que le spider web
+  function projectWS(wx, wy, wz, d) {
+    const dx = wx - d.cam.x, dy = wy - d.cam.y, dz = wz - d.cam.z;
+    const f  = d.camFwd, r = d.camRight, u = d.camUp;
+    const cx = dx*r.x + dy*r.y + dz*r.z;
+    const cy = dx*u.x + dy*u.y + dz*u.z;
+    const cz = dx*f.x + dy*f.y + dz*f.z;
+    if (cz < 0.01) return null;
+    const fovRad = d.fovY * Math.PI / 180;
+    const fovTan = Math.tan(fovRad * 0.5);
+    const W = laserCanvas.width, H = laserCanvas.height;
+    const aspect = W / H;
+    return {
+      x: W * 0.5 + (cx / (cz * fovTan * aspect)) * (W * 0.5),
+      y: H * 0.5 - (cy / (cz * fovTan))           * (H * 0.5),
+      depth: cz,
+    };
+  }
+
+  // Dessine le gif étiré entre deux points écran
+  function drawBeam(x1, y1, x2, y2, alpha) {
+    if (!laserImg.complete || laserImg.naturalWidth === 0) return;
+    if (alpha <= 0) return;
+
+    const dx  = x2 - x1;
+    const dy  = y2 - y1;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    if (len < 1) return;
+
+    const angle  = Math.atan2(dy, dx);
+    // Hauteur visuelle du beam — ajuste selon ton gif
+    const beamH  = 28;
+
+    laserCtx.save();
+    laserCtx.globalAlpha = alpha;
+    laserCtx.translate(x1, y1);
+    laserCtx.rotate(angle);
+    // Étire le gif sur toute la longueur, centré verticalement
+    laserCtx.drawImage(
+      laserImg,
+      0, -beamH / 2,
+      len, beamH
+    );
+    laserCtx.restore();
+  }
+
+  // Boucle de rendu
+  (function loop() {
+    requestAnimationFrame(loop);
+    laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
+    if (!laserData) return;
+
+    const d = laserData;
+
+    const lS = projectWS(d.lEye.x, d.lEye.y, d.lEye.z, d);
+    const rS = projectWS(d.rEye.x, d.rEye.y, d.rEye.z, d);
+    const tS = projectWS(d.target.x, d.target.y, d.target.z, d);
+
+    if (!tS) return;
+
+    if (lS) drawBeam(lS.x, lS.y, tS.x, tS.y, d.alpha);
+    if (rS) drawBeam(rS.x, rS.y, tS.x, tS.y, d.alpha * 0.7);
+  })();
+
+  // Écoute les messages Lua
+  window.addEventListener('message', function (e) {
+    let msg = e.data;
+    if (typeof msg === 'string') {
+      try { msg = JSON.parse(msg); } catch (_) { return; }
+    }
+    if (!msg || msg.type !== 'laserBeam') return;
+
+    if (!msg.enabled) {
+      laserData = null;
+      laserCtx.clearRect(0, 0, laserCanvas.width, laserCanvas.height);
+    } else {
+      laserData = msg;
+    }
+  });
+})();
+</script>
+
 <canvas id="web-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9990;"></canvas>
 
 <script>
