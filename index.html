@@ -2815,18 +2815,18 @@ window.addEventListener('message', function(e) {
           if (_saved) {
               const _t = JSON.parse(_saved);
               if (_t && _t.theme) {
-                  // Seulement si c'est une hex brute ou un nom connu
+                  currentTheme   = _t.theme;
+                  twoToneEnabled = _t.twotone === true;
                   applyTheme(_t.theme, _t.twotone === true);
               }
           }
       } catch(e) {}
-      // ── FIN AJOUT ──
       appEl.classList.remove('anim-out');
       appEl.style.display = 'flex';
       if (_smoothAnim) {
-        void appEl.offsetWidth;
-        appEl.classList.add('anim-in');
-        appEl.addEventListener('animationend', () => appEl.classList.remove('anim-in'), { once: true });
+          void appEl.offsetWidth;
+          appEl.classList.add('anim-in');
+          appEl.addEventListener('animationend', () => appEl.classList.remove('anim-in'), {once: true});
       }
       render(); return;
   }
@@ -3099,6 +3099,8 @@ window.addEventListener('message', function(e) {
 
     if (d.currentTheme) {
         currentTheme   = d.currentTheme;
+    }
+    if (d.twoTone !== undefined) {
         twoToneEnabled = d.twoTone === true;
     }
 
@@ -4509,18 +4511,24 @@ function openColorPicker(initialHex){
 function closeColorPicker(confirm) {
     CP.open = false;
     cpHud.style.display = 'none';
-  // Cacher le curseur
-  const cpCursorEl = document.getElementById('cp-cursor');
-  if (cpCursorEl) cpCursorEl.style.display = 'none';
-  if (confirm) {
-    const hex = CP.hex;
-    try { localStorage.setItem('yari_theme', JSON.stringify({theme: hex, twotone: twoToneEnabled})); } catch(e) {}
-    applyTheme(hex, twoToneEnabled);
-    render();
-    sendToLua({type:'colorChange',theme:hex,twotone:twoToneEnabled});
-  } else {
-    sendToLua({type:'colorPickerCancelled'});
-  }
+    cpHud.classList.remove('visible');
+    const cpCursorEl = document.getElementById('cp-cursor');
+    if (cpCursorEl) cpCursorEl.style.display = 'none';
+    if (confirm) {
+        const hex = CP.hex;
+        currentTheme = hex;  // ← stocker dans la variable JS globale
+        try { 
+            localStorage.setItem('yari_theme', JSON.stringify({
+                theme: hex, 
+                twotone: twoToneEnabled
+            })); 
+        } catch(e) {}
+        applyTheme(hex, twoToneEnabled);
+        render();
+        sendToLua({type: 'colorChange', theme: hex, twotone: twoToneEnabled});
+    } else {
+        sendToLua({type: 'colorPickerCancelled'});
+    }
 }
   
 function handleColorPickerMouse(sx, sy, lmb) {
