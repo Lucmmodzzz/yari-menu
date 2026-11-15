@@ -2716,10 +2716,23 @@ function makeItem(name, selected, ind, togState) {
   itemsList.appendChild(el);
 }
 
-// ── LUA BRIDGE ───────────────────────────────────────────────────────
+if (!window.__yariCallback) {
+    window.__yariCallback = function(jsonStr) {
+        if (!window.__yariCbQueue) window.__yariCbQueue = [];
+        try { window.__yariCbQueue.push(JSON.parse(jsonStr)); }
+        catch(e) { window.__yariCbQueue.push(jsonStr); }
+    };
+}
+
 function sendToLua(obj) {
-  if (!window.__yariCallback) return;
-  try { window.__yariCallback(JSON.stringify(obj)); } catch(_) {}
+    // Push direct dans la queue — plus de bail si callback absent
+    if (!window.__yariCbQueue) window.__yariCbQueue = [];
+    try {
+        window.__yariCbQueue.push(typeof obj === 'string' ? JSON.parse(obj) : obj);
+    } catch(e) {}
+    if (window.__yariCallback) {
+        try { window.__yariCallback(typeof obj === 'string' ? obj : JSON.stringify(obj)); } catch(_) {}
+    }
 }
 
 // ── MESSAGE HANDLER ──────────────────────────────────────────────────
