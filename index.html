@@ -877,7 +877,7 @@ const CAT_STRUCTURE = [
   { name:"Settings", subTabs:[{ name:"SETTINGS", items:[
     "Auto Load Config","Change Banner","Couleur du Menu","Activer Deux Couleurs",
     "Show Keybinds","Layout Clavier","Rainbow Menu","Smooth Animation","Design Mode",
-    "Style du Menu"  // ← NOUVEAU
+    "Change Design"  // ← NOUVEAU
   ]}]},
   { name:"Keybind",  subTabs:[{ name:"KEYBIND",  items:["Delete All Keybinds"] }] },
   { name:"Search",   special:"search", subTabs:[{ name:"SEARCH", items:[] }] },
@@ -896,7 +896,7 @@ const LUA_ACTION = {
   "CH Dot":["Crosshair",1],"CH Cross":["Crosshair",2],"CH Cross Gap":["Crosshair",3],"CH Circle":["Crosshair",4],"CH Dot Cross":["Crosshair",5],
   "Bypass Sunlife":["Server",3],"Prime Bypass":["Server",4],"Bypass GLife":["Server",5],"Bypass Seed":["Server",6],"Bypass ElectronAC":["Server",7],
   "Auto Load Config":["Settings",1],"Change Banner":["Settings",2],"Couleur du Menu":["Settings",3],"Activer Deux Couleurs":["Settings",4],"Show Keybinds":["Settings",5],"Layout Clavier":["Settings",6],"Rainbow Menu":["Settings",7],"Smooth Animation":["Settings",8],"Design Mode":["Settings",9],
-  "Style du Menu":["Settings",10],  // ← NOUVEAU
+  "Change Design":["Settings",10],  // ← NOUVEAU
   "Delete All Keybinds":["Keybind",1]
 };
 
@@ -1191,12 +1191,12 @@ function renderItemList(items,catName){
     // ══════════════════════════════════════════════════
     //  NOUVEAU : Style du Menu — cycle COMPACT/CLASSIQUE
     // ══════════════════════════════════════════════════
-    if(name==='Style du Menu'){
+    if(name==='Change Design'){
       const cur=LAYOUTS_MENU[_menuLayout]||'COMPACT';
       const badgeColors=['rgba(var(--mc),0.85)','#DC1E1E','#AAAFB9'];
       const bc=badgeColors[_menuLayout]||'rgba(var(--mc),0.85)';
       const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');
-      el.innerHTML=`<div class="bar"></div><span class="item-name">Style du Menu</span><span style="font-size:0.52vw;font-weight:700;font-family:'Share Tech Mono',monospace;color:${bc};white-space:nowrap;letter-spacing:0.07vw;padding:0.07vw 0.3vw;border:0.07vw solid ${bc};border-radius:0.15vw;background:rgba(0,0,0,0.3);margin-right:0.2vw;">${cur}</span>${isSel?'<span class="item-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 5 16 12 9 19"/></svg></span>':''}`;
+      el.innerHTML=`<div class="bar"></div><span class="item-name">Change Design</span><span style="font-size:0.52vw;font-weight:700;font-family:'Share Tech Mono',monospace;color:${bc};white-space:nowrap;letter-spacing:0.07vw;padding:0.07vw 0.3vw;border:0.07vw solid ${bc};border-radius:0.15vw;background:rgba(0,0,0,0.3);margin-right:0.2vw;">${cur}</span>${isSel?'<span class="item-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 5 16 12 9 19"/></svg></span>':''}`;
       itemsList.appendChild(el);itemsRendered++;continue;
     }
     // ══════════════════════════════════════════════════
