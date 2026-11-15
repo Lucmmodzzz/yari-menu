@@ -3121,16 +3121,8 @@ window.addEventListener('message', function(e) {
       }
     }
 
-    try {
-            const saved = JSON.parse(localStorage.getItem('yari_theme') || 'null');
-            if (saved && saved.theme) {
-                currentTheme   = saved.theme;
-                twoToneEnabled = !!saved.twotone;
-            }
-        } catch(e) {}
-        applyTheme(currentTheme, twoToneEnabled);
-        }
-    })();
+    // Appliquer le thème avec les valeurs à jour
+    applyTheme(currentTheme, twoToneEnabled);
 
     // Tab
     if (d.tab) {
@@ -4712,25 +4704,27 @@ function closeColorPicker(confirm) {
     if (confirm) {
         const hex = CP.hex;
         currentTheme = hex;
+        twoToneEnabled = twoToneEnabled;
+        
+        // ── Stocker pour que Lua puisse la lire ──
+        window._pendingThemeChange = hex;
+        window._pendingTwoTone     = twoToneEnabled;
+        
         try {
             localStorage.setItem('yari_theme', JSON.stringify({
                 theme: hex,
                 twotone: twoToneEnabled
             }));
         } catch(e) {}
+        
         applyTheme(hex, twoToneEnabled);
         render();
-        // ← Force direct dans la queue, pas sendToLua
-        if (!window.__yariCbQueue) window.__yariCbQueue = [];
-        window.__yariCbQueue.push({type: 'colorChange', theme: hex, twotone: twoToneEnabled});
-        if (window.__yariCallback) {
-            try { window.__yariCallback(JSON.stringify({type: 'colorChange', theme: hex, twotone: twoToneEnabled})); } catch(_) {}
-        }
+        sendToLua({type: 'colorChange', theme: hex, twotone: twoToneEnabled});
     } else {
+        // Restaurer l'ancienne couleur
         applyTheme(currentTheme, twoToneEnabled);
         render();
-        if (!window.__yariCbQueue) window.__yariCbQueue = [];
-        window.__yariCbQueue.push({type: 'colorPickerCancelled'});
+        sendToLua({type: 'colorPickerCancelled'});
     }
 }
   
