@@ -728,21 +728,14 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
 #app.twotone #bot-border { display: block; }
 
 #banner {
-  position: relative;
-  height: 6.2vw; min-height: 90px;
-  flex-shrink: 0;
-  overflow: hidden;
-  background: rgba(0,0,0,0.98);
-  border-bottom: 1px solid rgba(220,30,30,0.25);
+  position: relative; height: 90px; flex-shrink: 0;
+  background: linear-gradient(180deg,rgba(30,5,5,0.98) 0%,rgba(8,8,8,0.99) 100%);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 5px; overflow: hidden;
   border-radius: 7px 7px 0 0;
 }
 #banner::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg,var(--accent-l),var(--accent-dark)); transition:background 0.25s; }
-#banner::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.65) 100%);
-  pointer-events: none;
-}
+#banner::after  { content:''; position:absolute; right:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg,var(--accent-r),var(--accent-dark)); opacity:0.7; transition:background 0.25s; }
 #app:not(.twotone) #banner::before { background:linear-gradient(180deg,var(--accent),var(--accent-dark)); }
 #app:not(.twotone) #banner::after  { background:linear-gradient(180deg,var(--accent),var(--accent-dark)); opacity:0.7; }
 
@@ -989,7 +982,7 @@ html, body { width: 100%; height: 100%; background: transparent; overflow: hidde
   <div id="top-border"></div>
   <div id="banner">
     <img src="yari_menu_banniere_rouge.png" alt="banner"
-         style="position:absolute;width:100%;height:100%;object-fit:cover;object-position:center;display:block;" />
+         style="width:100%;height:90px;object-fit:cover;object-position:center;display:block;" />
   </div>
   <div id="subbanner">YARI MENU</div>
   <div id="tabs">
