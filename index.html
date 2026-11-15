@@ -28,7 +28,6 @@ html, body {
   user-select: none;
 }
 
-/* ── BLINK ── */
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
 /* ── CROSSHAIRS ── */
@@ -75,7 +74,6 @@ html, body {
   z-index: 9999;
   display: none;
   flex-direction: column;
-
   background: rgba(0,0,0,0.90);
   border: 0.07vw solid rgba(var(--mc), 0.45);
   border-radius: 0.3vw;
@@ -83,7 +81,6 @@ html, body {
     0 0 0.5vw rgba(var(--mc), 0.18),
     0 1.2vw 3vw rgba(0,0,0,0.65),
     inset 0 0 0.3vw rgba(0,0,0,0.5);
-
   overflow: hidden;
   transition: border-color 0.25s;
 }
@@ -120,7 +117,7 @@ html, body {
   border-bottom: 0.07vw solid rgba(var(--mc), 0.18);
 }
 
-/* ── MAIN TABS (MAIN / CONFIG) ── */
+/* ── MAIN TABS ── */
 #tabs {
   height: 1.6vw; min-height: 22px;
   flex-shrink: 0;
@@ -302,9 +299,7 @@ html, body {
   background: rgba(var(--mc), 0.06);
 }
 
-/* ══════════════════════════════════════════════════
-   SLIDE / SLIDER — ENGRAVED TRACK
-   ══════════════════════════════════════════════════ */
+/* ── SLIDER ── */
 .slider-row {
   height: auto; flex-direction: column; align-items: flex-start;
   padding: 0.3vw 0.75vw 0.3vw 1.1vw; gap: 0.22vw;
@@ -348,9 +343,7 @@ html, body {
   color: rgba(var(--mc), 0.35); margin-top: 0.05vw;
 }
 
-/* ══════════════════════════════════════════════════
-   SCROLLABLE CYCLE ELEMENT
-   ══════════════════════════════════════════════════ */
+/* ── CYCLE VALUE ── */
 .cycle-val {
   font-size: 0.58vw; font-weight: 400;
   font-family: 'Share Tech Mono', monospace;
@@ -358,9 +351,7 @@ html, body {
 }
 .menu-item.sel .cycle-val { color: rgba(var(--mc), 1); }
 
-/* ══════════════════════════════════════════════════
-   FREECAM HUD
-   ══════════════════════════════════════════════════ */
+/* ── FREECAM HUD ── */
 #freecam-hud {
   position: fixed; top: 50%; right: 1.5vw;
   transform: translateY(-50%);
@@ -374,12 +365,7 @@ html, body {
   display: none; flex-direction: column;
 }
 #freecam-hud.visible { display: flex; }
-.fc-header {
-  padding: 0.4vw 0.6vw 0.3vw;
-  background: rgba(0,0,0,0.98);
-  border-bottom: 0.07vw solid rgba(255,255,255,0.06);
-  flex-shrink: 0;
-}
+.fc-header { padding: 0.4vw 0.6vw 0.3vw; background: rgba(0,0,0,0.98); border-bottom: 0.07vw solid rgba(255,255,255,0.06); flex-shrink: 0; }
 .fc-title-row { display: flex; align-items: center; gap: 0.4vw; font-size: 0.65vw; font-weight: 600; letter-spacing: 0.15vw; color: #fff; }
 .fc-dot { width: 0.35vw; height: 0.35vw; border-radius: 50%; background: rgba(var(--mc),1); box-shadow: 0 0 0.35vw rgba(var(--mc),0.8); animation: blink 1s ease-in-out infinite; flex-shrink: 0; }
 .fc-aimed-row { margin-top: 0.25vw; font-size: 0.5vw; letter-spacing: 0.08vw; color: rgba(var(--mc),0.4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -498,7 +484,7 @@ html, body {
 #rainbow-ring::before { content: ''; position: absolute; inset: -150%; width: 400%; height: 400%; background: conic-gradient(from 0deg, hsl(0,100%,55%), hsl(45,100%,55%), hsl(90,100%,55%), hsl(135,100%,55%), hsl(180,100%,55%), hsl(225,100%,55%), hsl(270,100%,55%), hsl(315,100%,55%), hsl(360,100%,55%)); animation: rainbow-spin 2.5s linear infinite; transform-origin: center center; -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), black calc(100% - 4px)); mask: radial-gradient(farthest-side, transparent calc(100% - 8px), black calc(100% - 4px)); }
 @keyframes rainbow-spin { to { transform: rotate(360deg); } }
 
-/* ── SLIDE IN/OUT ANIMATION ── */
+/* ── SLIDE IN/OUT ── */
 @keyframes app-slide-in { from { opacity: 0; transform: translateX(-1.1vw) scale(0.96); } to { opacity: 1; transform: translateX(0) scale(1); } }
 @keyframes app-slide-out { from { opacity: 1; transform: translateX(0) scale(1); } to { opacity: 0; transform: translateX(-1.1vw) scale(0.96); } }
 #app.anim-in  { animation: app-slide-in  0.22s cubic-bezier(0.34,1.56,0.64,1) both; }
@@ -506,16 +492,7 @@ html, body {
 
 /* ── NOTIFICATIONS ── */
 #yari-notif-stack { position: fixed; bottom: 1.4vw; right: 1.2vw; display: flex; flex-direction: column-reverse; gap: 0.4vw; align-items: flex-end; z-index: 10000; pointer-events: none; }
-.ynotif {
-  position: relative; width: 15vw; min-width: 200px;
-  background: rgba(0,0,0,0.92);
-  border: 0.07vw solid rgba(var(--mc),0.75);
-  border-radius: 0.15vw;
-  box-shadow: 0 0 0.4vw rgba(var(--mc),0.15), inset 0 0 0.25vw rgba(var(--mc),0.08);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  animation: yn-in 0.22s cubic-bezier(0.34,1.56,0.64,1) both;
-  overflow: hidden;
-}
+.ynotif { position: relative; width: 15vw; min-width: 200px; background: rgba(0,0,0,0.92); border: 0.07vw solid rgba(var(--mc),0.75); border-radius: 0.15vw; box-shadow: 0 0 0.4vw rgba(var(--mc),0.15), inset 0 0 0.25vw rgba(var(--mc),0.08); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); animation: yn-in 0.22s cubic-bezier(0.34,1.56,0.64,1) both; overflow: hidden; }
 .ynotif::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg, rgba(var(--mc),0.9), rgba(var(--mc),0.3) 65%, transparent 100%); }
 .ynotif.yn-out { animation: yn-out 0.18s ease-in forwards; }
 @keyframes yn-in  { from { opacity:0; transform:translateX(1.4vw) scale(0.95); } to { opacity:1; transform:translateX(0) scale(1); } }
@@ -563,49 +540,46 @@ body.design-active .design-draggable { outline-color: rgba(var(--mc),0.3); }
 body.design-active .design-draggable:hover { outline-color: rgba(var(--mc),0.75); outline-width: 0.1vw; }
 body.design-active .design-draggable.dragging { outline-color: rgba(var(--mc),1); outline-width: 0.1vw; box-shadow: 0 0 1.2vw rgba(var(--mc),0.25); }
 
-/* ── COLOR PICKER ── */
-#color-picker-hud { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 15vw; min-width: 200px; background: rgba(0,0,0,0.98); border: 0.07vw solid rgba(var(--mc),0.6); border-radius: 0.3vw; box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 1vw 3vw rgba(0,0,0,0.75), 0 0 1vw rgba(var(--mc),0.1); overflow: hidden; font-family: 'Share Tech Mono', monospace; z-index: 100000; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); pointer-events: none; }
+/* ── COLOR PICKER HUD ── */
+#color-picker-hud {
+  display: none; position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%); width: 15vw; min-width: 200px;
+  background: rgba(0,0,0,0.98);
+  border: 0.07vw solid rgba(var(--mc),0.6);
+  border-radius: 0.3vw;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 1vw 3vw rgba(0,0,0,0.75), 0 0 1vw rgba(var(--mc),0.1);
+  overflow: hidden; font-family: 'Share Tech Mono', monospace;
+  z-index: 100000;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  /* pointer-events: none; -- REMOVED so mouse events work */
+}
 #color-picker-hud.visible { display: block; }
 .cp-header { display: flex; align-items: center; gap: 0.4vw; padding: 0.4vw 0.7vw 0.35vw; background: rgba(0,0,0,0.98); border-bottom: 0.07vw solid rgba(255,255,255,0.06); position: relative; }
 .cp-dot { width: 0.35vw; height: 0.35vw; border-radius: 50%; background: rgba(var(--mc),1); box-shadow: 0 0 0.35vw rgba(var(--mc),0.8); animation: blink 1s ease-in-out infinite; flex-shrink: 0; }
 .cp-title { font-size: 0.65vw; font-weight: 600; letter-spacing: 0.15vw; color: #fff; flex: 1; }
 .cp-hex-display { font-size: 0.6vw; font-weight: 700; letter-spacing: 0.1vw; color: rgba(var(--mc),1); min-width: 3.6vw; text-align: right; }
-.cp-sv-wrap { position: relative; width: 100%; height: 8vw; cursor: none; }
-#cp-sv-canvas { display: block; width: 100%; height: 8vw; }
+.cp-sv-wrap { position: relative; width: 100%; height: 8vw; cursor: crosshair; }
+#cp-sv-canvas { display: block; width: 100%; height: 8vw; cursor: crosshair; }
 #cp-sv-cursor { position: absolute; width: 0.7vw; height: 0.7vw; border-radius: 50%; border: 0.1vw solid #fff; box-shadow: 0 0 0.3vw rgba(0,0,0,0.8), 0 0 0 0.05vw rgba(0,0,0,0.4); transform: translate(-50%, -50%); pointer-events: none; }
 .cp-hue-wrap { padding: 0.4vw 0.7vw 0.2vw; position: relative; }
-#cp-hue-canvas { display: block; width: 100%; height: 0.7vw; border-radius: 0.35vw; cursor: none; }
+#cp-hue-canvas { display: block; width: 100%; height: 0.7vw; border-radius: 0.35vw; cursor: crosshair; }
 #cp-hue-cursor { position: absolute; width: 0.9vw; height: 0.9vw; border-radius: 50%; border: 0.1vw solid #fff; box-shadow: 0 0 0.3vw rgba(0,0,0,0.6), 0 0 0 0.05vw rgba(0,0,0,0.3); top: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 .cp-presets { display: flex; align-items: center; gap: 0.3vw; padding: 0 0.7vw 0.4vw; }
-.cp-preset { width: 0.9vw; height: 0.9vw; border-radius: 50%; border: 0.07vw solid rgba(255,255,255,0.1); flex-shrink: 0; cursor: none; transition: transform 0.1s, border-color 0.1s; }
-.cp-preset.hovered { transform: scale(1.3); border-color: #fff; }
+.cp-preset { width: 0.9vw; height: 0.9vw; border-radius: 50%; border: 0.07vw solid rgba(255,255,255,0.1); flex-shrink: 0; cursor: pointer; transition: transform 0.1s, border-color 0.1s; }
+.cp-preset.hovered, .cp-preset:hover { transform: scale(1.3); border-color: #fff; }
 .cp-bottom { display: flex; align-items: center; gap: 0.5vw; padding: 0.3vw 0.7vw 0.5vw; border-top: 0.07vw solid rgba(255,255,255,0.06); }
 .cp-preview-swatch { width: 1.8vw; height: 1.8vw; border-radius: 0.2vw; border: 0.07vw solid rgba(255,255,255,0.1); flex-shrink: 0; transition: background 0.05s; }
 .cp-hex-input-wrap { flex: 1; display: flex; flex-direction: column; gap: 0.15vw; }
 .cp-hex-label { font-size: 0.45vw; letter-spacing: 0.1vw; color: rgba(var(--mc),0.4); }
 .cp-hex-val { font-size: 0.75vw; font-weight: 700; letter-spacing: 0.1vw; color: #fff; }
-.cp-footer { display: flex; align-items: center; justify-content: center; gap: 0.6vw; padding: 0.3vw 0.7vw 0.4vw; border-top: 0.07vw solid rgba(255,255,255,0.06); font-size: 0.5vw; letter-spacing: 0.1vw; color: rgba(var(--mc),0.4); }
+.cp-footer { display: flex; align-items: center; justify-content: center; gap: 0.6vw; padding: 0.3vw 0.7vw 0.4vw; border-top: 0.07vw solid rgba(255,255,255,0.06); font-size: 0.5vw; letter-spacing: 0.1vw; color: rgba(var(--mc),0.4); cursor: pointer; }
 .cp-footer span { color: rgba(var(--mc),0.85); }
-
-/* ── CP CURSOR ── */
-#cp-cursor { position: fixed; top: 0; left: 0; width: 1vw; height: 1vw; pointer-events: none; z-index: 1000005; display: none; }
-
-/* ── BIND PROMPT ── */
-.BindPromptOverlay { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.65); z-index: 10050; font-family: 'Inter', sans-serif; }
-.BindPromptBox { width: 11vw; min-width: 160px; background: rgba(0,0,0,0.92); border: 0.07vw solid rgba(var(--mc),0.75); box-shadow: 0 0 0.5vw rgba(var(--mc),0.2), inset 0 0 0.3vw rgba(var(--mc),0.08); border-radius: 0.15vw; padding: 0.55vw 0.6vw; color: #fff; text-align: center; }
-.BindPromptBox .BPTitle { font-size: 0.65vw; font-weight: 700; color: rgba(var(--mc),0.9); letter-spacing: 0.1vw; margin-bottom: 0.28vw; }
-.BindPromptBox .BPDesc  { font-size: 0.5vw; color: #ccc; margin-bottom: 0.4vw; line-height: 1.35; }
-.BindPromptBox .BPKey   { display: inline-flex; min-width: 1.6vw; justify-content: center; align-items: center; padding: 0.22vw 0.35vw; margin: 0.1vw 0 0.4vw; background: #141414; border: 0.07vw solid rgba(var(--mc),0.6); border-radius: 0.1vw; font-size: 0.75vw; font-weight: 700; color: #fff; letter-spacing: 0.06vw; box-shadow: 0 0 0.35vw rgba(var(--mc),0.3); }
-.BindPromptBox .BPKey.waiting { color: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.15); box-shadow: none; }
-.BindPromptBox .BPHint  { font-size: 0.45vw; color: rgba(255,255,255,0.4); font-family: 'Share Tech Mono', monospace; }
-.BindPromptBox .BPHint span { color: rgba(var(--mc),0.85); font-weight: 600; }
+.cp-btn { padding: 0.2vw 0.8vw; border: 0.07vw solid rgba(var(--mc),0.4); border-radius: 0.15vw; background: rgba(var(--mc),0.08); color: rgba(var(--mc),0.9); font-size: 0.5vw; letter-spacing: 0.1vw; cursor: pointer; transition: background 0.1s; }
+.cp-btn:hover { background: rgba(var(--mc),0.18); }
+.cp-btn.confirm { border-color: rgba(var(--mc),0.7); color: #fff; background: rgba(var(--mc),0.15); }
 
 /* ── LASER / WEB CANVAS ── */
-#laser-canvas, #web-canvas {
-  position: fixed; top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-}
+#laser-canvas, #web-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
 #laser-canvas { z-index: 9989; }
 #web-canvas   { z-index: 9990; }
 </style>
@@ -689,7 +663,87 @@ body.design-active .design-draggable.dragging { outline-color: rgba(var(--mc),1)
 <div id="kb-hud"></div>
 <div id="noclip-hud"></div>
 
-<!-- ═══════════════════ JS (identical logic, visual vars wired to new CSS) ═══════════════════ -->
+<div id="key-picker">
+  <div class="kp-box">
+    <div class="kp-inner">
+      <div class="kp-title"><div class="kp-title-dot"></div>KEYBIND</div>
+      <div class="kp-user" id="kp-username">—</div>
+      <div class="kp-key-area" id="kp-key-area">
+        <div class="kp-waiting-dot" id="kp-waiting-dot"></div>
+        <span class="kp-key-badge" id="kp-badge" style="display:none"></span>
+      </div>
+      <div class="kp-enter" id="kp-enter">
+        <span class="kp-enter-key">ENTRÉE</span>
+        <span>confirmer</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="xh-container">
+  <div id="xh-1" class="xh-shape"></div>
+  <div id="xh-2" class="xh-shape"></div>
+  <div id="xh-3" class="xh-shape" style="width:24px;height:24px;">
+    <div style="position:absolute;background:rgba(var(--mc),0.95);width:8px;height:2px;top:50%;left:0;transform:translateY(-50%)"></div>
+    <div style="position:absolute;background:rgba(var(--mc),0.95);width:8px;height:2px;top:50%;right:0;transform:translateY(-50%)"></div>
+    <div style="position:absolute;background:rgba(var(--mc),0.95);width:2px;height:8px;left:50%;top:0;transform:translateX(-50%)"></div>
+    <div style="position:absolute;background:rgba(var(--mc),0.95);width:2px;height:8px;left:50%;bottom:0;transform:translateX(-50%)"></div>
+  </div>
+  <div id="xh-4" class="xh-shape"></div>
+  <div id="xh-5" class="xh-shape">
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:4px;height:4px;background:rgba(var(--mc),0.95);border-radius:50%;z-index:1"></div>
+  </div>
+</div>
+
+<div id="yari-notif-stack"></div>
+
+<!-- COLOR PICKER HUD -->
+<div id="color-picker-hud">
+  <div class="cp-header">
+    <div class="cp-dot"></div>
+    <span class="cp-title">MENU COLOR</span>
+    <span class="cp-hex-display" id="cp-hex-header">#AAAFB9</span>
+  </div>
+  <div class="cp-sv-wrap" id="cp-sv-wrap">
+    <canvas id="cp-sv-canvas" width="300" height="160"></canvas>
+    <div id="cp-sv-cursor"></div>
+  </div>
+  <div class="cp-hue-wrap" id="cp-hue-wrap">
+    <canvas id="cp-hue-canvas" width="280" height="14"></canvas>
+    <div id="cp-hue-cursor"></div>
+  </div>
+  <div class="cp-presets" id="cp-presets"></div>
+  <div class="cp-bottom">
+    <div class="cp-preview-swatch" id="cp-swatch"></div>
+    <div class="cp-hex-input-wrap">
+      <div class="cp-hex-label">HEX COLOR</div>
+      <div class="cp-hex-val" id="cp-hex-val">#AAAFB9</div>
+    </div>
+  </div>
+  <div class="cp-footer">
+    <div class="cp-btn confirm" id="cp-confirm-btn">↵ CONFIRMER</div>
+    <div class="cp-btn" id="cp-cancel-btn">⌫ ANNULER</div>
+  </div>
+</div>
+
+<!-- DESIGN MODE -->
+<div id="design-overlay"></div>
+<div id="design-bar">
+  <div class="design-bar-dot"></div>
+  <span>DESIGN MODE</span>
+  <span class="design-bar-hint">DRAG <span>UI PANELS</span></span>
+  <span class="design-bar-hint">— PRESS <span>INSERT</span> TO EXIT</span>
+</div>
+<div id="design-cursor">
+  <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M3 2L3 15L7 11L10 18L12 17L9 10L14 10L3 2Z" fill="rgba(var(--mc),0.95)" stroke="rgba(0,0,0,0.6)" stroke-width="0.8"/>
+  </svg>
+</div>
+<div id="design-coord-badge"></div>
+
+<canvas id="laser-canvas"></canvas>
+<canvas id="web-canvas"></canvas>
+
 <script>
 // ═══════════════════════════════════════════════════════════════════
 //  CATEGORY STRUCTURE
@@ -722,14 +776,40 @@ const CAT_STRUCTURE = [
   { name:"Search",   special:"search", subTabs:[{ name:"SEARCH", items:[] }] },
 ];
 const CONFIG_ITEMS = ["Save Config","Load Config"];
-const GLOBAL_ACTION_MAP = { "Player_2":true,"Player_3":true,"Player_4":true,"Player_5":true,"Player_9":true,"Player_10":true,"Player_11":true,"Player_12":true,"Player_14":true,"Player_15":true,"Player_1":true,"Player_6":true,"Player_13":true,"Player_19":true,"Player_20":true,"Vehicle_2":true,"Vehicle_6":true,"Vehicle_7":true,"Vehicle_8":true,"Vehicle_9":true,"Vehicle_13":true,"Vehicle_14":true,"Vehicle_15":true,"Vehicle_16":true,"Vehicle_17":true,"Vehicle_19":true,"Vehicle_20":true,"Vehicle_21":true,"Vehicle_22":true,"Misc_1":true,"Misc_2":true,"Misc_3":true,"Misc_4":true,"Combat_1":true,"Combat_2":true,"Protect_1":true,"Protect_2":true,"Protect_3":true,"Protect_4":true,"Settings_1":true,"Settings_2":true,"Settings_4":true,"Settings_5":true,"Settings_7":true,"Settings_8":true,"Settings_9":true,"Destroyer_5":true,"Destroyer_8":true,"Server_3":true,"Server_4":true,"Server_5":true,"Server_6":true,"Server_7":true };
-const LUA_ACTION = { "Noclip":["Player",1],"God Mode":["Player",2],"Tiny God Mode":["Player",3],"No Ragdoll":["Player",4],"No Collision":["Player",5],"Fast Run":["Player",6],"Revive":["Player",7],"Teleporte To Waypoint":["Player",8],"Max Heal":["Player",9],"Max Armor":["Player",10],"Invisible":["Player",11],"Super Jump":["Player",12],"Infinite Stamina":["Player",13],"Walk On Wall":["Player",14],"Walk On Wall SM":["Player",15],"Anti Aim V2":["Player",16],"Slide Run":["Player",17],"Slide Speed":["Player",18],"Spider Man":["Player",19],"Walk On Water":["Player",20],"Spoof Weapon":["Weapon",1],"Give Weapons":["Weapon",2],"Give Weapon by Name":["Weapon",3],"Remove All Weapons":["Weapon",4],"Laser Eye":["Combat",1],"Fast Punch":["Combat",2],"Force Push":["Combat",3],"Infinite Ammo":["Combat",4],"No Reload":["Combat",5],"Super Punch":["Combat",6],"Spawn Custom Véhicule":["Vehicle",1],"Porter/Lancer Véhicule":["Vehicle",2],"Full Performance":["Vehicle",3],"Delete Close Véhicule":["Vehicle",4],"Repair Vehicle":["Vehicle",5],"Vehicle God Mode":["Vehicle",6],"Shift Boost":["Vehicle",7],"Horn Boost":["Vehicle",8],"Unlock Vehicle":["Vehicle",9],"Lock Vehicle":["Vehicle",10],"Lock Yourself":["Vehicle",11],"Lock Passagers":["Vehicle",12],"Speed Multiplier":["Vehicle",13],"Brake Multiplier":["Vehicle",14],"Turn Multiplier":["Vehicle",15],"Infinite Fuel":["Vehicle",16],"Pit Mode":["Vehicle",17],"Vehicle Spin":["Vehicle",18],"Pop Tires":["Vehicle",19],"Wheelie Permanent":["Vehicle",20],"Flip Recovery":["Vehicle",21],"Vehicle Magnet":["Vehicle",22],"Train Vehicle":["Construction",1],"Wing Vehicle":["Construction",2],"Tower Vehicle":["Construction",3],"Ramp Vehicle":["Construction",4],"Transformer Vehicle":["Construction",5],"Mega Transformer Vehicle":["Construction",6],"Nazi Vehicle":["Construction",7],"Detach Vehicle":["Construction",8],"Warp to Explode":["Misc",1],"Warp to Vehicle":["Misc",2],"Afficher liste spectateurs":["Misc",3],"Ragdoll All Players":["Misc",4],"Anti Aim":["Misc",5],"Free Cam":["Misc",6],"Cam Options":["Misc",7],"Desync":["Misc",8],"Weather":["Misc",9],"New Player Bypass":["Protect",1],"Anti Freeze":["Protect",2],"Anti Teleport":["Protect",3],"Anti Animation":["Protect",4],"Panic Mode":["Protect",5],"Delete All Vehicles":["Destroyer",1],"Explode All Vehicles":["Destroyer",2],"Cage All Players":["Destroyer",3],"Bug All Players BMX":["Destroyer",4],"Vehicle Chaos":["Destroyer",5],"Vehicle Spin Chaos":["Destroyer",6],"Vehicle Black Hole":["Destroyer",7],"Disable Map Collision":["Destroyer",8],"CH Dot":["Crosshair",1],"CH Cross":["Crosshair",2],"CH Cross Gap":["Crosshair",3],"CH Circle":["Crosshair",4],"CH Dot Cross":["Crosshair",5],"Bypass Sunlife":["Server",3],"Prime Bypass":["Server",4],"Bypass GLife":["Server",5],"Bypass Seed":["Server",6],"Bypass ElectronAC":["Server",7],"Auto Load Config":["Settings",1],"Change Banner":["Settings",2],"Couleur du Menu":["Settings",3],"Activer Deux Couleurs":["Settings",4],"Show Keybinds":["Settings",5],"Layout Clavier":["Settings",6],"Rainbow Menu":["Settings",7],"Smooth Animation":["Settings",8],"Design Mode":["Settings",9],"Delete All Keybinds":["Keybind",1] };
+
+const LUA_ACTION = {
+  "Noclip":["Player",1],"God Mode":["Player",2],"Tiny God Mode":["Player",3],"No Ragdoll":["Player",4],"No Collision":["Player",5],"Fast Run":["Player",6],"Revive":["Player",7],"Teleporte To Waypoint":["Player",8],"Max Heal":["Player",9],"Max Armor":["Player",10],"Invisible":["Player",11],"Super Jump":["Player",12],"Infinite Stamina":["Player",13],"Walk On Wall":["Player",14],"Walk On Wall SM":["Player",15],"Anti Aim V2":["Player",16],"Slide Run":["Player",17],"Slide Speed":["Player",18],"Spider Man":["Player",19],"Walk On Water":["Player",20],
+  "Spoof Weapon":["Weapon",1],"Give Weapons":["Weapon",2],"Give Weapon by Name":["Weapon",3],"Remove All Weapons":["Weapon",4],
+  "Laser Eye":["Combat",1],"Fast Punch":["Combat",2],"Force Push":["Combat",3],"Infinite Ammo":["Combat",4],"No Reload":["Combat",5],"Super Punch":["Combat",6],
+  "Spawn Custom Véhicule":["Vehicle",1],"Porter/Lancer Véhicule":["Vehicle",2],"Full Performance":["Vehicle",3],"Delete Close Véhicule":["Vehicle",4],"Repair Vehicle":["Vehicle",5],"Vehicle God Mode":["Vehicle",6],"Shift Boost":["Vehicle",7],"Horn Boost":["Vehicle",8],"Unlock Vehicle":["Vehicle",9],"Lock Vehicle":["Vehicle",10],"Lock Yourself":["Vehicle",11],"Lock Passagers":["Vehicle",12],"Speed Multiplier":["Vehicle",13],"Brake Multiplier":["Vehicle",14],"Turn Multiplier":["Vehicle",15],"Infinite Fuel":["Vehicle",16],"Pit Mode":["Vehicle",17],"Vehicle Spin":["Vehicle",18],"Pop Tires":["Vehicle",19],"Wheelie Permanent":["Vehicle",20],"Flip Recovery":["Vehicle",21],"Vehicle Magnet":["Vehicle",22],
+  "Train Vehicle":["Construction",1],"Wing Vehicle":["Construction",2],"Tower Vehicle":["Construction",3],"Ramp Vehicle":["Construction",4],"Transformer Vehicle":["Construction",5],"Mega Transformer Vehicle":["Construction",6],"Nazi Vehicle":["Construction",7],"Detach Vehicle":["Construction",8],
+  "Warp to Explode":["Misc",1],"Warp to Vehicle":["Misc",2],"Afficher liste spectateurs":["Misc",3],"Ragdoll All Players":["Misc",4],"Anti Aim":["Misc",5],"Free Cam":["Misc",6],"Cam Options":["Misc",7],"Desync":["Misc",8],"Weather":["Misc",9],
+  "New Player Bypass":["Protect",1],"Anti Freeze":["Protect",2],"Anti Teleport":["Protect",3],"Anti Animation":["Protect",4],"Panic Mode":["Protect",5],
+  "Delete All Vehicles":["Destroyer",1],"Explode All Vehicles":["Destroyer",2],"Cage All Players":["Destroyer",3],"Bug All Players BMX":["Destroyer",4],"Vehicle Chaos":["Destroyer",5],"Vehicle Spin Chaos":["Destroyer",6],"Vehicle Black Hole":["Destroyer",7],"Disable Map Collision":["Destroyer",8],
+  "CH Dot":["Crosshair",1],"CH Cross":["Crosshair",2],"CH Cross Gap":["Crosshair",3],"CH Circle":["Crosshair",4],"CH Dot Cross":["Crosshair",5],
+  "Bypass Sunlife":["Server",3],"Prime Bypass":["Server",4],"Bypass GLife":["Server",5],"Bypass Seed":["Server",6],"Bypass ElectronAC":["Server",7],
+  "Auto Load Config":["Settings",1],"Change Banner":["Settings",2],"Couleur du Menu":["Settings",3],"Activer Deux Couleurs":["Settings",4],"Show Keybinds":["Settings",5],"Layout Clavier":["Settings",6],"Rainbow Menu":["Settings",7],"Smooth Animation":["Settings",8],"Design Mode":["Settings",9],
+  "Delete All Keybinds":["Keybind",1]
+};
+
 const TOGGLE_NAMES = new Set(["Noclip","God Mode","Tiny God Mode","No Ragdoll","No Collision","Fast Run","Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall","Walk On Wall SM","Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost","CH Dot","CH Cross","CH Cross Gap","CH Circle","CH Dot Cross","Free cam","Cam Options","Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Spoof Weapon","Laser Eye","Fast Punch","New Player Bypass","Anti Freeze","Anti Teleport","Anti Animation","Auto Load Config","Activer Deux Couleurs","Vehicle Chaos","Vehicle Spin Chaos","Show Keybinds","Anti Aim V2","Slide Run","Speed Multiplier","Brake Multiplier","Turn Multiplier","Pit Mode","Spider Man","Walk On Water","Vehicle Spin","Wheelie Permanent","Flip Recovery","Infinite Fuel","Vehicle Magnet","Force Push","Vehicle Black Hole","Disable Map Collision","Infinite Ammo","No Reload","Super Punch","Horn Boost","Design Mode"]);
-const SEP_MAP = { "Player|SELF":{4:"Health & Armor",6:"Capacity",10:"Others"},"Player|MOVEMENT":{3:"Stamina & Velocity",7:"Special"},"Vehicle|PHYSICS":{1:"Boosts",5:"Car Handler",9:"Effects"},"Vehicle|CONTROL":{2:"Lock/Unlock",6:"Gadget"},"Combat|COMBAT":{3:"Munitions"},"Misc|MISC":{3:"Players",5:"Tools",7:"Advance"},"Misc|PROTECT":{1:"Anti-Effects",4:"Urgency"},"Misc|DESTROYER":{2:"Players",4:"Chaos",7:"World"},"Settings|SETTINGS":{1:"Appearence",4:"UI",6:"Animation"},"Misc|SERVER":{2:"Bypass"} };
+
+const SEP_MAP = {
+  "Player|SELF":{4:"Health & Armor",6:"Capacity",10:"Others"},
+  "Player|MOVEMENT":{3:"Stamina & Velocity",7:"Special"},
+  "Vehicle|PHYSICS":{1:"Boosts",5:"Car Handler",9:"Effects"},
+  "Vehicle|CONTROL":{2:"Lock/Unlock",6:"Gadget"},
+  "Combat|COMBAT":{3:"Munitions"},
+  "Misc|MISC":{3:"Players",5:"Tools",7:"Advance"},
+  "Misc|PROTECT":{1:"Anti-Effects",4:"Urgency"},
+  "Misc|DESTROYER":{2:"Players",4:"Chaos",7:"World"},
+  "Settings|SETTINGS":{1:"Appearence",4:"UI",6:"Animation"},
+  "Misc|SERVER":{2:"Bypass"}
+};
 
 function luaToggleKey(name){ const la=LUA_ACTION[name]; if(!la) return null; return la[0]+'_'+la[1]; }
 
-// ── THEME — grey by default, honours applyTheme for colour changes ──
+// ── THEME
 let currentTheme = 'grey';
 let twoToneEnabled = false;
 let rainbowTimer = null;
@@ -744,7 +824,6 @@ function applyTheme(nameOrHex, twotone){
   try { localStorage.setItem('yari_theme', JSON.stringify({theme:nameOrHex,twotone:!!twotone})); } catch(e){}
   if((window._rainbowMode||0)>0) return;
   if(!nameOrHex || nameOrHex==='grey'){
-    // reset to grey scheme
     root.style.setProperty('--mc','170, 175, 185');
     root.style.setProperty('--accent','rgb(170,175,185)');
     root.style.setProperty('--accent-glow','rgba(170,175,185,0.5)');
@@ -756,10 +835,16 @@ function applyTheme(nameOrHex, twotone){
     root.style.setProperty('--accent',`rgb(${r},${g},${b})`);
     const lr=Math.min(255,r+40),lg=Math.min(255,g+40),lb=Math.min(255,b+40);
     root.style.setProperty('--accent-glow',`rgba(${lr},${lg},${lb},0.5)`);
+    root.style.setProperty('--accent-dark',`rgba(${Math.max(0,r-40)},${Math.max(0,g-40)},${Math.max(0,b-40)},0.6)`);
   } else {
-    const PRESETS = { red:'DC,30,30', purple:'139,31,220', blue:'30,90,220', green:'30,220,74', grey:'170,175,185' };
+    const PRESETS = { red:'220,30,30', purple:'139,31,220', blue:'30,90,220', green:'30,220,74', grey:'170,175,185' };
     const vals = PRESETS[nameOrHex] || PRESETS.grey;
     root.style.setProperty('--mc', vals);
+    root.style.setProperty('--accent', `rgb(${vals})`);
+    const parts=vals.split(',').map(Number);
+    const lr=Math.min(255,parts[0]+40),lg=Math.min(255,parts[1]+40),lb=Math.min(255,parts[2]+40);
+    root.style.setProperty('--accent-glow',`rgba(${lr},${lg},${lb},0.5)`);
+    root.style.setProperty('--accent-dark',`rgba(${Math.max(0,parts[0]-40)},${Math.max(0,parts[1]-40)},${Math.max(0,parts[2]-40)},0.6)`);
   }
 }
 
@@ -767,27 +852,28 @@ function startRainbowCycle(){
   if(rainbowTimer) return;
   rainbowTimer = setInterval(()=>{
     rainbowHue=(rainbowHue+1.2)%360;
-    const a=`hsl(${rainbowHue},75%,55%)`;
-    const [r2,g2,b2]=[rainbowHue,rainbowHue+120,rainbowHue+240].map(h=>{ const hh=((h%360)+360)%360; const c=0.75*0.5; const m=0.55-c; const x=c*(1-Math.abs((hh/60)%2-1)); let r,g,b; if(hh<60){r=c;g=x;b=0}else if(hh<120){r=x;g=c;b=0}else if(hh<180){r=0;g=c;b=x}else if(hh<240){r=0;g=x;b=c}else if(hh<300){r=x;g=0;b=c}else{r=c;g=0;b=x} return Math.round((r+m)*255); });
-    root.style.setProperty('--mc',`${r2},${g2},${b2}`);
-    root.style.setProperty('--accent',`hsl(${rainbowHue},75%,55%)`);
+    function hslToRgb(h){const s=0.75,l=0.55;const c=(1-Math.abs(2*l-1))*s;const x=c*(1-Math.abs((h/60)%2-1));const m=l-c/2;let r,g,b;if(h<60){r=c;g=x;b=0}else if(h<120){r=x;g=c;b=0}else if(h<180){r=0;g=c;b=x}else if(h<240){r=0;g=x;b=c}else if(h<300){r=x;g=0;b=c}else{r=c;g=0;b=x}return[Math.round((r+m)*255),Math.round((g+m)*255),Math.round((b+m)*255)];}
+    const [r,g,b]=hslToRgb(rainbowHue);
+    root.style.setProperty('--mc',`${r},${g},${b}`);
+    root.style.setProperty('--accent',`rgb(${r},${g},${b})`);
+    root.style.setProperty('--accent-glow',`rgba(${Math.min(255,r+40)},${Math.min(255,g+40)},${Math.min(255,b+40)},0.5)`);
   },20);
 }
 function stopRainbowCycle(){ if(rainbowTimer){clearInterval(rainbowTimer);rainbowTimer=null;} applyTheme(currentTheme,twoToneEnabled); }
 
 (function ringSync(){ requestAnimationFrame(ringSync); if(!ringEl.classList.contains('visible')) return; const r=appEl.getBoundingClientRect(); if(r.width===0) return; ringEl.style.top=(r.top-4)+'px'; ringEl.style.left=(r.left-4)+'px'; ringEl.style.width=(r.width+8)+'px'; ringEl.style.height=(r.height+8)+'px'; })();
 
-// ── BANNER ──
+// ── BANNER
 const BANNERS = ["yari_menu_banniere_grise.png","yari_menu_banniere_rouge.png","banniere.gif","banniere1.png","banniere2.png","banniere2giff.gif","banniere3.png"];
 let bannerIdx = 0;
 const bannerImg = document.querySelector('#banner img');
 function setBanner(idx){ bannerIdx=((idx%BANNERS.length)+BANNERS.length)%BANNERS.length; bannerImg.src=BANNERS[bannerIdx]; bannerImg.onerror=()=>{bannerImg.src=BANNERS[0];}; }
 
-// ── WEAPON DATA (same as original, omitted for length — paste from original) ──
+// ── WEAPON DATA
 const WEAPON_CAT_ORDER=["Pistol","SMG","Rifle","Shotgun","Sniper","Machine Gun","Melee","Heavy","Throwables","Tools","Stun"];
 const WEAPON_DATA={"Pistol":[{name:"Pistol",hash:"weapon_pistol"},{name:"Pistol Mk II",hash:"weapon_pistol_mk2"},{name:"Combat Pistol",hash:"weapon_combatpistol"},{name:"AP Pistol",hash:"weapon_appistol"},{name:"Pistol .50",hash:"weapon_pistol50"},{name:"SNS Pistol",hash:"weapon_snspistol"},{name:"SNS Pistol Mk II",hash:"weapon_snspistol_mk2"},{name:"Heavy Pistol",hash:"weapon_heavypistol"},{name:"Vintage Pistol",hash:"weapon_vintagepistol"},{name:"Marksman Pistol",hash:"weapon_marksmanpistol"},{name:"Heavy Revolver",hash:"weapon_revolver"},{name:"Heavy Revolver Mk II",hash:"weapon_revolver_mk2"},{name:"Double Action Revolver",hash:"weapon_doubleaction"},{name:"Ceramic Pistol",hash:"weapon_ceramicpistol"},{name:"Navy Revolver",hash:"weapon_navyrevolver"},{name:"Perico Pistol",hash:"weapon_gadgetpistol"},{name:"WM 29 Pistol",hash:"weapon_pistolxm3"},{name:"Flare Gun",hash:"weapon_flaregun"},{name:"Up-n-Atomizer",hash:"weapon_raypistol"}],"SMG":[{name:"Micro SMG",hash:"weapon_microsmg"},{name:"SMG",hash:"weapon_smg"},{name:"SMG Mk II",hash:"weapon_smg_mk2"},{name:"Assault SMG",hash:"weapon_assaultsmg"},{name:"Combat PDW",hash:"weapon_combatpdw"},{name:"Machine Pistol",hash:"weapon_machinepistol"},{name:"Mini SMG",hash:"weapon_minismg"},{name:"Tactical SMG",hash:"weapon_tecpistol"}],"Rifle":[{name:"Assault Rifle",hash:"weapon_assaultrifle"},{name:"Assault Rifle Mk II",hash:"weapon_assaultrifle_mk2"},{name:"Carbine Rifle",hash:"weapon_carbinerifle"},{name:"Carbine Rifle Mk II",hash:"weapon_carbinerifle_mk2"},{name:"Advanced Rifle",hash:"weapon_advancedrifle"},{name:"Special Carbine",hash:"weapon_specialcarbine"},{name:"Special Carbine Mk II",hash:"weapon_specialcarbine_mk2"},{name:"Bullpup Rifle",hash:"weapon_bullpuprifle"},{name:"Bullpup Rifle Mk II",hash:"weapon_bullpuprifle_mk2"},{name:"Compact Rifle",hash:"weapon_compactrifle"},{name:"Military Rifle",hash:"weapon_militaryrifle"},{name:"Heavy Rifle",hash:"weapon_heavyrifle"},{name:"Service Carbine",hash:"weapon_tacticalrifle"},{name:"Battle Rifle",hash:"weapon_battlerifle"}],"Shotgun":[{name:"Pump Shotgun",hash:"weapon_pumpshotgun"},{name:"Pump Shotgun Mk II",hash:"weapon_pumpshotgun_mk2"},{name:"Sawed-Off Shotgun",hash:"weapon_sawnoffshotgun"},{name:"Assault Shotgun",hash:"weapon_assaultshotgun"},{name:"Bullpup Shotgun",hash:"weapon_bullpupshotgun"},{name:"Heavy Shotgun",hash:"weapon_heavyshotgun"},{name:"Musket",hash:"weapon_musket"},{name:"Double Barrel Shotgun",hash:"weapon_dbshotgun"},{name:"Sweeper Shotgun",hash:"weapon_autoshotgun"},{name:"Combat Shotgun",hash:"weapon_combatshotgun"}],"Sniper":[{name:"Sniper Rifle",hash:"weapon_sniperrifle"},{name:"Heavy Sniper",hash:"weapon_heavysniper"},{name:"Heavy Sniper Mk II",hash:"weapon_heavysniper_mk2"},{name:"Marksman Rifle",hash:"weapon_marksmanrifle"},{name:"Marksman Rifle Mk II",hash:"weapon_marksmanrifle_mk2"},{name:"Precision Rifle",hash:"weapon_precisionrifle"}],"Machine Gun":[{name:"MG",hash:"weapon_mg"},{name:"Combat MG",hash:"weapon_combatmg"},{name:"Combat MG Mk II",hash:"weapon_combatmg_mk2"},{name:"Gusenberg Sweeper",hash:"weapon_gusenberg"},{name:"Unholy Hellbringer",hash:"weapon_raycarbine"}],"Melee":[{name:"Unarmed",hash:"weapon_unarmed"},{name:"Knife",hash:"weapon_knife"},{name:"Nightstick",hash:"weapon_nightstick"},{name:"Hammer",hash:"weapon_hammer"},{name:"Baseball Bat",hash:"weapon_bat"},{name:"Golf Club",hash:"weapon_golfclub"},{name:"Crowbar",hash:"weapon_crowbar"},{name:"Bottle",hash:"weapon_bottle"},{name:"Dagger",hash:"weapon_dagger"},{name:"Hatchet",hash:"weapon_hatchet"},{name:"Knuckle Duster",hash:"weapon_knuckle"},{name:"Machete",hash:"weapon_machete"},{name:"Flashlight",hash:"weapon_flashlight"},{name:"Switchblade",hash:"weapon_switchblade"},{name:"Battle Axe",hash:"weapon_battleaxe"},{name:"Pool Cue",hash:"weapon_poolcue"},{name:"Wrench",hash:"weapon_wrench"},{name:"Stone Hatchet",hash:"weapon_stone_hatchet"},{name:"Candy Cane",hash:"weapon_candycane"},{name:"Stun Rod",hash:"weapon_stunrod"}],"Heavy":[{name:"RPG",hash:"weapon_rpg"},{name:"Grenade Launcher",hash:"weapon_grenadelauncher"},{name:"Smoke Grenade Launcher",hash:"weapon_grenadelauncher_smoke"},{name:"Minigun",hash:"weapon_minigun"},{name:"Firework Launcher",hash:"weapon_firework"},{name:"Homing Launcher",hash:"weapon_hominglauncher"},{name:"Railgun",hash:"weapon_railgun"},{name:"Compact Grenade Launcher",hash:"weapon_compactlauncher"},{name:"Widowmaker",hash:"weapon_rayminigun"},{name:"Compact EMP Launcher",hash:"weapon_emplauncher"},{name:"Snowball Launcher",hash:"weapon_snowlauncher"},{name:"Railgun XM3",hash:"weapon_railgunxm3"}],"Throwables":[{name:"Grenade",hash:"weapon_grenade"},{name:"BZ Gas",hash:"weapon_bzgas"},{name:"Tear Gas",hash:"weapon_smokegrenade"},{name:"Molotov",hash:"weapon_molotov"},{name:"Sticky Bomb",hash:"weapon_stickybomb"},{name:"Proximity Mine",hash:"weapon_proxmine"},{name:"Snowball",hash:"weapon_snowball"},{name:"Pipe Bomb",hash:"weapon_pipebomb"},{name:"Ball",hash:"weapon_ball"},{name:"Flare",hash:"weapon_flare"},{name:"Acid Package",hash:"weapon_acidpackage"}],"Tools":[{name:"Jerry Can",hash:"weapon_petrolcan"},{name:"Hazardous Jerry Can",hash:"weapon_hazardcan"},{name:"Fertilizer Can",hash:"weapon_fertilizercan"},{name:"Fire Extinguisher",hash:"weapon_fireextinguisher"},{name:"Metal Detector",hash:"weapon_metaldetector"},{name:"Hacking Device",hash:"weapon_hackingdevice"}],"Stun":[{name:"Stun Gun",hash:"weapon_stungun"},{name:"Stun Gun MP",hash:"weapon_stungun_mp"}]};
 
-// ── STATE ──
+// ── STATE
 let tab='main', selIdx=0, scrollOff=0, curCatIdx=null, subTabIdx=0, itemSelIdx=0, itemScrollOff=0;
 let nearbyPlayers=[], selectedPlayers={}, playerSel=0;
 let trollActions=["Ragdoll","Silent Kill","Steal Outfit","Stun Player","Spectate","Revive","Smash Attack","Launch Player","Launch Simple","Fly Player Vehicle","Cage Player","Cage Player M2","Stop Cage Player M2","Bug Player","Bug Player BMX","Bug Player Avenger","Block Player Vehicle","Rain Vehicle","Stop Rain Vehicle","Attach To Hood","Detach From Hood"];
@@ -815,7 +901,7 @@ const catHeader=document.getElementById('cat-header');
 const itemsList=document.getElementById('items-list');
 const playerPanel=document.getElementById('player-panel');
 
-// ── HELPERS ──
+// ── HELPERS
 function sendToLua(obj){ if(!window.__yariCallback) return; try{window.__yariCallback(JSON.stringify(obj));}catch(_){} }
 
 function renderSeparator(label){
@@ -842,7 +928,7 @@ function makeItem(name, selected, ind, togState){
   itemsList.appendChild(el);
 }
 
-// ── RENDER SUB-TABS ──
+// ── RENDER SUB-TABS
 function renderSubTabs(cat){
   if(!cat){ subTabsEl.innerHTML=''; subTabsEl.className=''; return; }
   subTabsEl.className='show'; subTabsEl.innerHTML='';
@@ -853,7 +939,7 @@ function renderSubTabs(cat){
   });
 }
 
-// ── PLAYER PANEL ──
+// ── PLAYER PANEL
 function updatePlayerPanel(player){
   if(!player){ playerPanel.classList.remove('visible'); return; }
   playerPanel.classList.add('visible');
@@ -878,7 +964,7 @@ function updatePlayerPanel(player){
   else document.getElementById('pp-coords').textContent='X —  Y —  Z —';
 }
 
-// ── SPEC HUD ──
+// ── SPEC HUD
 function updateSpecHud(d){
   const hud=document.getElementById('spec-hud');
   if(!d||!d.enabled){hud.className='';hud.innerHTML='';return;}
@@ -896,7 +982,7 @@ function updateSpecHud(d){
   hud.innerHTML=html;
 }
 
-// ── KB HUD ──
+// ── KB HUD
 function updateKbHud(d){
   const hud=document.getElementById('kb-hud');
   if(!d||!d.enabled){hud.className='';hud.innerHTML='';return;}
@@ -908,7 +994,7 @@ function updateKbHud(d){
   hud.innerHTML=html;
 }
 
-// ── NOCLIP HUD ──
+// ── NOCLIP HUD
 function updateNoclipHud(d){
   const hud=document.getElementById('noclip-hud');
   if(!d||!d.active){hud.classList.remove('visible');hud.innerHTML='';return;}
@@ -916,7 +1002,7 @@ function updateNoclipHud(d){
   hud.innerHTML=`<div class="noclip-inner"><div class="noclip-dot"></div><span class="noclip-label">Noclip</span><span class="noclip-sep">|</span><span class="noclip-mode">${d.modeName}</span></div>`;
 }
 
-// ── WEATHER ──
+// ── WEATHER
 function renderWeatherMenu(){
   catHeader.textContent='MISC › WEATHER';catHeader.className='show';
   const rows=[{type:'time'},{type:'weathertype'},{type:'freezetime'},{type:'freezeweather'}];
@@ -939,7 +1025,7 @@ function renderWeatherMenu(){
   });
 }
 
-// ── RENDER ──
+// ── RENDER
 function render(){
   itemsList.innerHTML='';
   if(tab==='config'){ tabsBarEl.style.display='flex'; subTabsEl.innerHTML=''; subTabsEl.className=''; catHeader.className=''; renderConfigList(); return; }
@@ -966,8 +1052,48 @@ function renderItemList(items,catName){
   if(catName==='Misc'&&weatherMenuOpen){ renderWeatherMenu(); return; }
   if(!items||items.length===0){ const d=document.createElement('div');d.className='menu-item';d.innerHTML='<span class="item-name" style="color:rgba(255,255,255,0.3)">Aucun élément</span>';itemsList.appendChild(d);return; }
   if(items.length===1&&items[0]==='__wardrobe__'){ renderWardrobe(); return; }
+  
   const cat=curCatIdx!==null?CAT_STRUCTURE[curCatIdx]:null;
   const stab=cat?cat.subTabs[subTabIdx]:null;
+
+  // ── SERVER TAB special rendering (Detected AC + Load Bypass + bypass items)
+  if(cat&&cat.name==='Misc'&&stab&&stab.name==='SERVER'){
+    const acName=window._detectedAC||'';
+    const acActive=window._detectedACActive===true;
+
+    const isSel0=itemSelIdx===0;
+    const el0=document.createElement('div');
+    el0.className='menu-item'+(isSel0?' sel':'');
+    el0.style.cssText='height:auto;min-height:1.9vw;flex-direction:row;align-items:center;padding:0 0.75vw 0 1.1vw;gap:0.4vw;';
+    el0.innerHTML=`<div class="bar"></div>
+      <span class="item-name" style="font-size:0.58vw;font-weight:400;">Detected AC</span>
+      <span style="font-size:0.52vw;font-weight:600;font-family:'Share Tech Mono',monospace;color:${acName?'rgba(var(--mc),0.9)':'rgba(var(--mc),0.25)'};white-space:nowrap;">${acName||'None'}</span>
+      <span style="font-size:0.4vw;font-weight:700;letter-spacing:0.08vw;font-family:'Share Tech Mono',monospace;padding:0.1vw 0.3vw;border-radius:0.15vw;white-space:nowrap;flex-shrink:0;${acName?acActive?'color:#32ff6e;background:rgba(50,255,110,0.1);border:0.07vw solid rgba(50,255,110,0.3);':'color:#ff4444;background:rgba(255,68,68,0.1);border:0.07vw solid rgba(255,68,68,0.3);':'color:rgba(var(--mc),0.2);background:rgba(255,255,255,0.03);border:0.07vw solid rgba(255,255,255,0.07);'}">${acName?(acActive?'Bypassed':'Not Bypassed'):'—'}</span>`;
+    itemsList.appendChild(el0);
+
+    const isSel1=itemSelIdx===1;
+    const el1=document.createElement('div');
+    el1.className='menu-item'+(isSel1?' sel':'');
+    el1.style.cssText='height:auto;min-height:1.9vw;flex-direction:row;align-items:center;padding:0 0.75vw 0 1.1vw;gap:0.4vw;';
+    el1.innerHTML=`<div class="bar"></div>
+      <span class="item-name" style="font-size:0.58vw;font-weight:400;${!acName?'color:rgba(var(--mc),0.25);':''}">Load Bypass${acName?' ('+acName+')':''}</span>
+      <span style="font-size:0.5vw;font-weight:600;font-family:'Share Tech Mono',monospace;color:${acActive?'#32ff6e':(acName?'rgba(var(--mc),0.75)':'rgba(var(--mc),0.2)')};white-space:nowrap;">${acActive?'✓ ACTIVE':(acName?'▶ LOAD':'—')}</span>`;
+    itemsList.appendChild(el1);
+
+    const sepLine=document.createElement('div');
+    sepLine.style.cssText='height:1px;background:linear-gradient(90deg,transparent,rgba(var(--mc),0.35),transparent);margin:0.1vw 0;opacity:0.3;';
+    itemsList.appendChild(sepLine);
+    renderSeparator('BYPASS');
+
+    const startBp=Math.max(0,itemScrollOff-2);
+    for(let bi=startBp;bi<items.length&&(3+bi-startBp)<MAX_VIS;bi++){
+      const bname=items[bi],biSel=(bi+2)===itemSelIdx;
+      const isTog=TOGGLE_NAMES.has(bname),tk=luaToggleKey(bname),togVal=isTog?(toggleStates[tk]===true):null;
+      makeItem(bname,biSel,isTog?null:'+',togVal);
+    }
+    return;
+  }
+
   const sepKey=cat&&stab?cat.name+'|'+stab.name:null;
   const seps=(sepKey&&SEP_MAP[sepKey])?SEP_MAP[sepKey]:{};
   const visualRows=[];
@@ -979,7 +1105,8 @@ function renderItemList(items,catName){
     const row=visualRows[r];
     if(row.type==='sep'){renderSeparator(row.label);continue;}
     const idx=row.idx,name=items[idx],isSel=idx===itemSelIdx;
-    // slider items
+
+    // Slider items
     if(name==='Slide Speed'){ const spd=window._slideRunSpeed||15,pct=((spd-5)/(250-5))*100; const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');el.style.flexDirection='column';el.style.alignItems='flex-start';el.style.height='auto';el.style.padding='0.3vw 0.75vw 0.3vw 1.1vw';el.style.gap='0.22vw';el.innerHTML=`<div class="bar"></div><div class="slider-header"><span class="slider-label">SLIDE SPEED</span><span class="slider-val">${spd} m/s</span></div><div class="slider-track"><div class="slider-fill" style="width:${pct}%"><div class="slider-thumb"></div></div></div>${isSel?'<div class="slider-hint">← → AJUSTER</div>':''}`;itemsList.appendChild(el);itemsRendered++;continue; }
     if(name==='Speed Multiplier'){ const val=window._vehicleSpeedMult||1.0,pct=((val-0.5)/(5.0-0.5))*100,isOn=toggleStates['Vehicle_12']===true; const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');el.style.flexDirection='column';el.style.alignItems='flex-start';el.style.height='auto';el.style.padding='0.3vw 0.75vw 0.3vw 1.1vw';el.style.gap='0.22vw';el.innerHTML=`<div class="bar"></div><div class="slider-header"><span class="slider-label">SPEED</span><div class="tog${isOn?' on':''}" style="transform:scale(0.85)"></div><span class="slider-val">${val.toFixed(2)}x</span></div><div class="slider-track"><div class="slider-fill" style="width:${pct}%"><div class="slider-thumb"></div></div></div>${isSel?'<div class="slider-hint">↵ TOGGLE   ← → (0.5×→5.0×)</div>':''}`;itemsList.appendChild(el);itemsRendered++;continue; }
     if(name==='Brake Multiplier'){ const val=window._vehicleBrakeMult||1.0,pct=((val-0.1)/(5.0-0.1))*100,isOn=toggleStates['Vehicle_13']===true; const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');el.style.flexDirection='column';el.style.alignItems='flex-start';el.style.height='auto';el.style.padding='0.3vw 0.75vw 0.3vw 1.1vw';el.style.gap='0.22vw';el.innerHTML=`<div class="bar"></div><div class="slider-header"><span class="slider-label">BRAKE</span><div class="tog${isOn?' on':''}" style="transform:scale(0.85)"></div><span class="slider-val">${val.toFixed(2)}x</span></div><div class="slider-track"><div class="slider-fill" style="width:${pct}%"><div class="slider-thumb"></div></div></div>${isSel?'<div class="slider-hint">↵ TOGGLE   ← → (0.1×→5.0×)</div>':''}`;itemsList.appendChild(el);itemsRendered++;continue; }
@@ -988,20 +1115,22 @@ function renderItemList(items,catName){
     if(name==='Horn Boost'){ const val=window._hornBoostSpeed||100,pct=((val-1)/(300-1))*100,isOn=toggleStates['Vehicle_8']===true; const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');el.style.flexDirection='column';el.style.alignItems='flex-start';el.style.height='auto';el.style.padding='0.3vw 0.75vw 0.3vw 1.1vw';el.style.gap='0.22vw';el.innerHTML=`<div class="bar"></div><div class="slider-header"><span class="slider-label">HORN BOOST</span><div class="tog${isOn?' on':''}" style="transform:scale(0.85)"></div><span class="slider-val">${val} m/s</span></div><div class="slider-track"><div class="slider-fill" style="width:${pct}%"><div class="slider-thumb"></div></div></div>${isSel?'<div class="slider-hint">↵ TOGGLE   ← → (1→300 m/s)</div>':''}`;itemsList.appendChild(el);itemsRendered++;continue; }
     if(name==='Shift Boost'){ const val=window._shiftBoostSpeed||50,pct=((val-1)/(300-1))*100,isOn=toggleStates['Vehicle_7']===true; const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');el.style.flexDirection='column';el.style.alignItems='flex-start';el.style.height='auto';el.style.padding='0.3vw 0.75vw 0.3vw 1.1vw';el.style.gap='0.22vw';el.innerHTML=`<div class="bar"></div><div class="slider-header"><span class="slider-label">SHIFT BOOST</span><div class="tog${isOn?' on':''}" style="transform:scale(0.85)"></div><span class="slider-val">${val} m/s</span></div><div class="slider-track"><div class="slider-fill" style="width:${pct}%"><div class="slider-thumb"></div></div></div>${isSel?'<div class="slider-hint">↵ TOGGLE   ← → (1→300 m/s)</div>':''}`;itemsList.appendChild(el);itemsRendered++;continue; }
     if(name==='Vehicle Spin Chaos'){ const val=window._vehicleSpinChaosSpeed||45,pct=((val-1)/(120-1))*100,isOn=toggleStates['Destroyer_6']===true; const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');el.style.flexDirection='column';el.style.alignItems='flex-start';el.style.height='auto';el.style.padding='0.3vw 0.75vw 0.3vw 1.1vw';el.style.gap='0.22vw';el.innerHTML=`<div class="bar"></div><div class="slider-header"><span class="slider-label">SPIN CHAOS</span><div class="tog${isOn?' on':''}" style="transform:scale(0.85)"></div><span class="slider-val">${val.toFixed(1)}°/f</span></div><div class="slider-track"><div class="slider-fill" style="width:${pct}%"><div class="slider-thumb"></div></div></div>${isSel?'<div class="slider-hint">↵ TOGGLE   ← → (1→120)</div>':''}`;itemsList.appendChild(el);itemsRendered++;continue; }
-    // cycle items
+
+    // Cycle items
     if(name==='Noclip'){ const MODES=['Normal','Desync','Solo'],modeIdx=window._noclipMode||0,isOn=toggleStates['Player_1']===true; const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');el.innerHTML=`<div class="bar"></div><span class="item-name">Noclip</span><span class="cycle-val">← ${MODES[modeIdx]} →</span><div class="tog${isOn?' on':''}"></div>`;itemsList.appendChild(el);itemsRendered++;continue; }
     if(name==='Rainbow Menu'){ const MODES=['OFF','CYCLE'],mIdx=window._rainbowMode||0; const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');el.innerHTML=`<div class="bar"></div><span class="item-name">Rainbow Menu</span><span class="cycle-val">${isSel?'← ':''} ${MODES[mIdx]}${isSel?' →':' ◈'}</span>`;itemsList.appendChild(el);itemsRendered++;continue; }
     if(name==='Layout Clavier'){ const LAYOUTS=['QWERTY','AZERTY'],lname=LAYOUTS[window._keyboardLayout||0]; const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');el.innerHTML=`<div class="bar"></div><span class="item-name">Layout Clavier</span><span class="cycle-val">${isSel?'← ':''} ${lname}${isSel?' →':' ◈'}</span>`;itemsList.appendChild(el);itemsRendered++;continue; }
     if(name==='Disable Map Collision'){ const MODES=['Smoke','Coffee','Clipboard','Hammer','Broom','Rod','Racket'],modeIdx=window._disableMapCollisionMode||0,modeName=MODES[modeIdx],isOn=toggleStates['Destroyer_8']===true; const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');el.innerHTML=`<div class="bar"></div><span class="item-name">Disable Map Collision</span><span class="cycle-val">${isSel?'← ':''} ${modeName}${isSel?' →':' ◈'}</span><div class="tog${isOn?' on':''}"></div>`;itemsList.appendChild(el);itemsRendered++;continue; }
-    if(name==='Couleur du Menu'){ const hex=(getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'rgb(170,175,185)'); const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');const bar=document.createElement('div');bar.className='bar';el.appendChild(bar);const nm=document.createElement('span');nm.className='item-name';nm.textContent='Couleur du Menu';el.appendChild(nm);const sw=document.createElement('div');sw.style.cssText='width:0.9vw;height:0.9vw;border-radius:0.15vw;flex-shrink:0;margin-right:0.2vw;background:var(--accent);border:0.07vw solid rgba(255,255,255,0.15);box-shadow:0 0 0.3vw var(--accent-glow);';el.appendChild(sw);if(isSel){const hint=document.createElement('span');hint.style.cssText='font-size:0.45vw;color:rgba(var(--mc),0.4);font-family:"Share Tech Mono",monospace;white-space:nowrap;margin-left:0.3vw;';hint.textContent='↵ OUVRIR';el.appendChild(hint);}itemsList.appendChild(el);itemsRendered++;continue; }
+    if(name==='Couleur du Menu'){ const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');el.style.height='1.6vw';const bar=document.createElement('div');bar.className='bar';el.appendChild(bar);const nm=document.createElement('span');nm.className='item-name';nm.textContent='Couleur du Menu';el.appendChild(nm);const sw=document.createElement('div');sw.style.cssText='width:0.9vw;height:0.9vw;border-radius:0.15vw;flex-shrink:0;margin-right:0.2vw;background:var(--accent);border:0.07vw solid rgba(255,255,255,0.15);box-shadow:0 0 0.3vw var(--accent-glow);';el.appendChild(sw);if(isSel){const hint=document.createElement('span');hint.style.cssText='font-size:0.45vw;color:rgba(var(--mc),0.4);font-family:"Share Tech Mono",monospace;white-space:nowrap;margin-left:0.3vw;';hint.textContent='↵ OUVRIR';el.appendChild(hint);}itemsList.appendChild(el);itemsRendered++;continue; }
     if(name==='Activer Deux Couleurs'){ makeItem(name,isSel,null,twoToneEnabled);itemsRendered++;continue; }
+
     const isTog=TOGGLE_NAMES.has(name),tk=luaToggleKey(name),togVal=isTog?(toggleStates[tk]===true):null;
     makeItem(name,isSel,isTog?null:'+',togVal);
     itemsRendered++;
   }
 }
 
-// ── ONLINE ──
+// ── ONLINE
 function renderOnline(cat){
   catHeader.textContent='ONLINE › '+cat.subTabs[subTabIdx].name; catHeader.className='show';
   if(subTabIdx===0){
@@ -1009,10 +1138,7 @@ function renderOnline(cat){
     [[0,'TP METHOD','TO PLAYER ▶'],[1,'SORT BY','— '+(onlineSortBy==='distance'?'DISTANCE':'ALPHABETICAL')+' —'],[2,'FREEZE LIST',null],[3,'LINE TO SEL',null],[4,'UNSELECT ALL',null]].forEach(([i,lbl,val])=>{
       const r=document.createElement('div');r.className='menu-item'+(playerSel===i?' sel':'');r.style.cssText='height:1.3vw;background:rgba(0,0,0,0.98);';
       if(val!==null) r.innerHTML=`<div class="bar"></div><span class="item-name" style="font-size:0.5vw;color:rgba(var(--mc),0.5);letter-spacing:0.08vw">${lbl}</span><span style="font-size:0.5vw;color:rgba(var(--mc),0.75);font-family:'Share Tech Mono',monospace;letter-spacing:0.05vw;white-space:nowrap">${val}</span>`;
-      else {
-        const isOn=i===2?onlineFreezeList:onlineLineToSel;
-        r.innerHTML=`<div class="bar"></div><span class="item-name" style="font-size:0.5vw;color:rgba(var(--mc),0.5);letter-spacing:0.08vw">${lbl}</span><div class="tog${isOn?' on':''}" style="transform:scale(0.8)"></div>`;
-      }
+      else {const isOn=i===2?onlineFreezeList:onlineLineToSel;r.innerHTML=`<div class="bar"></div><span class="item-name" style="font-size:0.5vw;color:rgba(var(--mc),0.5);letter-spacing:0.08vw">${lbl}</span><div class="tog${isOn?' on':''}" style="transform:scale(0.8)"></div>`;}
       itemsList.appendChild(r);
     });
     const sep=document.createElement('div');sep.style.cssText='height:1px;background:linear-gradient(90deg,transparent,rgba(var(--mc),0.4),transparent);margin:0.1vw 0;opacity:0.5;';itemsList.appendChild(sep);
@@ -1039,7 +1165,7 @@ function renderOnline(cat){
   }
 }
 
-// ── SEARCH ──
+// ── SEARCH
 function renderSearch(cat){
   catHeader.textContent='SEARCH › '+searchResults.length+' résultat(s)'; catHeader.className='show';
   const rows=[{input:true}];
@@ -1057,7 +1183,7 @@ function renderSearch(cat){
   }
 }
 
-// ── WEAPON ──
+// ── WEAPON
 function renderWeaponList(){
   const catName=WEAPON_CAT_ORDER[weaponCatIdx]||'Pistol',weapons=WEAPON_DATA[catName]||[];
   const hint=document.createElement('div');hint.style.cssText='padding:0.1vw 0.7vw;font-size:0.45vw;letter-spacing:0.08vw;color:rgba(var(--mc),0.3);font-family:"Share Tech Mono",monospace;background:rgba(0,0,0,0.98);border-bottom:0.07vw solid rgba(255,255,255,0.04);';hint.textContent='← → CAT   ↑ ↓ ARME   ↵ DONNER';itemsList.appendChild(hint);
@@ -1065,7 +1191,7 @@ function renderWeaponList(){
   for(let i=0;i<MAX_VIS_W;i++){ const idx=i+scrollStart; if(idx>=weapons.length) break; const w=weapons[idx];const el=document.createElement('div');el.className='menu-item'+(idx===weaponSelIdx?' sel':'');const hashShort=w.hash.replace('weapon_','').replace(/_/g,' ');el.innerHTML=`<div class="bar"></div><span class="item-name" style="font-size:0.6vw">${w.name}</span><span class="item-ind" style="font-size:0.42vw;opacity:0.4;font-family:'Share Tech Mono',monospace;">${hashShort}</span>`;itemsList.appendChild(el); }
 }
 
-// ── WARDROBE ──
+// ── WARDROBE
 function renderWardrobe(){
   catHeader.textContent='PLAYER › WARDROBE'; catHeader.className='show';
   if(wardrobeMode==='save'||wardrobeMode==='load'){ renderWardrobeSlots(); return; }
@@ -1116,7 +1242,7 @@ function renderWardrobeSlots(){
   }
 }
 
-// ── RADAR ──
+// ── RADAR
 function onRadarTabOpen(){radarActive=true;radarMode=false;radarSelectedIdx=0;radarActionIdx=0;radarVehicles=[];}
 function onRadarTabClose(){radarActive=false;}
 function renderRadarList(){
@@ -1132,32 +1258,188 @@ function renderRadarActions(){
   allActions.forEach((label,i)=>{const isSel=i===radarActionIdx;const el=document.createElement('div');el.className='menu-item'+(isSel?' sel':'');el.innerHTML=`<div class="bar"></div><span class="item-name">${label}</span>${i<radarActions.length?'<span class="item-ind">▶</span>':''}`;itemsList.appendChild(el);});
 }
 
-// ── SERVER SUBTAB ──
-function renderServerItems(stab){
-  const acName=window._detectedAC||'',acActive=window._detectedACActive===true;
-  const isSel0=itemSelIdx===0;
-  const el0=document.createElement('div');el0.className='menu-item'+(isSel0?' sel':'');el0.style.cssText='height:1.8vw;display:flex;align-items:center;padding:0 0.7vw 0 1.1vw;gap:0.4vw;';
-  el0.innerHTML=`<div class="bar"></div><span class="item-name" style="font-size:0.58vw;font-weight:500;">Detected AC</span><span style="font-size:0.55vw;font-weight:700;letter-spacing:0.05vw;font-family:'Share Tech Mono',monospace;color:${acName?'rgba(var(--mc),0.9)':'rgba(var(--mc),0.25)'};white-space:nowrap;">${acName||'None'}</span><span style="font-size:0.42vw;font-weight:700;letter-spacing:0.08vw;font-family:'Share Tech Mono',monospace;padding:0.1vw 0.35vw;border-radius:0.15vw;white-space:nowrap;flex-shrink:0;${acName?acActive?'color:rgba(var(--mc),1);background:rgba(var(--mc),0.1);border:0.07vw solid rgba(var(--mc),0.3);':'color:#ff4444;background:rgba(255,68,68,0.1);border:0.07vw solid rgba(255,68,68,0.3);':'color:rgba(var(--mc),0.2);background:rgba(255,255,255,0.03);border:0.07vw solid rgba(255,255,255,0.07);'}">${acName?(acActive?'Bypassed':'Not Bypassed'):'—'}</span>`;
-  itemsList.appendChild(el0);
-  const isSel1=itemSelIdx===1;
-  const el1=document.createElement('div');el1.className='menu-item'+(isSel1?' sel':'');el1.style.cssText='height:1.8vw;display:flex;align-items:center;padding:0 0.7vw 0 1.1vw;gap:0.4vw;';
-  el1.innerHTML=`<div class="bar"></div><span class="item-name" style="font-size:0.58vw;font-weight:500;${!acName?'color:rgba(var(--mc),0.25);':''}">Load Bypass${acName?' ('+acName+')':''}</span><span style="font-size:0.5vw;font-weight:700;letter-spacing:0.05vw;font-family:'Share Tech Mono',monospace;color:${acActive?'rgba(var(--mc),1)':(acName?'rgba(var(--mc),0.75)':'rgba(var(--mc),0.2)')};white-space:nowrap;">${acActive?'✓ ACTIVE':(acName?'▶ LOAD':'—')}</span>`;
-  itemsList.appendChild(el1);
-  const sepLine=document.createElement('div');sepLine.style.cssText='height:1px;background:linear-gradient(90deg,transparent,rgba(var(--mc),0.35),transparent);margin:0.1vw 0;opacity:0.3;';itemsList.appendChild(sepLine);
-  const sepLabel=document.createElement('div');sepLabel.className='menu-sep';sepLabel.innerHTML=`<div class="menu-sep-line"></div><span class="menu-sep-label">BYPASS</span><div class="menu-sep-line"></div>`;itemsList.appendChild(sepLabel);
-  const bypassItems=stab.items,startBp=Math.max(0,itemScrollOff-2);
-  for(let bi=startBp;bi<bypassItems.length&&(3+bi-startBp)<MAX_VIS;bi++){
-    const bname=bypassItems[bi],biSel=(bi+2)===itemSelIdx;
-    const isTog=TOGGLE_NAMES.has(bname),tk=luaToggleKey(bname),togVal=isTog?(toggleStates[tk]===true):null;
-    makeItem(bname,biSel,isTog?null:'+',togVal);
+// ══════════════════════════════════════════════════════════════
+//  COLOR PICKER ENGINE — fixed (pointer-events on, native mouse)
+// ══════════════════════════════════════════════════════════════
+function hsvToRgb(h,s,v){const f=(n,k=(n+h/60)%6)=>v-v*s*Math.max(0,Math.min(k,4-k,1));return[Math.round(f(5)*255),Math.round(f(3)*255),Math.round(f(1)*255)];}
+function rgbToHex(r,g,b){return'#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase();}
+function hexToHsv(hex){hex=hex.replace('#','');const r=parseInt(hex.substring(0,2),16)/255,g=parseInt(hex.substring(2,4),16)/255,b=parseInt(hex.substring(4,6),16)/255;const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;let h=0,s=max===0?0:d/max,v=max;if(d!==0){switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break;}}return{h:h*360,s,v};}
+
+const CP={open:false,hue:0,sat:0.75,val:0.75,drag:null,PRESETS:['#AAAFB9','#DC1E1E','#8B1FDC','#1E5ADC','#1EDC4A','#DC8C1E','#1EDCDC','#FFFFFF'],get hex(){const[r,g,b]=hsvToRgb(this.hue,this.sat,this.val);return rgbToHex(r,g,b);}};
+const cpHud=document.getElementById('color-picker-hud');
+const cpSvCanvas=document.getElementById('cp-sv-canvas');
+const cpHueCanvas=document.getElementById('cp-hue-canvas');
+const cpSvCursor=document.getElementById('cp-sv-cursor');
+const cpHueCursor=document.getElementById('cp-hue-cursor');
+const cpSwatch=document.getElementById('cp-swatch');
+const cpHexVal=document.getElementById('cp-hex-val');
+const cpHexHeader=document.getElementById('cp-hex-header');
+const cpPresets=document.getElementById('cp-presets');
+
+function drawSVCanvas(){const W=cpSvCanvas.width,H=cpSvCanvas.height,ctx=cpSvCanvas.getContext('2d');const[hr,hg,hb]=hsvToRgb(CP.hue,1,1);ctx.fillStyle=`rgb(${hr},${hg},${hb})`;ctx.fillRect(0,0,W,H);const gW=ctx.createLinearGradient(0,0,W,0);gW.addColorStop(0,'rgba(255,255,255,1)');gW.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=gW;ctx.fillRect(0,0,W,H);const gB=ctx.createLinearGradient(0,H,0,0);gB.addColorStop(0,'rgba(0,0,0,1)');gB.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=gB;ctx.fillRect(0,0,W,H);}
+function drawHueCanvas(){const W=cpHueCanvas.width,H=cpHueCanvas.height,ctx=cpHueCanvas.getContext('2d');const g=ctx.createLinearGradient(0,0,W,0);for(let i=0;i<=360;i+=30){const[r,g2,b]=hsvToRgb(i,1,1);g.addColorStop(i/360,`rgb(${r},${g2},${b})`);}ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
+function drawPresets(){cpPresets.innerHTML='';CP.PRESETS.forEach(hex=>{const el=document.createElement('div');el.className='cp-preset';el.style.background=hex;el.addEventListener('click',()=>{const{h,s,v}=hexToHsv(hex);CP.hue=h;CP.sat=s;CP.val=v;cpUpdateUI(true);});cpPresets.appendChild(el);});}
+function cpUpdateUI(redrawSV){
+  if(redrawSV)drawSVCanvas();
+  const W=cpSvCanvas.width,H=cpSvCanvas.height;
+  cpSvCursor.style.left=(CP.sat*W)+'px'; cpSvCursor.style.top=((1-CP.val)*H)+'px';
+  cpHueCursor.style.left=(CP.hue/360*cpHueCanvas.width)+'px';
+  const hex=CP.hex;
+  cpSwatch.style.background=hex; cpHexVal.textContent=hex; cpHexHeader.textContent=hex; cpHexHeader.style.color=hex;
+  const[r,g,b]=hsvToRgb(CP.hue,1,1);
+  root.style.setProperty('--mc',`${r},${g},${b}`);
+  root.style.setProperty('--accent',`rgb(${r},${g},${b})`);
+  root.style.setProperty('--accent-glow',`rgba(${Math.min(255,r+40)},${Math.min(255,g+40)},${Math.min(255,b+40)},0.5)`);
+}
+
+function openColorPicker(initialHex){
+  if(initialHex){const{h,s,v}=hexToHsv(initialHex);CP.hue=h;CP.sat=s;CP.val=v;}
+  CP.open=true; CP.drag=null;
+  cpHud.classList.add('visible');
+  drawSVCanvas(); drawHueCanvas(); drawPresets(); cpUpdateUI(false);
+}
+function closeColorPicker(confirm){
+  CP.open=false;
+  cpHud.classList.remove('visible');
+  if(confirm){
+    const hex=CP.hex; currentTheme=hex;
+    try{localStorage.setItem('yari_theme',JSON.stringify({theme:hex,twotone:twoToneEnabled}));}catch(e){}
+    applyTheme(hex,twoToneEnabled); render();
+    sendToLua({type:'colorChange',theme:hex,twotone:twoToneEnabled});
+  } else {
+    sendToLua({type:'colorPickerCancelled'});
   }
 }
 
-// Override renderItemList for server subtab
-const _origRenderItemList=renderItemList;
-// (server tab is handled inline via cat check in render)
+// Native mouse events on color picker (no Lua bridge needed)
+cpSvCanvas.addEventListener('mousedown',e=>{CP.drag='sv';cpHandleSVMouse(e);});
+cpHueCanvas.addEventListener('mousedown',e=>{CP.drag='hue';cpHandleHueMouse(e);});
+document.addEventListener('mousemove',e=>{
+  if(!CP.open) return;
+  if(CP.drag==='sv') cpHandleSVMouse(e);
+  else if(CP.drag==='hue') cpHandleHueMouse(e);
+});
+document.addEventListener('mouseup',()=>{ CP.drag=null; });
+function cpHandleSVMouse(e){
+  const r=cpSvCanvas.getBoundingClientRect();
+  CP.sat=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+  CP.val=Math.max(0,Math.min(1,1-(e.clientY-r.top)/r.height));
+  cpUpdateUI(false);
+}
+function cpHandleHueMouse(e){
+  const r=cpHueCanvas.getBoundingClientRect();
+  CP.hue=Math.max(0,Math.min(360,((e.clientX-r.left)/r.width)*360));
+  cpUpdateUI(true);
+}
 
-// ── MESSAGE HANDLER ──
+// Confirm / Cancel buttons
+document.getElementById('cp-confirm-btn').addEventListener('click',()=>closeColorPicker(true));
+document.getElementById('cp-cancel-btn').addEventListener('click',()=>closeColorPicker(false));
+
+// Lua bridge for color picker (keeps compatibility)
+function handleColorPickerMouse(sx,sy,lmb){
+  if(!CP.open) return;
+  if(!lmb){CP.drag=null;return;}
+  const svR=cpSvCanvas.getBoundingClientRect();
+  if(sx>=svR.left&&sx<=svR.right&&sy>=svR.top&&sy<=svR.bottom){
+    CP.drag='sv';
+    CP.sat=Math.max(0,Math.min(1,(sx-svR.left)/svR.width));
+    CP.val=Math.max(0,Math.min(1,1-(sy-svR.top)/svR.height));
+    cpUpdateUI(false); return;
+  }
+  const hR=cpHueCanvas.getBoundingClientRect();
+  if(sx>=hR.left&&sx<=hR.right&&sy>=hR.top&&sy<=hR.bottom){
+    CP.drag='hue';
+    CP.hue=Math.max(0,Math.min(360,((sx-hR.left)/hR.width)*360));
+    cpUpdateUI(true); return;
+  }
+  CP.presetsEl=cpPresets.querySelectorAll('.cp-preset');
+  CP.presetsEl.forEach((el,i)=>{const r=el.getBoundingClientRect();if(sx>=r.left&&sx<=r.right&&sy>=r.top&&sy<=r.bottom){const{h,s,v}=hexToHsv(CP.PRESETS[i]);CP.hue=h;CP.sat=s;CP.val=v;cpUpdateUI(true);}});
+}
+function handleColorPickerKey(key){
+  if(!CP.open) return false;
+  if(key==='enter'||key==='confirm'){closeColorPicker(true);return true;}
+  if(key==='esc'||key==='cancel'){closeColorPicker(false);return true;}
+  return false;
+}
+window.openColorPicker=openColorPicker;
+window.closeColorPicker=closeColorPicker;
+window.handleColorPickerMouse=handleColorPickerMouse;
+window.handleColorPickerKey=handleColorPickerKey;
+
+// ══════════════════════════════════════════════════════════════
+//  DESIGN MODE — fixed drag using native mouse events
+// ══════════════════════════════════════════════════════════════
+(function(){
+  const DRAGGABLE_IDS=['app','player-panel','spec-hud','kb-hud','freecam-hud','fc-center-hud'];
+  let designActive=false,dragTarget=null,dragOffX=0,dragOffY=0,isDragging=false;
+  const overlayEl=document.getElementById('design-overlay');
+  const barEl=document.getElementById('design-bar');
+  const cursorEl=document.getElementById('design-cursor');
+  const coordBadge=document.getElementById('design-coord-badge');
+
+  function snapshotPanel(el){
+    const r=el.getBoundingClientRect();
+    if(r.width===0&&r.height===0) return;
+    el.style.position='fixed'; el.style.left=r.left+'px'; el.style.top=r.top+'px'; el.style.right='auto'; el.style.bottom='auto'; el.style.margin='0';
+  }
+  function initPanels(){DRAGGABLE_IDS.forEach(id=>{const el=document.getElementById(id);if(!el) return;el.classList.add('design-draggable');snapshotPanel(el);});}
+  function enterDesign(){designActive=true;document.body.classList.add('design-active');overlayEl.classList.add('active');barEl.classList.add('active');cursorEl.classList.add('active');initPanels();}
+  function leaveDesign(){designActive=false;document.body.classList.remove('design-active');overlayEl.classList.remove('active');barEl.classList.remove('active');cursorEl.classList.remove('active');coordBadge.classList.remove('visible');endDrag();}
+
+  function panelAt(x,y){
+    for(let i=DRAGGABLE_IDS.length-1;i>=0;i--){
+      const el=document.getElementById(DRAGGABLE_IDS[i]);if(!el) continue;
+      const style=window.getComputedStyle(el);
+      if(style.display==='none'||style.visibility==='hidden') continue;
+      const r=el.getBoundingClientRect();if(r.width===0||r.height===0) continue;
+      if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom) return el;
+    }
+    return null;
+  }
+  function startDrag(panel,x,y){snapshotPanel(panel);const r=panel.getBoundingClientRect();dragTarget=panel;dragOffX=x-r.left;dragOffY=y-r.top;isDragging=true;panel.classList.add('dragging');panel.style.zIndex='99997';}
+  function moveDrag(x,y){if(!dragTarget) return;const nx=x-dragOffX,ny=y-dragOffY;dragTarget.style.left=nx+'px';dragTarget.style.top=ny+'px';coordBadge.textContent='X '+Math.round(nx)+'  Y '+Math.round(ny);coordBadge.style.left=(x+14)+'px';coordBadge.style.top=(y-20)+'px';coordBadge.classList.add('visible');}
+  function endDrag(){
+    if(dragTarget){dragTarget.classList.remove('dragging');dragTarget.style.zIndex='';const positions={};DRAGGABLE_IDS.forEach(id=>{const el=document.getElementById(id);if(!el) return;if(el.style.left&&el.style.top) positions[id]={left:el.style.left,top:el.style.top};});const posJson=JSON.stringify(positions);try{localStorage.setItem('yari_design_pos',posJson);}catch(e){}sendToLua({type:'designSavePositions',data:posJson});dragTarget=null;}
+    isDragging=false; coordBadge.classList.remove('visible');
+  }
+
+  // Native mouse events for drag (always active, only acts when designActive)
+  document.addEventListener('mousedown',e=>{
+    if(!designActive) return;
+    const p=panelAt(e.clientX,e.clientY);
+    if(p){e.preventDefault();startDrag(p,e.clientX,e.clientY);}
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!designActive) return;
+    cursorEl.style.left=e.clientX+'px'; cursorEl.style.top=e.clientY+'px';
+    if(isDragging) moveDrag(e.clientX,e.clientY);
+  });
+  document.addEventListener('mouseup',e=>{
+    if(!designActive) return;
+    if(isDragging) endDrag();
+  });
+
+  // Lua bridge messages (kept for compatibility)
+  window.addEventListener('message',function(e){
+    let d=e.data;if(typeof d==='string'){try{d=JSON.parse(d);}catch(_){return;}}if(!d||!d.type) return;
+    if(d.type==='designMode'){if(d.enabled)enterDesign();else leaveDesign();return;}
+    // Lua mouse fallback (for FiveM NUI where native mouse isn't captured)
+    if(d.type==='designMouse'){
+      if(!designActive) return;
+      cursorEl.style.left=d.x+'px'; cursorEl.style.top=d.y+'px';
+      if(!!d.lmb&&!isDragging){const p=panelAt(d.x,d.y);if(p) startDrag(p,d.x,d.y);}
+      if(isDragging&&!!d.lmb) moveDrag(d.x,d.y);
+      if(!d.lmb&&isDragging) endDrag();
+      return;
+    }
+  });
+
+  // Restore saved positions
+  try{const raw=localStorage.getItem('yari_design_pos');if(!raw) return;const positions=JSON.parse(raw);DRAGGABLE_IDS.forEach(id=>{const el=document.getElementById(id);if(!el||!positions[id]) return;const pos=positions[id];if(!pos.left||!pos.top) return;el.style.position='fixed';el.style.left=pos.left;el.style.top=pos.top;el.style.right='auto';el.style.bottom='auto';el.style.margin='0';});}catch(e){}
+})();
+
+// ── MESSAGE HANDLER
 window.addEventListener('message',function(e){
   let d=e.data;
   if(typeof d==='string'){try{d=JSON.parse(d);}catch(_){return;}}
@@ -1185,6 +1467,10 @@ window.addEventListener('message',function(e){
   if(d.type==='setToggleStates'){if(d.states)Object.assign(toggleStates,d.states);if('Settings_4'in(d.states||{})){twoToneEnabled=d.states['Settings_4']===true;}render();return;}
   if(d.type==='crosshair'){for(let i=1;i<=5;i++){const el=document.getElementById('xh-'+i);if(el)el.style.display=(d.id===i)?'block':'none';}return;}
   if(d.type==='radarUpdate'){radarVehicles=d.vehicles||[];render();return;}
+  if(d.type==='colorPickerOpen'){openColorPicker(d.hex||null);return;}
+  if(d.type==='colorPickerClose'){closeColorPicker(false);return;}
+  if(d.type==='colorPickerMouse'){handleColorPickerMouse(d.x,d.y,!!d.lmb);return;}
+  if(d.type==='colorPickerKey'){handleColorPickerKey(d.key);return;}
 
   if(d.type==='freecam'){
     const hud=document.getElementById('freecam-hud'),centerHud=document.getElementById('fc-center-hud');
@@ -1212,39 +1498,9 @@ window.addEventListener('message',function(e){
     return;
   }
 
-  if(d.type==='showPicker'){
-    const pk=document.getElementById('key-picker');pk.classList.add('visible');
-    document.getElementById('kp-username').textContent=d.username||'—';
-    document.getElementById('kp-waiting-dot').style.display='block';
-    document.getElementById('kp-badge').style.display='none';
-    document.getElementById('kp-badge').textContent='';
-    document.getElementById('kp-enter').classList.remove('ready');
-    return;
-  }
-  if(d.type==='pickerKey'){
-    document.getElementById('kp-waiting-dot').style.display='none';
-    const badge=document.getElementById('kp-badge');badge.style.display='inline-flex';badge.style.animation='none';void badge.offsetWidth;badge.style.animation='';badge.textContent=d.name||('0x'+d.code.toString(16).toUpperCase());
-    document.getElementById('kp-enter').classList.add('ready');
-    return;
-  }
+  if(d.type==='showPicker'){const pk=document.getElementById('key-picker');pk.classList.add('visible');document.getElementById('kp-username').textContent=d.username||'—';document.getElementById('kp-waiting-dot').style.display='block';const badge=document.getElementById('kp-badge');badge.style.display='none';badge.textContent='';document.getElementById('kp-enter').classList.remove('ready');return;}
+  if(d.type==='pickerKey'){document.getElementById('kp-waiting-dot').style.display='none';const badge=document.getElementById('kp-badge');badge.style.display='inline-flex';badge.style.animation='none';void badge.offsetWidth;badge.style.animation='';badge.textContent=d.name||('0x'+d.code.toString(16).toUpperCase());document.getElementById('kp-enter').classList.add('ready');return;}
   if(d.type==='hidePicker'){document.getElementById('key-picker').classList.remove('visible');return;}
-
-  if(d.type==='designMode'){
-    const o=document.getElementById('design-overlay'),b=document.getElementById('design-bar'),c=document.getElementById('design-cursor');
-    if(d.enabled){document.body.classList.add('design-active');o.classList.add('active');b.classList.add('active');c.classList.add('active');}
-    else{document.body.classList.remove('design-active');o.classList.remove('active');b.classList.remove('active');c.classList.remove('active');}
-    return;
-  }
-  if(d.type==='designMouse'){
-    if(!document.body.classList.contains('design-active')) return;
-    const c=document.getElementById('design-cursor');c.style.left=d.x+'px';c.style.top=d.y+'px';
-    return;
-  }
-
-  if(d.type==='colorPickerOpen'){openColorPicker(d.hex||null);return;}
-  if(d.type==='colorPickerClose'){closeColorPicker(false);return;}
-  if(d.type==='colorPickerMouse'){handleColorPickerMouse(d.x,d.y,!!d.lmb);return;}
-  if(d.type==='colorPickerKey'){handleColorPickerKey(d.key);return;}
 
   if(d.type==='sync'){
     updatePlayerPanel(d.focusedPlayer||null);
@@ -1317,45 +1573,7 @@ window.addEventListener('message',function(e){
   }
 });
 
-// ── COLOR PICKER ENGINE (unchanged from original) ──
-function hsvToRgb(h,s,v){const f=(n,k=(n+h/60)%6)=>v-v*s*Math.max(0,Math.min(k,4-k,1));return[Math.round(f(5)*255),Math.round(f(3)*255),Math.round(f(1)*255)];}
-function rgbToHex(r,g,b){return'#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase();}
-function hexToHsv(hex){hex=hex.replace('#','');const r=parseInt(hex.substring(0,2),16)/255,g=parseInt(hex.substring(2,4),16)/255,b=parseInt(hex.substring(4,6),16)/255;const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;let h=0,s=max===0?0:d/max,v=max;if(d!==0){switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break;}}return{h:h*360,s,v};}
-const CP={open:false,hue:0,sat:0.75,val:0.75,drag:null,lmbWas:false,svRect:null,hueRect:null,presetsRect:[],PRESETS:['#AAAFB9','#DC1E1E','#8B1FDC','#1E5ADC','#1EDC4A','#DC8C1E','#1EDCDC','#FFFFFF'],get hex(){const[r,g,b]=hsvToRgb(this.hue,this.sat,this.val);return rgbToHex(r,g,b);},get accentGlow(){return'#'+this.hex.replace('#','').match(/.{2}/g).map(c=>Math.min(255,parseInt(c,16)+40).toString(16).padStart(2,'0')).join('').toUpperCase();}};
-const cpHud=document.getElementById('color-picker-hud'),cpSvCanvas=document.getElementById('cp-sv-canvas'),cpHueCanvas=document.getElementById('cp-hue-canvas'),cpSvCursor=document.getElementById('cp-sv-cursor'),cpHueCursor=document.getElementById('cp-hue-cursor'),cpSwatch=document.getElementById('cp-swatch'),cpHexVal=document.getElementById('cp-hex-val'),cpHexHeader=document.getElementById('cp-hex-header'),cpPresets=document.getElementById('cp-presets');
-function drawSVCanvas(){const W=cpSvCanvas.width,H=cpSvCanvas.height,ctx=cpSvCanvas.getContext('2d');const[hr,hg,hb]=hsvToRgb(CP.hue,1,1);ctx.fillStyle=`rgb(${hr},${hg},${hb})`;ctx.fillRect(0,0,W,H);const gW=ctx.createLinearGradient(0,0,W,0);gW.addColorStop(0,'rgba(255,255,255,1)');gW.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=gW;ctx.fillRect(0,0,W,H);const gB=ctx.createLinearGradient(0,H,0,0);gB.addColorStop(0,'rgba(0,0,0,1)');gB.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=gB;ctx.fillRect(0,0,W,H);}
-function drawHueCanvas(){const W=cpHueCanvas.width,H=cpHueCanvas.height,ctx=cpHueCanvas.getContext('2d');const g=ctx.createLinearGradient(0,0,W,0);for(let i=0;i<=360;i+=30){const[r,g2,b]=hsvToRgb(i,1,1);g.addColorStop(i/360,`rgb(${r},${g2},${b})`);}ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
-function drawPresets(){cpPresets.innerHTML='';CP.presetsRect=[];CP.PRESETS.forEach(hex=>{const el=document.createElement('div');el.className='cp-preset';el.style.background=hex;cpPresets.appendChild(el);});}
-function cpUpdateUI(redrawSV){if(redrawSV)drawSVCanvas();const W=cpSvCanvas.width,H=cpSvCanvas.height;cpSvCursor.style.left=(CP.sat*W)+'px';cpSvCursor.style.top=((1-CP.val)*H)+'px';cpHueCursor.style.left=(14+(CP.hue/360)*cpHueCanvas.width)+'px';const hex=CP.hex;cpSwatch.style.background=hex;cpHexVal.textContent=hex;cpHexHeader.textContent=hex;cpHexHeader.style.color=hex;const[hr,hg,hb]=hsvToRgb(CP.hue,1,1);root.style.setProperty('--mc',`${hr},${hg},${hb}`);root.style.setProperty('--accent',hex);const presetEls=cpPresets.querySelectorAll('.cp-preset');presetEls.forEach((el,i)=>{el.classList.toggle('hovered',CP.PRESETS[i].toUpperCase()===hex.toUpperCase());});}
-function cpCacheRects(){CP.svRect=cpSvCanvas.getBoundingClientRect();CP.hueRect=cpHueCanvas.getBoundingClientRect();CP.presetsRect=[];cpPresets.querySelectorAll('.cp-preset').forEach(el=>CP.presetsRect.push(el.getBoundingClientRect()));}
-function openColorPicker(initialHex){if(initialHex){const{h,s,v}=hexToHsv(initialHex);CP.hue=h;CP.sat=s;CP.val=v;}CP.open=true;CP.drag=null;CP.lmbWas=false;cpHud.style.display='block';cpHud.classList.add('visible');drawSVCanvas();drawHueCanvas();drawPresets();cpUpdateUI(false);requestAnimationFrame(cpCacheRects);}
-function closeColorPicker(confirm){CP.open=false;cpHud.style.display='none';cpHud.classList.remove('visible');if(confirm){const hex=CP.hex;currentTheme=hex;try{localStorage.setItem('yari_theme',JSON.stringify({theme:hex,twotone:twoToneEnabled}));}catch(e){}applyTheme(hex,twoToneEnabled);render();sendToLua({type:'colorChange',theme:hex,twotone:twoToneEnabled});}else{sendToLua({type:'colorPickerCancelled'});}}
-function handleColorPickerMouse(sx,sy,lmb){if(!CP.open)return;cpCacheRects();const lmbDown=!!lmb,justDown=lmbDown&&!CP.lmbWas,justUp=!lmbDown&&CP.lmbWas;CP.lmbWas=lmbDown;if(justDown){const svR=CP.svRect;if(sx>=svR.left&&sx<=svR.right&&sy>=svR.top&&sy<=svR.bottom){CP.drag='sv';}else{const hR=CP.hueRect;if(sx>=hR.left&&sx<=hR.right&&sy>=hR.top&&sy<=hR.bottom){CP.drag='hue';}else{CP.presetsRect.forEach((r,i)=>{if(sx>=r.left&&sx<=r.right&&sy>=r.top&&sy<=r.bottom){const{h,s,v}=hexToHsv(CP.PRESETS[i]);CP.hue=h;CP.sat=s;CP.val=v;cpUpdateUI(true);}});const hudR=cpHud.getBoundingClientRect(),footerY=hudR.bottom-30;if(sy>footerY&&sx>=hudR.left&&sx<=hudR.right){closeColorPicker(sx<(hudR.left+hudR.right)/2);}}}}
-if(lmbDown&&CP.drag==='sv'&&CP.svRect){const r=CP.svRect;CP.sat=Math.max(0,Math.min(1,(sx-r.left)/(r.right-r.left)));CP.val=Math.max(0,Math.min(1,1-(sy-r.top)/(r.bottom-r.top)));cpUpdateUI(false);}
-if(lmbDown&&CP.drag==='hue'&&CP.hueRect){const r=CP.hueRect;CP.hue=Math.max(0,Math.min(360,((sx-r.left)/(r.right-r.left))*360));cpUpdateUI(true);}
-if(justUp)CP.drag=null;}
-function handleColorPickerKey(key){if(!CP.open)return false;if(key==='enter'||key==='confirm'){closeColorPicker(true);return true;}if(key==='esc'||key==='cancel'){closeColorPicker(false);return true;}return false;}
-window.openColorPicker=openColorPicker;window.closeColorPicker=closeColorPicker;window.handleColorPickerMouse=handleColorPickerMouse;window.handleColorPickerKey=handleColorPickerKey;
-
-// ── DESIGN MODE drag ──
-(function(){
-  const DRAGGABLE_IDS=['app','player-panel','spec-hud','kb-hud','freecam-hud','fc-center-hud'];
-  let designActive=false,lmbWas=false,dragTarget=null,dragOffX=0,dragOffY=0,isDragging=false;
-  const overlayEl=document.getElementById('design-overlay'),barEl=document.getElementById('design-bar'),cursorEl=document.getElementById('design-cursor'),coordBadge=document.getElementById('design-coord-badge');
-  function snapshotPanel(el){const r=el.getBoundingClientRect();if(r.width===0&&r.height===0)return;el.style.position='fixed';el.style.left=r.left+'px';el.style.top=r.top+'px';el.style.right='auto';el.style.bottom='auto';el.style.margin='0';}
-  function initPanels(){DRAGGABLE_IDS.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.classList.add('design-draggable');snapshotPanel(el);});}
-  function enterDesign(){designActive=true;document.body.classList.add('design-active');overlayEl.classList.add('active');barEl.classList.add('active');cursorEl.classList.add('active');cursorEl.style.left=(window.innerWidth/2)+'px';cursorEl.style.top=(window.innerHeight/2)+'px';initPanels();}
-  function leaveDesign(){designActive=false;document.body.classList.remove('design-active');overlayEl.classList.remove('active');barEl.classList.remove('active');cursorEl.classList.remove('active');coordBadge.classList.remove('visible');endDrag();}
-  function panelAt(x,y){for(let i=DRAGGABLE_IDS.length-1;i>=0;i--){const el=document.getElementById(DRAGGABLE_IDS[i]);if(!el)continue;const style=window.getComputedStyle(el);if(style.display==='none'||style.visibility==='hidden')continue;const r=el.getBoundingClientRect();if(r.width===0||r.height===0)continue;if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return el;}return null;}
-  function startDrag(panel,x,y){snapshotPanel(panel);const r=panel.getBoundingClientRect();dragTarget=panel;dragOffX=x-r.left;dragOffY=y-r.top;isDragging=true;panel.classList.add('dragging');panel.style.zIndex='99997';}
-  function moveDrag(x,y){if(!dragTarget)return;const nx=x-dragOffX,ny=y-dragOffY;dragTarget.style.left=nx+'px';dragTarget.style.top=ny+'px';coordBadge.textContent='X '+Math.round(nx)+'  Y '+Math.round(ny);coordBadge.style.left=(x+14)+'px';coordBadge.style.top=(y-20)+'px';coordBadge.classList.add('visible');}
-  function endDrag(){if(dragTarget){dragTarget.classList.remove('dragging');dragTarget.style.zIndex='';const positions={};const panelIds=['app','player-panel','spec-hud','kb-hud','freecam-hud','fc-center-hud'];panelIds.forEach(id=>{const el=document.getElementById(id);if(!el)return;if(el.style.left&&el.style.top)positions[id]={left:el.style.left,top:el.style.top};});const posJson=JSON.stringify(positions);try{localStorage.setItem('yari_design_pos',posJson);}catch(e){}sendToLua({type:'designSavePositions',data:posJson});dragTarget=null;}isDragging=false;coordBadge.classList.remove('visible');}
-  window.addEventListener('message',function(e){let d=e.data;if(typeof d==='string'){try{d=JSON.parse(d);}catch(_){return;}}if(!d||!d.type)return;if(d.type==='designMode'){if(d.enabled)enterDesign();else leaveDesign();return;}if(d.type==='designMouse'){if(!designActive)return;cursorEl.style.left=d.x+'px';cursorEl.style.top=d.y+'px';const lmbNow=!!d.lmb;if(lmbNow&&!lmbWas){const p=panelAt(d.x,d.y);if(p)startDrag(p,d.x,d.y);}if(isDragging&&lmbNow)moveDrag(d.x,d.y);if(!lmbNow&&lmbWas)endDrag();lmbWas=lmbNow;return;}});
-  // restore saved positions
-  try{const raw=localStorage.getItem('yari_design_pos');if(raw){const positions=JSON.parse(raw);DRAGGABLE_IDS.forEach(id=>{const el=document.getElementById(id);if(!el||!positions[id])return;const pos=positions[id];if(!pos.left||!pos.top)return;el.style.position='fixed';el.style.left=pos.left;el.style.top=pos.top;el.style.right='auto';el.style.bottom='auto';el.style.margin='0';});}}catch(e){}
-})();
-
-// ── LASER CANVAS ──
+// ── LASER CANVAS
 (function(){
   const laserCanvas=document.getElementById('laser-canvas'),laserCtx=laserCanvas.getContext('2d');
   let laserData=null;
@@ -1368,7 +1586,7 @@ window.openColorPicker=openColorPicker;window.closeColorPicker=closeColorPicker;
   window.addEventListener('message',function(e){let msg=e.data;if(typeof msg==='string'){try{msg=JSON.parse(msg);}catch(_){return;}}if(!msg||msg.type!=='laserBeam')return;if(!msg.enabled){laserData=null;laserCtx.clearRect(0,0,laserCanvas.width,laserCanvas.height);}else laserData=msg;});
 })();
 
-// ── WEB CANVAS ──
+// ── WEB CANVAS
 (function(){
   const webCanvas=document.getElementById('web-canvas'),webCtx=webCanvas.getContext('2d');
   let webData=null;
@@ -1381,97 +1599,12 @@ window.openColorPicker=openColorPicker;window.closeColorPicker=closeColorPicker;
   window.addEventListener('message',function(e){let msg=e.data;if(typeof msg==='string'){try{msg=JSON.parse(msg);}catch(_){return;}}if(msg&&msg.type==='spiderWeb'){if(!msg.enabled){webData=null;webCtx.clearRect(0,0,webCanvas.width,webCanvas.height);}else webData=msg;}});
 })();
 
-// init
-(function(){try{const _s=localStorage.getItem('yari_theme');if(_s){const _t=JSON.parse(_s);if(_t&&_t.theme)applyTheme(_t.theme,_t.twotone===true);}}catch(e){}render();try{const raw=localStorage.getItem('yari_design_pos');if(!raw)return;const positions=JSON.parse(raw);['app','player-panel','spec-hud','kb-hud','freecam-hud','fc-center-hud'].forEach(id=>{const el=document.getElementById(id);if(!el||!positions[id])return;const pos=positions[id];if(!pos.left||!pos.top)return;el.style.position='fixed';el.style.left=pos.left;el.style.top=pos.top;el.style.right='auto';el.style.bottom='auto';el.style.margin='0';});}catch(e){}})();
+// ── INIT
+(function(){
+  try{const _s=localStorage.getItem('yari_theme');if(_s){const _t=JSON.parse(_s);if(_t&&_t.theme)applyTheme(_t.theme,_t.twotone===true);}}catch(e){}
+  render();
+  try{const raw=localStorage.getItem('yari_design_pos');if(!raw) return;const positions=JSON.parse(raw);['app','player-panel','spec-hud','kb-hud','freecam-hud','fc-center-hud'].forEach(id=>{const el=document.getElementById(id);if(!el||!positions[id]) return;const pos=positions[id];if(!pos.left||!pos.top) return;el.style.position='fixed';el.style.left=pos.left;el.style.top=pos.top;el.style.right='auto';el.style.bottom='auto';el.style.margin='0';});}catch(e){}
+})();
 </script>
-
-<!-- KEY PICKER HTML -->
-<div id="key-picker">
-  <div class="kp-box">
-    <div class="kp-inner">
-      <div class="kp-title"><div class="kp-title-dot"></div>KEYBIND</div>
-      <div class="kp-user" id="kp-username">—</div>
-      <div class="kp-key-area" id="kp-key-area">
-        <div class="kp-waiting-dot" id="kp-waiting-dot"></div>
-        <span class="kp-key-badge" id="kp-badge" style="display:none"></span>
-      </div>
-      <div class="kp-enter" id="kp-enter">
-        <span class="kp-enter-key">ENTRÉE</span>
-        <span>confirmer</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- CROSSHAIRS -->
-<div id="xh-container">
-  <div id="xh-1" class="xh-shape"></div>
-  <div id="xh-2" class="xh-shape"></div>
-  <div id="xh-3" class="xh-shape" style="width:24px;height:24px;">
-    <div style="position:absolute;background:rgba(var(--mc),0.95);width:8px;height:2px;top:50%;left:0;transform:translateY(-50%)"></div>
-    <div style="position:absolute;background:rgba(var(--mc),0.95);width:8px;height:2px;top:50%;right:0;transform:translateY(-50%)"></div>
-    <div style="position:absolute;background:rgba(var(--mc),0.95);width:2px;height:8px;left:50%;top:0;transform:translateX(-50%)"></div>
-    <div style="position:absolute;background:rgba(var(--mc),0.95);width:2px;height:8px;left:50%;bottom:0;transform:translateX(-50%)"></div>
-  </div>
-  <div id="xh-4" class="xh-shape"></div>
-  <div id="xh-5" class="xh-shape">
-    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:4px;height:4px;background:rgba(var(--mc),0.95);border-radius:50%;z-index:1"></div>
-  </div>
-</div>
-
-<!-- NOTIFICATIONS STACK -->
-<div id="yari-notif-stack"></div>
-
-<!-- COLOR PICKER HUD -->
-<div id="color-picker-hud">
-  <div class="cp-header">
-    <div class="cp-dot"></div>
-    <span class="cp-title">MENU COLOR</span>
-    <span class="cp-hex-display" id="cp-hex-header">#AAAFB9</span>
-  </div>
-  <div class="cp-sv-wrap">
-    <canvas id="cp-sv-canvas" width="290" height="160"></canvas>
-    <div id="cp-sv-cursor"></div>
-  </div>
-  <div class="cp-hue-wrap">
-    <canvas id="cp-hue-canvas" width="262" height="14"></canvas>
-    <div id="cp-hue-cursor"></div>
-  </div>
-  <div class="cp-presets" id="cp-presets"></div>
-  <div class="cp-bottom">
-    <div class="cp-preview-swatch" id="cp-swatch"></div>
-    <div class="cp-hex-input-wrap">
-      <div class="cp-hex-label">HEX COLOR</div>
-      <div class="cp-hex-val" id="cp-hex-val">#AAAFB9</div>
-    </div>
-  </div>
-  <div class="cp-footer"><span>↵</span> CONFIRMER&nbsp;&nbsp;<span>⌫</span> ANNULER</div>
-</div>
-
-<!-- CP CURSOR -->
-<div id="cp-cursor">
-  <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 2L3 15L7 11L10 18L12 17L9 10L14 10L3 2Z" fill="rgba(var(--mc),0.95)" stroke="rgba(0,0,0,0.6)" stroke-width="0.8"/>
-  </svg>
-</div>
-
-<!-- DESIGN MODE ELEMENTS -->
-<div id="design-overlay"></div>
-<div id="design-bar">
-  <div class="design-bar-dot"></div>
-  <span>DESIGN MODE</span>
-  <span class="design-bar-hint">DRAG <span>UI PANELS</span></span>
-  <span class="design-bar-hint">— PRESS <span>INSERT</span> TO EXIT</span>
-</div>
-<div id="design-cursor">
-  <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 2L3 15L7 11L10 18L12 17L9 10L14 10L3 2Z" fill="rgba(var(--mc),0.95)" stroke="rgba(0,0,0,0.6)" stroke-width="0.8"/>
-  </svg>
-</div>
-<div id="design-coord-badge"></div>
-
-<canvas id="laser-canvas"></canvas>
-<canvas id="web-canvas"></canvas>
-
 </body>
 </html>
