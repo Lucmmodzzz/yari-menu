@@ -3089,20 +3089,22 @@ window.addEventListener('message', function(e) {
     updatePlayerPanel(d.focusedPlayer || null);
 
 
-    if (d.toggles) {
-      Object.assign(toggleStates, d.toggles);
-      if ('Settings_4' in d.toggles) {
-        twoToneEnabled = d.toggles['Settings_4'] === true;
-        applyTheme(currentTheme, twoToneEnabled);
-      }
-    }
-
     if (d.currentTheme) {
-        currentTheme   = d.currentTheme;
+        currentTheme = d.currentTheme;
     }
     if (d.twoTone !== undefined) {
         twoToneEnabled = d.twoTone === true;
     }
+    
+    if (d.toggles) {
+      Object.assign(toggleStates, d.toggles);
+      if ('Settings_4' in d.toggles) {
+        twoToneEnabled = d.toggles['Settings_4'] === true;
+      }
+    }
+    
+    // ② Appliquer le thème une seule fois avec les valeurs à jour
+    applyTheme(currentTheme, twoToneEnabled);
 
     // Tab
     if (d.tab) {
