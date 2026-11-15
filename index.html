@@ -4226,16 +4226,66 @@ body.design-active .design-draggable.dragging {
     'kb-hud', 'freecam-hud', 'fc-center-hud'
   ];
 
+  // Only 'app' gets resize handles (it's the main menu panel)
+  const RESIZABLE_ID = 'app';
+  const MIN_W = 200, MAX_W = 600;
+  const MIN_H = 200, MAX_H = 900;
+  const CORNER_SIZE = 16; // hit area in px
+
   let designActive = false;
   let lmbWas       = false;
+
+  // Drag state
   let dragTarget   = null;
   let dragOffX     = 0, dragOffY = 0;
   let isDragging   = false;
+
+  // Resize state
+  let resizeTarget  = null;
+  let resizeCorner  = null; // 'nw','ne','sw','se'
+  let resizeStartX  = 0, resizeStartY  = 0;
+  let resizeStartW  = 0, resizeStartH  = 0;
+  let resizeStartL  = 0, resizeStartT  = 0;
+  let isResizing    = false;
 
   const overlayEl  = document.getElementById('design-overlay');
   const barEl      = document.getElementById('design-bar');
   const cursorEl   = document.getElementById('design-cursor');
   const coordBadge = document.getElementById('design-coord-badge');
+
+  // ── Corner handle elements ──────────────────────────────────────
+  const cornerHandles = {};
+  const CORNER_STYLE  = `
+    position:absolute;width:14px;height:14px;z-index:100010;
+    pointer-events:none;box-sizing:border-box;
+    border-color:var(--accent);border-style:solid;
+    display:none;
+  `;
+  function createCorners() {
+    const defs = {
+      nw: 'top:0;left:0;border-width:3px 0 0 3px;cursor:nw-resize;',
+      ne: 'top:0;right:0;border-width:3px 3px 0 0;cursor:ne-resize;',
+      sw: 'bottom:0;left:0;border-width:0 0 3px 3px;cursor:sw-resize;',
+      se: 'bottom:0;right:0;border-width:0 3px 3px 0;cursor:se-resize;',
+    };
+    const target = document.getElementById(RESIZABLE_ID);
+    if (!target) return;
+    // Make sure parent is positioned
+    target.style.position = target.style.position || 'fixed';
+    Object.entries(defs).forEach(([key, pos]) => {
+      const el = document.createElement('div');
+      el.setAttribute('data-corner', key);
+      el.style.cssText = CORNER_STYLE + pos;
+      target.appendChild(el);
+      cornerHandles[key] = el;
+    });
+  }
+
+  function showCorners(show) {
+    Object.values(cornerHandles).forEach(el => {
+      el.style.display = show ? 'block' : 'none';
+    });
+  }
 
   function snapshotPanel(el) {
     const r = el.getBoundingClientRect();
@@ -4259,7 +4309,7 @@ body.design-active .design-draggable.dragging {
 
   function enterDesign() {
     designActive = true;
-    document.documentElement.style.cursor = 'none';  // ← AJOUTE
+    document.documentElement.style.cursor = 'none';
     document.body.classList.add('design-active');
     overlayEl.classList.add('active');
     barEl.classList.add('active');
@@ -4267,40 +4317,54 @@ body.design-active .design-draggable.dragging {
     cursorEl.style.left = (window.innerWidth  / 2) + 'px';
     cursorEl.style.top  = (window.innerHeight / 2) + 'px';
     initPanels();
+    if (!cornerHandles.se) createCorners();
+    showCorners(true);
   }
-  
+
   function leaveDesign() {
     designActive = false;
-    document.documentElement.style.cursor = '';  // ← AJOUTE
+    document.documentElement.style.cursor = '';
     document.body.classList.remove('design-active');
     overlayEl.classList.remove('active');
     barEl.classList.remove('active');
     cursorEl.classList.remove('active');
     coordBadge.classList.remove('visible');
+    showCorners(false);
     endDrag();
+    endResize();
   }
 
-  // ── HIT-TEST MANUEL : pas de elementFromPoint, on lit les BoundingRect ──
+  // ── Corner hit-test against the RESIZABLE panel ─────────────────
+  function cornerAt(sx, sy) {
+    const el = document.getElementById(RESIZABLE_ID);
+    if (!el) return null;
+    const style = window.getComputedStyle(el);
+    if (style.display === 'none') return null;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) return null;
+    const C = CORNER_SIZE;
+    if (sx >= r.left && sx <= r.left + C && sy >= r.top && sy <= r.top + C)       return 'nw';
+    if (sx >= r.right - C && sx <= r.right && sy >= r.top && sy <= r.top + C)     return 'ne';
+    if (sx >= r.left && sx <= r.left + C && sy >= r.bottom - C && sy <= r.bottom) return 'sw';
+    if (sx >= r.right - C && sx <= r.right && sy >= r.bottom - C && sy <= r.bottom) return 'se';
+    return null;
+  }
+
+  // ── Panel drag hit-test ─────────────────────────────────────────
   function panelAt(x, y) {
-    // Itère en ordre inverse (dernier = plus au-dessus visuellement)
     for (let i = DRAGGABLE_IDS.length - 1; i >= 0; i--) {
       const el = document.getElementById(DRAGGABLE_IDS[i]);
       if (!el) continue;
-
-      // Panel non visible → skip
       const style = window.getComputedStyle(el);
       if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') continue;
-
       const r = el.getBoundingClientRect();
       if (r.width === 0 || r.height === 0) continue;
-
-      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
-        return el;
-      }
+      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return el;
     }
     return null;
   }
 
+  // ── Drag ────────────────────────────────────────────────────────
   function startDrag(panel, x, y) {
     snapshotPanel(panel);
     const r  = panel.getBoundingClientRect();
@@ -4318,7 +4382,6 @@ body.design-active .design-draggable.dragging {
     const ny = y - dragOffY;
     dragTarget.style.left = nx + 'px';
     dragTarget.style.top  = ny + 'px';
-
     coordBadge.textContent = 'X ' + Math.round(nx) + '  Y ' + Math.round(ny);
     coordBadge.style.left  = (x + 14) + 'px';
     coordBadge.style.top   = (y - 20) + 'px';
@@ -4326,28 +4389,117 @@ body.design-active .design-draggable.dragging {
   }
 
   function endDrag() {
-      if (dragTarget) {
-          dragTarget.classList.remove('dragging');
-          dragTarget.style.zIndex = '';
-          const positions = {};
-          const panelIds = ['app','player-panel','spec-hud','kb-hud','freecam-hud','fc-center-hud'];
-          panelIds.forEach(id => {
-              const el = document.getElementById(id);
-              if (!el) return;
-              if (el.style.left && el.style.top) {
-                  positions[id] = { left: el.style.left, top: el.style.top };
-              }
-          });
-          const posJson = JSON.stringify(positions);
-          // Stockage local immédiat
-          try { localStorage.setItem('yari_design_pos', posJson); } catch(e) {}
-          sendToLua({ type: 'designSavePositions', data: posJson });
-          dragTarget = null;
-      }
-      isDragging = false;
-      coordBadge.classList.remove('visible');
+    if (dragTarget) {
+      dragTarget.classList.remove('dragging');
+      dragTarget.style.zIndex = '';
+      savePositions();
+      dragTarget = null;
+    }
+    isDragging = false;
+    coordBadge.classList.remove('visible');
   }
 
+  // ── Resize ──────────────────────────────────────────────────────
+  function startResize(corner, x, y) {
+    const el = document.getElementById(RESIZABLE_ID);
+    if (!el) return;
+    snapshotPanel(el);
+    const r       = el.getBoundingClientRect();
+    resizeTarget  = el;
+    resizeCorner  = corner;
+    resizeStartX  = x;
+    resizeStartY  = y;
+    resizeStartW  = r.width;
+    resizeStartH  = r.height;
+    resizeStartL  = r.left;
+    resizeStartT  = r.top;
+    isResizing    = true;
+    el.classList.add('dragging');
+    el.style.zIndex = '99997';
+    // Lock overflow during resize
+    el.style.overflow = 'hidden';
+  }
+
+  function moveResize(x, y) {
+    if (!resizeTarget) return;
+    const dx = x - resizeStartX;
+    const dy = y - resizeStartY;
+    let newW = resizeStartW;
+    let newH = resizeStartH;
+    let newL = resizeStartL;
+    let newT = resizeStartT;
+
+    switch (resizeCorner) {
+      case 'se':
+        newW = resizeStartW + dx;
+        newH = resizeStartH + dy;
+        break;
+      case 'sw':
+        newW = resizeStartW - dx;
+        newH = resizeStartH + dy;
+        newL = resizeStartL + dx;
+        break;
+      case 'ne':
+        newW = resizeStartW + dx;
+        newH = resizeStartH - dy;
+        newT = resizeStartT + dy;
+        break;
+      case 'nw':
+        newW = resizeStartW - dx;
+        newH = resizeStartH - dy;
+        newL = resizeStartL + dx;
+        newT = resizeStartT + dy;
+        break;
+    }
+
+    // Clamp
+    newW = Math.max(MIN_W, Math.min(MAX_W, newW));
+    newH = Math.max(MIN_H, Math.min(MAX_H, newH));
+
+    resizeTarget.style.width  = newW + 'px';
+    resizeTarget.style.height = newH + 'px';
+    resizeTarget.style.left   = newL + 'px';
+    resizeTarget.style.top    = newT + 'px';
+
+    coordBadge.textContent = newW + 'px × ' + newH + 'px';
+    coordBadge.style.left  = (x + 14) + 'px';
+    coordBadge.style.top   = (y - 20) + 'px';
+    coordBadge.classList.add('visible');
+  }
+
+  function endResize() {
+    if (resizeTarget) {
+      resizeTarget.classList.remove('dragging');
+      resizeTarget.style.zIndex   = '';
+      resizeTarget.style.overflow = '';
+      savePositions();
+      resizeTarget = null;
+    }
+    isResizing   = false;
+    resizeCorner = null;
+    coordBadge.classList.remove('visible');
+  }
+
+  // ── Persist ─────────────────────────────────────────────────────
+  function savePositions() {
+    const positions = {};
+    const panelIds  = ['app','player-panel','spec-hud','kb-hud','freecam-hud','fc-center-hud'];
+    panelIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const entry = {};
+      if (el.style.left)   entry.left   = el.style.left;
+      if (el.style.top)    entry.top    = el.style.top;
+      if (el.style.width)  entry.width  = el.style.width;
+      if (el.style.height) entry.height = el.style.height;
+      if (entry.left || entry.top) positions[id] = entry;
+    });
+    const posJson = JSON.stringify(positions);
+    try { localStorage.setItem('yari_design_pos', posJson); } catch(e) {}
+    sendToLua({ type: 'designSavePositions', data: posJson });
+  }
+
+  // ── Message handler ─────────────────────────────────────────────
   window.addEventListener('message', function (e) {
     let d = e.data;
     if (typeof d === 'string') {
@@ -4362,59 +4514,48 @@ body.design-active .design-draggable.dragging {
     }
 
     if (d.type === 'colorPickerCursor') {
-        const cpCur = document.getElementById('cp-cursor');  // ← cp-cursor, pas design-cursor
-        if (!cpCur) return;
-        if (d.visible) {
-            cpCur.style.display = 'block';
-            cpCur.style.left = (window.innerWidth  / 2) + 'px';
-            cpCur.style.top  = (window.innerHeight / 2) + 'px';
-        } else {
-            cpCur.style.display = 'none';
-        }
-        return;
+      const cpCur = document.getElementById('cp-cursor');
+      if (!cpCur) return;
+      if (d.visible) {
+        cpCur.style.display = 'block';
+        cpCur.style.left = (window.innerWidth  / 2) + 'px';
+        cpCur.style.top  = (window.innerHeight / 2) + 'px';
+      } else {
+        cpCur.style.display = 'none';
+      }
+      return;
     }
 
     if (d.type === 'designMouse') {
-      console.log('[JS DESIGN]', JSON.stringify(d), 'active:', designActive, 'lmb:', d.lmb);
       if (!designActive) return;
-      
       const sx = d.x;
       const sy = d.y;
-      console.log('[JS PANEL CHECK] sx:', sx, 'sy:', sy);
-      
-      // Vérifie chaque panel
-      DRAGGABLE_IDS.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const style = window.getComputedStyle(el);
-        const r = el.getBoundingClientRect();
-        console.log('[PANEL]', id, 
-          'display:', style.display, 
-          'rect:', Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom),
-          'hit:', sx >= r.left && sx <= r.right && sy >= r.top && sy <= r.bottom
-        );
-      });
 
-      // Déplace le curseur custom
+      // Move cursor
       cursorEl.style.left = sx + 'px';
       cursorEl.style.top  = sy + 'px';
 
       const lmbNow = !!d.lmb;
 
-      // LMB vient d'être pressé → cherche un panel sous le curseur
       if (lmbNow && !lmbWas) {
-        const p = panelAt(sx, sy);
-        if (p) startDrag(p, sx, sy);
+        // Priority: resize corner > drag
+        const corner = cornerAt(sx, sy);
+        if (corner) {
+          startResize(corner, sx, sy);
+        } else {
+          const p = panelAt(sx, sy);
+          if (p) startDrag(p, sx, sy);
+        }
       }
 
-      // LMB maintenu + drag en cours → déplace
-      if (isDragging && lmbNow) {
-        moveDrag(sx, sy);
+      if (lmbNow) {
+        if (isResizing)  moveResize(sx, sy);
+        else if (isDragging) moveDrag(sx, sy);
       }
 
-      // LMB relâché → fin du drag
       if (!lmbNow && lmbWas) {
-        endDrag();
+        if (isResizing)  endResize();
+        else             endDrag();
       }
 
       lmbWas = lmbNow;
@@ -4425,12 +4566,43 @@ body.design-active .design-draggable.dragging {
       DRAGGABLE_IDS.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
-        el.style.left   = '';
-        el.style.top    = '';
-        el.style.right  = '';
-        el.style.bottom = '';
+        el.style.left    = '';
+        el.style.top     = '';
+        el.style.right   = '';
+        el.style.bottom  = '';
+        el.style.width   = '';
+        el.style.height  = '';
         el.classList.remove('design-draggable', 'dragging');
       });
+      return;
+    }
+
+    // Restore saved positions + sizes on load
+    if (d.type === 'designLoadPositions') {
+      let raw = d.data;
+      if (!raw || raw === '{}' || raw === '') {
+        try { raw = localStorage.getItem('yari_design_pos'); } catch(e) {}
+      }
+      if (!raw) return;
+      try {
+        const positions = JSON.parse(raw);
+        const panelIds  = ['app','player-panel','spec-hud','kb-hud','freecam-hud','fc-center-hud'];
+        panelIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el || !positions[id]) return;
+          const pos = positions[id];
+          if (!pos.left || !pos.top) return;
+          el.style.position = 'fixed';
+          el.style.left     = pos.left;
+          el.style.top      = pos.top;
+          el.style.right    = 'auto';
+          el.style.bottom   = 'auto';
+          el.style.margin   = '0';
+          if (pos.width)  el.style.width  = pos.width;
+          if (pos.height) el.style.height = pos.height;
+        });
+        try { localStorage.setItem('yari_design_pos', raw); } catch(e) {}
+      } catch(e) {}
       return;
     }
   });
