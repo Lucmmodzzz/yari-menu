@@ -2810,17 +2810,8 @@ window.addEventListener('message', function(e) {
   }
 
   if (d.type === 'showMenu') {
-      try {
-          const _saved = localStorage.getItem('yari_theme');
-          if (_saved) {
-              const _t = JSON.parse(_saved);
-              if (_t && _t.theme) {
-                  currentTheme   = _t.theme;
-                  twoToneEnabled = _t.twotone === true;
-                  applyTheme(_t.theme, _t.twotone === true);
-              }
-          }
-      } catch(e) {}
+    // currentTheme déjà correct, Lua enverra applyTheme
+    appEl.classList.remove('anim-out');
       appEl.classList.remove('anim-out');
       appEl.style.display = 'flex';
       if (_smoothAnim) {
