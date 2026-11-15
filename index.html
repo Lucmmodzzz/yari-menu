@@ -4684,19 +4684,22 @@ function closeColorPicker(confirm) {
     
     if (confirm) {
         const hex = CP.hex;
-        // ── Appliquer IMMÉDIATEMENT côté HTML ──
         currentTheme = hex;
-        twoToneEnabled = twoToneEnabled; // inchangé
-        applyTheme(hex, twoToneEnabled);
-        // ── Persister dans localStorage MAINTENANT ──
+        twoToneEnabled = twoToneEnabled;
+        
+        // ── Stocker pour que Lua puisse la lire ──
+        window._pendingThemeChange = hex;
+        window._pendingTwoTone     = twoToneEnabled;
+        
         try {
             localStorage.setItem('yari_theme', JSON.stringify({
                 theme: hex,
                 twotone: twoToneEnabled
             }));
         } catch(e) {}
+        
+        applyTheme(hex, twoToneEnabled);
         render();
-        // ── Envoyer à Lua ──
         sendToLua({type: 'colorChange', theme: hex, twotone: twoToneEnabled});
     } else {
         // Restaurer l'ancienne couleur
