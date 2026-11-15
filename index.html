@@ -2302,7 +2302,7 @@ function renderItemList(items, catName) {
 
     if (name === 'Speed Multiplier') {
       const val = window._vehicleSpeedMult || 1.0;
-      const pct = ((val - 0.5) / (5.0 - 0.5)) * 100;
+      const pct = ((val - 0.5) / (15.0 - 0.5)) * 100;
       const isOn = toggleStates['Vehicle_13'] === true;
       const el = document.createElement('div');
       el.className = 'menu-item' + (isSel ? ' sel' : '');
@@ -2325,7 +2325,7 @@ function renderItemList(items, catName) {
 
     if (name === 'Brake Multiplier') {
       const val = window._vehicleBrakeMult || 1.0;
-      const pct = ((val - 0.1) / (5.0 - 0.1)) * 100;
+      const pct = ((val - 0.1) / (10.0 - 0.1)) * 100;
       const isOn = toggleStates['Vehicle_14'] === true;
       const el = document.createElement('div');
       el.className = 'menu-item' + (isSel ? ' sel' : '');
@@ -2348,7 +2348,7 @@ function renderItemList(items, catName) {
 
     if (name === 'Turn Multiplier') {
       const val = window._vehicleTurnMult || 1.0;
-      const pct = ((val - 0.1) / (3.0 - 0.1)) * 100;
+      const pct = ((val - 0.1) / (2.0 - 0.1)) * 100;
       const isOn = toggleStates['Vehicle_15'] === true;
       const el = document.createElement('div');
       el.className = 'menu-item' + (isSel ? ' sel' : '');
