@@ -1161,23 +1161,25 @@ const GLOBAL_ACTION_MAP = {
   "Player_19": true,  // Spider Man
   "Player_20": true,  // Walk On Water
   // Vehicle
-  "Vehicle_2": true,  // Porter/Lancer
-  "Vehicle_6": true,  // Vehicle God Mode
-  "Vehicle_7": true,  // Shift Boost
-  "Vehicle_8": true,  // Horn Boost
-  "Vehicle_9":  true,  // Lock Yourself
-  "Vehicle_10": true,  // Lock Yourself (lockExitEnabled)
-  "Vehicle_11": true,  // Lock Yourself (lockExitEnabled)
-  "Vehicle_12": true,
+    "Vehicle_2": true,   // Porter/Lancer
+  "Vehicle_6": true,   // Vehicle God Mode
+  "Vehicle_7": true,   // Shift Boost
+  "Vehicle_8": true,   // Horn Boost
+  "Vehicle_9":  true,  // Unlock Vehicle (attention: unlock n'est pas un toggle ?)
+  "Vehicle_10": true,  // Lock Vehicle
+  "Vehicle_11": true,  // Lock Yourself
+  "Vehicle_12": true,  // Lock Passagers
   "Vehicle_13": true,  // Speed Multiplier
-  "Vehicle_14": true,  // Brake Multiplier 
-  "Vehicle_15": true,  // Turn Multiplier 
-  "Vehicle_16": true,  // Pit Mode 
-  "Vehicle_17": true,  // Vehicle Spin 
-  "Vehicle_19": true,  // Wheelie Permanent
-  "Vehicle_20": true,  // Flip Recovery
-  "Vehicle_21": true,  // Vehicle Magnet
-  "Vehicle_22": true,  // Wall Ride
+  "Vehicle_14": true,  // Brake Multiplier
+  "Vehicle_15": true,  // Turn Multiplier
+  "Vehicle_16": true,  // Infinite Fuel   ← NOUVEAU (manquait)
+  "Vehicle_17": true,  // Pit Mode        ← corrigé (était 16)
+  // Vehicle_18 = Stick To Ground (pas dans MAP, géré différemment via groundLockThread)
+  "Vehicle_19": true,  // Vehicle Spin    ← corrigé (était 16, doublon)
+  // Vehicle_20 = Pop Tires → pas un toggle, pas besoin ici
+  "Vehicle_21": true,  // Wheelie Permanent ← corrigé (était 19)
+  "Vehicle_22": true,  // Flip Recovery     ← corrigé (était 20)
+  "Vehicle_23": true,
   // Misc
   "Misc_1": true,
   "Misc_2": true,
@@ -1348,7 +1350,7 @@ const TOGGLE_NAMES = new Set([
   "Noclip","God Mode", "Tiny God Mode", "No Ragdoll","No Collision","Fast Run",
   "Max Heal","Max Armor","Invisible","Super Jump","Infinite Stamina","Walk On Wall","Walk On Wall SM",
   "Porter/Lancer Véhicule","Vehicle God Mode","Shift Boost", "CH Dot","CH Cross","CH Cross Gap","CH Circle","CH Dot Cross", "Free cam", "Cam Options",
-  "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Spoof Weapon",
+  "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Spoof Weapon","Infinite Fuel",
   "Laser Eye","Fast Punch","New Player Bypass", "Anti Freeze", "Anti Teleport", "Anti Animation", "Auto Load Config","Activer Deux Couleurs",
   "Vehicle Chaos", "Vehicle Spin Chaos","Show Keybinds","Anti Aim V2","Slide Run","Speed Multiplier", 
   "Brake Multiplier", "Turn Multiplier","Pit Mode","Stick To Ground", "Spider Man", "Walk On Water", "Vehicle Spin", "Wheelie Permanent", "Flip Recovery", "Infinite Fuel",
