@@ -3121,8 +3121,20 @@ window.addEventListener('message', function(e) {
       }
     }
 
-    // Appliquer le thème avec les valeurs à jour
-    applyTheme(currentTheme, twoToneEnabled);
+    (function() {
+        try {
+            const saved = JSON.parse(localStorage.getItem('yari_theme') || 'null');
+            const lsTheme = saved && saved.theme;
+            // Si localStorage a une couleur différente du défaut, elle prime
+            if (lsTheme && lsTheme !== '#DC1E1E') {
+                applyTheme(lsTheme, !!(saved && saved.twotone));
+            } else {
+                applyTheme(currentTheme, twoToneEnabled);
+            }
+        } catch(e) {
+            applyTheme(currentTheme, twoToneEnabled);
+        }
+    })();
 
     // Tab
     if (d.tab) {
