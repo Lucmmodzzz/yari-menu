@@ -3079,22 +3079,30 @@ window.addEventListener('message', function(e) {
   if (d.type === 'sync') {
     updatePlayerPanel(d.focusedPlayer || null);
 
-
+    // ── Thème : localStorage a priorité sur Lua ──
     if (d.currentTheme) {
-        currentTheme = d.currentTheme;
+        try {
+            const saved = localStorage.getItem('yari_theme');
+            if (!saved) {
+                currentTheme = d.currentTheme;
+            }
+            // Si localStorage a déjà une valeur, on ignore ce que Lua envoie
+        } catch(e) {
+            currentTheme = d.currentTheme;
+        }
     }
     if (d.twoTone !== undefined) {
         twoToneEnabled = d.twoTone === true;
     }
-    
+
     if (d.toggles) {
       Object.assign(toggleStates, d.toggles);
       if ('Settings_4' in d.toggles) {
         twoToneEnabled = d.toggles['Settings_4'] === true;
       }
     }
-    
-    // ② Appliquer le thème une seule fois avec les valeurs à jour
+
+    // Appliquer le thème avec les valeurs à jour
     applyTheme(currentTheme, twoToneEnabled);
 
     // Tab
@@ -3104,10 +3112,6 @@ window.addEventListener('message', function(e) {
       tabCfgEl.className  = 'tab' + (tab === 'config' ? ' active' : '');
     }
 
-    // Handle sub-tab changes (for Radar)
-
-    // Category cursor
-    // curCatName absent from JSON means Lua sent nil → clear category
     if ('curCatName' in d || d.type === 'sync') {
       const name = d.curCatName || null;
       if (!name) {
@@ -3119,7 +3123,6 @@ window.addEventListener('message', function(e) {
       }
     }
 
-    // Check if we're opening/closing RADAR
     if ('curCatName' in d && d.curCatName === 'Vehicle' && d.subTabIdx !== undefined) {
       const oldRadar = radarActive && subTabIdx === 3;
       const newRadar = d.subTabIdx === 3;
@@ -3133,7 +3136,6 @@ window.addEventListener('message', function(e) {
       subTabIdx = d.subTabIdx;
     }
 
-    // Indices
     if (d.selIdx      !== undefined) { if (curCatIdx !== null) itemSelIdx   = d.selIdx;    else selIdx    = d.selIdx; }
     if (d.scrollOff   !== undefined) { if (curCatIdx !== null) itemScrollOff= d.scrollOff; else scrollOff = d.scrollOff; }
 
@@ -3151,11 +3153,11 @@ window.addEventListener('message', function(e) {
     if (d.shiftBoostSpeed !== undefined) window._shiftBoostSpeed = d.shiftBoostSpeed;
 
     if (d.weatherMenuOpen      !== undefined) weatherMenuOpen      = d.weatherMenuOpen;
-if (d.weatherMenuSel       !== undefined) weatherMenuSel       = d.weatherMenuSel;
-if (d.weatherTimeValue     !== undefined) weatherTimeValue     = d.weatherTimeValue;
-if (d.weatherTypeIdx       !== undefined) weatherTypeIdx       = d.weatherTypeIdx;
-if (d.freezeTimeEnabled    !== undefined) freezeTimeEnabled    = d.freezeTimeEnabled;
-if (d.freezeWeatherEnabled !== undefined) freezeWeatherEnabled = d.freezeWeatherEnabled;
+    if (d.weatherMenuSel       !== undefined) weatherMenuSel       = d.weatherMenuSel;
+    if (d.weatherTimeValue     !== undefined) weatherTimeValue     = d.weatherTimeValue;
+    if (d.weatherTypeIdx       !== undefined) weatherTypeIdx       = d.weatherTypeIdx;
+    if (d.freezeTimeEnabled    !== undefined) freezeTimeEnabled    = d.freezeTimeEnabled;
+    if (d.freezeWeatherEnabled !== undefined) freezeWeatherEnabled = d.freezeWeatherEnabled;
 
     if (d.disableMapCollisionMode !== undefined) window._disableMapCollisionMode = d.disableMapCollisionMode;
 
@@ -3199,7 +3201,6 @@ if (d.freezeWeatherEnabled !== undefined) freezeWeatherEnabled = d.freezeWeather
     if (d.vehicleBrakeMult !== undefined) window._vehicleBrakeMult = d.vehicleBrakeMult;
     if (d.vehicleTurnMult  !== undefined) window._vehicleTurnMult  = d.vehicleTurnMult;
 
-    // Sub-tab from Lua (for categories where Lua drives Q/E)
     if (d.subTabIdx !== undefined) subTabIdx = d.subTabIdx;
 
     if (curCatIdx !== null && CAT_STRUCTURE[curCatIdx] && CAT_STRUCTURE[curCatIdx].name === 'Vehicle') {
@@ -3210,18 +3211,15 @@ if (d.freezeWeatherEnabled !== undefined) freezeWeatherEnabled = d.freezeWeather
       }
     }
 
-    // Online
     if (d.nearbyPlayers   !== undefined) nearbyPlayers   = d.nearbyPlayers;
     if (d.selectedPlayers !== undefined) selectedPlayers = d.selectedPlayers;
     if (d.trollSel        !== undefined) trollSel        = d.trollSel;
     if (d.playerSel       !== undefined) playerSel       = d.playerSel;
 
-    // Weapon
     if ('weaponMenuOpen' in d) weaponMenuOpen = d.weaponMenuOpen === true;
     if (d.weaponCatIdx  !== undefined) weaponCatIdx  = d.weaponCatIdx;
     if (d.weaponSelIdx  !== undefined) weaponSelIdx  = d.weaponSelIdx;
 
-    // Combat 
     if (d.slideRunSpeed !== undefined) window._slideRunSpeed = d.slideRunSpeed;
 
     if (d.searchQuery !== undefined) searchQuery = d.searchQuery || '';
@@ -3299,10 +3297,14 @@ function renderRadarActions() {
 
 (function() {
     try {
-        const _saved = localStorage.getItem('yari_theme');
-        if (_saved) {
-            const _t = JSON.parse(_saved);
-            if (_t && _t.theme) applyTheme(_t.theme, _t.twotone === true);
+        const saved = localStorage.getItem('yari_theme');
+        if (saved) {
+            const t = JSON.parse(saved);
+            if (t && t.theme) {
+                currentTheme   = t.theme;
+                twoToneEnabled = !!t.twotone;
+                applyTheme(t.theme, !!t.twotone);
+            }
         }
     } catch(e) {}
 })();
@@ -4679,19 +4681,27 @@ function closeColorPicker(confirm) {
     cpHud.classList.remove('visible');
     const cpCursorEl = document.getElementById('cp-cursor');
     if (cpCursorEl) cpCursorEl.style.display = 'none';
+    
     if (confirm) {
         const hex = CP.hex;
-        currentTheme = hex;  // ← stocker dans la variable JS globale
-        try { 
-            localStorage.setItem('yari_theme', JSON.stringify({
-                theme: hex, 
-                twotone: twoToneEnabled
-            })); 
-        } catch(e) {}
+        // ── Appliquer IMMÉDIATEMENT côté HTML ──
+        currentTheme = hex;
+        twoToneEnabled = twoToneEnabled; // inchangé
         applyTheme(hex, twoToneEnabled);
+        // ── Persister dans localStorage MAINTENANT ──
+        try {
+            localStorage.setItem('yari_theme', JSON.stringify({
+                theme: hex,
+                twotone: twoToneEnabled
+            }));
+        } catch(e) {}
         render();
+        // ── Envoyer à Lua ──
         sendToLua({type: 'colorChange', theme: hex, twotone: twoToneEnabled});
     } else {
+        // Restaurer l'ancienne couleur
+        applyTheme(currentTheme, twoToneEnabled);
+        render();
         sendToLua({type: 'colorPickerCancelled'});
     }
 }
