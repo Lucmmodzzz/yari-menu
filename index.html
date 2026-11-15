@@ -3121,18 +3121,14 @@ window.addEventListener('message', function(e) {
       }
     }
 
-    (function() {
-        try {
+    try {
             const saved = JSON.parse(localStorage.getItem('yari_theme') || 'null');
-            const lsTheme = saved && saved.theme;
-            // Si localStorage a une couleur différente du défaut, elle prime
-            if (lsTheme && lsTheme !== '#DC1E1E') {
-                applyTheme(lsTheme, !!(saved && saved.twotone));
-            } else {
-                applyTheme(currentTheme, twoToneEnabled);
+            if (saved && saved.theme) {
+                currentTheme   = saved.theme;
+                twoToneEnabled = !!saved.twotone;
             }
-        } catch(e) {
-            applyTheme(currentTheme, twoToneEnabled);
+        } catch(e) {}
+        applyTheme(currentTheme, twoToneEnabled);
         }
     })();
 
@@ -4716,27 +4712,25 @@ function closeColorPicker(confirm) {
     if (confirm) {
         const hex = CP.hex;
         currentTheme = hex;
-        twoToneEnabled = twoToneEnabled;
-        
-        // ── Stocker pour que Lua puisse la lire ──
-        window._pendingThemeChange = hex;
-        window._pendingTwoTone     = twoToneEnabled;
-        
         try {
             localStorage.setItem('yari_theme', JSON.stringify({
                 theme: hex,
                 twotone: twoToneEnabled
             }));
         } catch(e) {}
-        
         applyTheme(hex, twoToneEnabled);
         render();
-        sendToLua({type: 'colorChange', theme: hex, twotone: twoToneEnabled});
+        // ← Force direct dans la queue, pas sendToLua
+        if (!window.__yariCbQueue) window.__yariCbQueue = [];
+        window.__yariCbQueue.push({type: 'colorChange', theme: hex, twotone: twoToneEnabled});
+        if (window.__yariCallback) {
+            try { window.__yariCallback(JSON.stringify({type: 'colorChange', theme: hex, twotone: twoToneEnabled})); } catch(_) {}
+        }
     } else {
-        // Restaurer l'ancienne couleur
         applyTheme(currentTheme, twoToneEnabled);
         render();
-        sendToLua({type: 'colorPickerCancelled'});
+        if (!window.__yariCbQueue) window.__yariCbQueue = [];
+        window.__yariCbQueue.push({type: 'colorPickerCancelled'});
     }
 }
   
