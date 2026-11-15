@@ -3322,20 +3322,19 @@ function renderRadarActions() {
   });
 }
 
-if (d.currentTheme) {
-    currentTheme = d.currentTheme;
-}
-if (d.twoTone !== undefined) {
-    twoToneEnabled = d.twoTone === true;
-}
-applyTheme(currentTheme, twoToneEnabled);
-// Mise à jour localStorage pour persistance entre sessions
-try {
-    localStorage.setItem('yari_theme', JSON.stringify({
-        theme: currentTheme,
-        twotone: twoToneEnabled
-    }));
-} catch(e) {}
+(function() {
+    try {
+        const saved = localStorage.getItem('yari_theme');
+        if (saved) {
+            const t = JSON.parse(saved);
+            if (t && t.theme) {
+                currentTheme   = t.theme;
+                twoToneEnabled = !!t.twotone;
+                applyTheme(t.theme, !!t.twotone);
+            }
+        }
+    } catch(e) {}
+})();
 
 render();
 
