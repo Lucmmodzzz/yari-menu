@@ -1104,7 +1104,7 @@ const CAT_STRUCTURE = [
     name: "Vehicle",
     subTabs: [
       { name: "SPAWN",   items: ["Spawn Custom Véhicule"] },
-      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost", "Horn Boost", "Full Performance","Repair Vehicle","Speed Multiplier","Brake Multiplier","Turn Multiplier", "Infinite Fuel", "Stick To Ground" ,"Pit Mode","Vehicle Spin","Pop Tires","Wheelie Permanent","Flip Recovery"] },
+      { name: "PHYSICS", items: ["Vehicle God Mode","Shift Boost", "Horn Boost", "Full Performance","Repair Vehicle","Speed Multiplier","Brake Multiplier","Turn Multiplier", "Infinite Fuel", "Stick To Ground", "No Collision Props" ,"Pit Mode","Vehicle Spin","Pop Tires","Wheelie Permanent","Flip Recovery"] },
       { name: "CONTROL", items: ["Porter/Lancer Véhicule","Delete Close Véhicule","Unlock Vehicle","Lock Vehicle","Lock Yourself","Lock Passagers","Vehicle Magnet"] },
       { name: "RADAR",   items: [] }
     ]
@@ -1174,12 +1174,13 @@ const GLOBAL_ACTION_MAP = {
   "Vehicle_15": true,  // Turn Multiplier
   "Vehicle_16": true,  // Infinite Fuel   ← NOUVEAU (manquait)
   "Vehicle_17": true,  // Pit Mode        ← corrigé (était 16)
-  // Vehicle_18 = Stick To Ground (pas dans MAP, géré différemment via groundLockThread)
-  "Vehicle_19": true,  // Vehicle Spin    ← corrigé (était 16, doublon)
-  // Vehicle_20 = Pop Tires → pas un toggle, pas besoin ici
-  "Vehicle_21": true,  // Wheelie Permanent ← corrigé (était 19)
-  "Vehicle_22": true,  // Flip Recovery     ← corrigé (était 20)
-  "Vehicle_23": true,
+  // Vehicle_18
+  "Vehicle_19": true,
+  "Vehicle_20": true,  // Vehicle Spin    ← corrigé (était 16, doublon)
+  // Vehicle_21
+  "Vehicle_22": true,  // Wheelie Permanent ← corrigé (était 19)
+  "Vehicle_23": true,  // Flip Recovery     ← corrigé (était 20)
+  "Vehicle_24": true,
   // Misc
   "Misc_1": true,
   "Misc_2": true,
@@ -1270,11 +1271,12 @@ const LUA_ACTION = {
   "Infinite Fuel":            ["Vehicle", 16],
   "Pit Mode":                 ["Vehicle", 17],
   "Stick To Ground":          ["Vehicle", 18],
-  "Vehicle Spin":             ["Vehicle", 19],
-  "Pop Tires":                ["Vehicle", 20],
-  "Wheelie Permanent":        ["Vehicle", 21],
-  "Flip Recovery":            ["Vehicle", 22],
-  "Vehicle Magnet":           ["Vehicle", 23],
+  "No Collision Props":       ["Vehicle", 19],
+  "Vehicle Spin":             ["Vehicle", 20],
+  "Pop Tires":                ["Vehicle", 21],
+  "Wheelie Permanent":        ["Vehicle", 22],
+  "Flip Recovery":            ["Vehicle", 23],
+  "Vehicle Magnet":           ["Vehicle", 24],
   
   // Construction
   "Train Vehicle":             ["Construction", 1],
@@ -1353,7 +1355,7 @@ const TOGGLE_NAMES = new Set([
   "Warp to Explode","Warp to Vehicle","Afficher liste spectateurs","Spoof Weapon","Infinite Fuel",
   "Laser Eye","Fast Punch","New Player Bypass", "Anti Freeze", "Anti Teleport", "Anti Animation", "Auto Load Config","Activer Deux Couleurs",
   "Vehicle Chaos", "Vehicle Spin Chaos","Show Keybinds","Anti Aim V2","Slide Run","Speed Multiplier", 
-  "Brake Multiplier", "Turn Multiplier","Pit Mode","Stick To Ground", "Spider Man", "Walk On Water", "Vehicle Spin", "Wheelie Permanent", "Flip Recovery", "Infinite Fuel",
+  "Brake Multiplier", "Turn Multiplier","Pit Mode","Stick To Ground", "No Collision Props", "Spider Man", "Walk On Water", "Vehicle Spin", "Wheelie Permanent", "Flip Recovery", "Infinite Fuel",
   "Vehicle Magnet", "Force Push", "Vehicle Black Hole", "Disable Map Collision", "Infinite Ammo", "No Reload", "Super Punch", "Horn Boost", "Design Mode"
 ]);
 
@@ -1370,7 +1372,7 @@ const SEP_MAP = {
   "Vehicle|PHYSICS": {
     1: "Boosts",
     5: "Car Handler",
-    10: "Effects",
+    11: "Effects",
   },
   "Vehicle|CONTROL": {
     2: "Lock/Unlock",
